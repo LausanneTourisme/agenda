@@ -22,24 +22,27 @@
     //TODO convert dates to Date and display day 3letters month year
 </script>
 
-<div class="card w-72 rounded-none shadow-none" transition:fade>
-    <Clickable {href}>
+<div class="card w-72 rounded-none shadow-none flex-shrink-0" transition:fade>
+    <Clickable {href} class="h-full">
         <div class="card-body p-4">
             <figure class="h-64">
                 <img src="{imgSrc}" alt="{imgTitle}" title="{imgTitle}" class="object-cover w-full h-full"/>
             </figure>
-            <Heading tag="h3" class="line-clamp-2 text-clip" {title} >
-                {title}
-            </Heading>
+            <div class="title">
+                <Heading tag="h3" class="line-clamp-2 text-clip" {title}>
+                    {title}
+                </Heading>
+            </div>
             <div class="flex items-center">
                 <div class="mb-1 mr-2">
                     <CalendarIcon/>
                 </div>
 
-                <p class="flex w-full">
+                <p class="flex w-full text-sm">
                     {#each dates as date}
                         {@const d =  moment(date, 'YYYY-MM-DD')}
-                        <span class="pr-2" title="{d.format('DD MMMM YYYY')}">{d.format('DD-MMM')}</span>
+                        <span class="pr-2"
+                              title="{d.locale('fr-ch').format('DD MMMM YYYY')}">{d.locale('fr-ch').format('DD - MMM')}</span>
                     {/each}
                 </p>
             </div>
@@ -48,5 +51,17 @@
 </div>
 
 <style lang="scss">
+  .card {
+    height: 400px;
 
+    .card-body{
+      display: flex;
+      flex-flow: column;
+      height: 100%;
+
+      .title{
+        flex: 1 1 auto;
+      }
+    }
+  }
 </style>
