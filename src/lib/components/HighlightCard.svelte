@@ -4,6 +4,11 @@
     import Clickable from "./Clickable.svelte";
     import Heading from "./Heading.svelte";
     import moment from "moment/moment";
+    import 'moment/locale/en-gb';
+    import 'moment/locale/fr-ch';
+    import 'moment/locale/de';
+    import 'moment/locale/it';
+    import 'moment/locale/es';
 
     export let imgSrc: string;
     export let imgTitle: string;
