@@ -1,17 +1,32 @@
 <script lang="ts">
-let title: string = "Titre de l'affiche beaucoup trop long pour avoir un exemple avec un événement qui abuse de son nom"
+    import {getRandomNumber} from "../Helpers";
 
-import HighlightCard from "../components/HighlightCard.svelte";
+    let title: string = "Titre de l'affiche beaucoup trop long pour avoir un exemple avec un événement qui abuse de son nom"
+
+    import HighlightCard from "../components/HighlightCard.svelte";
+    import AsyncLoading from "../components/AsyncLoading.svelte";
+
+    async function getData() {
+        const response = await (await fetch("https://rickandmortyapi.com/api/character/")).json()
+        return response.results;
+    }
 </script>
 
-<main>
-    <div id="highlight" class="w-full bg-yellow-400">
-        <HighlightCard {title} imgSrc="https://picsum.photos/1920/1080" imgTitle="Une img" dates="{['2024-02-15','2024-03-01']}" href="https://perdu.com"/>
-    </div>
-</main>
+
+<div id="highlight" class="flex p-3 w-full bg-yellow-400 overflow-hidden overflow-x-scroll">
+    {#await getData()}
+        <AsyncLoading/>
+    {:then response}
+        {#each Array(getRandomNumber(7, 20)).keys() as i}
+            <HighlightCard title="{response[i].name}" imgSrc="{response[i].image}" imgTitle="{`${response[i].species}•${response[i].gender} => ${response[i].status}`}"
+                           dates="{['2024-02-15','2024-03-01']}" href="{response[i].url}"/>
+        {/each}
+    {:catch error}
+        Erreur
+    {/await}
+</div>
 
 <style lang="scss">
-    #highlight{
-      height: 600px;
-    }
+  #highlight {
+  }
 </style>
