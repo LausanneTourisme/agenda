@@ -1,0 +1,47 @@
+<script lang="ts">
+    import {fade} from "svelte/transition";
+    import CalendarIcon from "./icons/CalendarIcon.svelte";
+    import Clickable from "./Clickable.svelte";
+    import Heading from "./Heading.svelte";
+    import moment from "moment/moment";
+
+    export let imgSrc: string;
+    export let imgTitle: string;
+    export let title: string;
+    export let href: string;
+
+    //Y-m-d
+    export let dates: string[]
+
+    moment().locale('fr')
+    //TODO convert dates to Date and display day 3letters month year
+</script>
+
+<div class="card w-72 rounded-none shadow-none" transition:fade>
+    <Clickable {href}>
+        <div class="card-body p-4">
+            <figure class="h-64">
+                <img src="{imgSrc}" alt="{imgTitle}" title="{imgTitle}" class="object-cover w-full h-full"/>
+            </figure>
+            <Heading tag="h3" class="line-clamp-2 text-clip" {title} >
+                {title}
+            </Heading>
+            <div class="flex items-center">
+                <div class="mb-1 mr-2">
+                    <CalendarIcon/>
+                </div>
+
+                <p class="flex w-full">
+                    {#each dates as date}
+                        {@const d =  moment(date, 'YYYY-MM-DD')}
+                        <span class="pr-2" title="{d.format('DD MMMM YYYY')}">{d.format('DD-MMM')}</span>
+                    {/each}
+                </p>
+            </div>
+        </div>
+    </Clickable>
+</div>
+
+<style lang="scss">
+
+</style>
