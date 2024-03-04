@@ -39,10 +39,14 @@
                 </div>
 
                 <p class="flex w-full text-sm">
-                    {#each dates as date}
+                    {#each dates as date, i}
                         {@const d =  moment(date, 'YYYY-MM-DD')}
-                        <span class="pr-2"
-                              title="{d.locale('fr-ch').format('DD MMMM YYYY')}">{d.locale('fr-ch').format('DD - MMM')}</span>
+                        <span title="{d.locale('fr-ch').format('DD MMMM YYYY')}">
+                            {d.locale('fr-ch').format('DD MMM')}
+                        </span>
+                        {#if (i < (dates.length - 1))}
+                            <span class="px-2">-</span>
+                        {/if}
                     {/each}
                 </p>
             </div>
@@ -54,12 +58,12 @@
   .card {
     height: 400px;
 
-    .card-body{
+    .card-body {
       display: flex;
       flex-flow: column;
       height: 100%;
 
-      .title{
+      .title {
         flex: 1 1 auto;
       }
     }
