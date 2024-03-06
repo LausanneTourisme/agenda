@@ -1,5 +1,6 @@
 <script lang="ts">
     import {fade} from "svelte/transition";
+    import {ClassList} from "../ClassList.js";
     import CalendarIcon from "./icons/CalendarIcon.svelte";
     import Clickable from "./Clickable.svelte";
     import Heading from "./Heading.svelte";
@@ -18,11 +19,15 @@
     //Y-m-d
     export let dates: string[]
 
+
+    let style: ClassList = ClassList.make("card w-72 rounded-none shadow-none flex-shrink-0");
+
+    $: style;
     moment().locale('fr')
     //TODO convert dates to Date and display day 3letters month year
 </script>
 
-<div class="card w-72 rounded-none shadow-none flex-shrink-0" transition:fade>
+<div class="{style.merge($$props.class)}" transition:fade>
     <Clickable {href} class="h-full">
         <div class="card-body p-4">
             <figure class="h-64">
