@@ -104,7 +104,5 @@
 </div>
 
 <style lang="scss">
-  .highlight {
-    min-height: 400px;
-  }
+
 </style>
