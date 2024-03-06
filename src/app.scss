@@ -18,3 +18,17 @@ body {
 img {
     image-rendering: auto;
 }
+
+
+.splide__arrow {
+
+
+    svg {
+        fill: #E7302F !important;
+
+        &:hover:not(:disabled){
+            fill: red !important;
+        }
+
+    }
+}
