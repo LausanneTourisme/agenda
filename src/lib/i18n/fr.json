@@ -1,0 +1,16 @@
+{
+  "date": {
+    "locale": "fr-ch"
+  },
+  "hightlights": {
+    "title": "Nos recommendations !"
+  },
+  "agenda": {
+    "title": "Agenda complet",
+    "search-section": {
+      "today": "Aujourd'hui",
+      "weekend": "Ce week-end",
+      "date": "Date"
+    }
+  }
+}

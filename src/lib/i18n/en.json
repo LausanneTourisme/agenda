@@ -1,0 +1,16 @@
+{
+  "date": {
+    "locale": "en-gb"
+  },
+  "hightlights": {
+    "title": "Our recommendations !"
+  },
+  "agenda": {
+    "title": "Complete agenda",
+    "search-section": {
+      "today": "Today",
+      "weekend": "This weekend",
+      "date": "Date"
+    }
+  }
+}
