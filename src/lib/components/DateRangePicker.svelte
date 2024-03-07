@@ -11,14 +11,13 @@
     import { Button } from "$lib/components/ui/button";
     import { RangeCalendar } from "$lib/components/ui/range-calendar";
     import * as Popover from "$lib/components/ui/popover";
+    import {date} from "svelte-i18n";
 
     const df = new DateFormatter("en-US", {
         dateStyle: "medium"
     });
 
-    export let value: DateRange | undefined;
-
-    let startValue: DateValue | undefined = undefined;
+    export let value: DateRange | undefined = undefined;
 </script>
 
 <div class="grid gap-2">
@@ -35,14 +34,12 @@
                 <CalendarIcon class="mr-2 h-4 w-4" />
                 {#if value && value.start}
                     {#if value.end}
-                        {df.format(value.start.toDate(getLocalTimeZone()))} - {df.format(
-                        value.end.toDate(getLocalTimeZone())
-                    )}
+                        {$date(new Date(value.start), {format: 'medium'})}
+                        -
+                        {$date(new Date(value.end), {format: 'medium'})}
                     {:else}
-                        {df.format(value.start.toDate(getLocalTimeZone()))}
+                        {$date(new Date(value.start), {format: 'medium'})}
                     {/if}
-                {:else if startValue}
-                    {df.format(startValue.toDate(getLocalTimeZone()))}
                 {:else}
                     Pick a date
                 {/if}
@@ -51,7 +48,6 @@
         <Popover.Content class="w-auto p-0" align="start">
             <RangeCalendar
                     bind:value
-                    bind:startValue
                     initialFocus
                     numberOfMonths={2}
                     placeholder={value?.start}
