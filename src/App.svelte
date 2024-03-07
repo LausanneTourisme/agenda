@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Highlights from "./lib/composables/Highlights.svelte";
-    import {onMount} from "svelte";
+    import Highlights, {type Highlight} from "$lib/composables/Highlights.svelte";
+    import Agenda from "$lib/composables/Agenda.svelte";
 
     export const highlightTitle = "Our Recommandations";
     let getHightlightEvents: () => Highlight[] = () => [
@@ -93,9 +93,8 @@
 </script>
 
 <main>
-    <Highlights title="Our recommandations"/>
-
     <Highlights title={highlightTitle} onLoad={getHightlightEvents}/>
+    <Agenda/>
 </main>
 
 <style>
