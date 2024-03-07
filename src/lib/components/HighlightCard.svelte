@@ -1,9 +1,10 @@
 <script lang="ts">
     import {fade} from "svelte/transition";
-    import {ClassList} from "../ClassList.js";
-    import CalendarIcon from "./icons/CalendarIcon.svelte";
-    import Clickable from "./Clickable.svelte";
-    import Heading from "./Heading.svelte";
+    import Clickable from "$lib/components/Clickable.svelte";
+    import Heading from "$lib/components//Heading.svelte";
+    import {ClassList} from "$lib/ClassList";
+    import {Calendar} from "lucide-svelte";
+
     import moment from "moment/moment";
     import 'moment/locale/en-gb';
     import 'moment/locale/fr-ch';
@@ -12,7 +13,7 @@
     import 'moment/locale/es';
 
     export let imgSrc: string;
-    export let imgTitle: string;
+    export let imgCopyright: string;
     export let title: string;
     export let href: string;
 
@@ -31,7 +32,7 @@
     <Clickable {href} class="h-full">
         <div class="card-body p-4">
             <figure class="h-64">
-                <img src="{imgSrc}" alt="{imgTitle}" title="{imgTitle}" class="object-cover w-full h-full"/>
+                <img src="{imgSrc}" alt="{imgCopyright}" title="{imgCopyright}" class="object-cover w-full h-full"/>
             </figure>
             <div class="title">
                 <Heading tag="h3" class="line-clamp-2 text-clip" {title}>
@@ -40,7 +41,7 @@
             </div>
             <div class="flex items-center">
                 <div class="mb-1 mr-2">
-                    <CalendarIcon/>
+                    <Calendar color="#E7302F" size="24px"/>
                 </div>
 
                 <p class="flex w-full text-sm">
