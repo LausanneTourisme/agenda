@@ -2,7 +2,6 @@
     import Heading from "$lib/components/Heading.svelte";
     import DateRangePicker from "$lib/components/DateRangePicker.svelte";
     import {Calendar} from "lucide-svelte";
-    import DateRangePicker_v2 from "$lib/components/DateRangePicker_v2.svelte";
 
     export let events = [];
 </script>
