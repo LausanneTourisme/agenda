@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {ClassList} from "../ClassList";
+    import {ClassList} from "$lib/ClassList";
 
     export let tag: string = "h2";
     let style: ClassList = ClassList.make("font-bold");

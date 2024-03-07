@@ -1,6 +1,6 @@
 <script lang="ts">
 import {Moon} from "svelte-loading-spinners";
-import {ClassList} from "../ClassList.js";
+import {ClassList} from "$lib/ClassList";
 
 let style: ClassList = ClassList.make();
 

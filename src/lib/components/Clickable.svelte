@@ -2,7 +2,7 @@
     import {blankable, type NullableString} from "../Helpers";
     import {fade} from "svelte/transition";
     import {onMount} from "svelte";
-    import {ClassList} from "../ClassList";
+    import {ClassList} from "$lib/ClassList";
 
     export let href: string;
     export let overflow: boolean = false;
