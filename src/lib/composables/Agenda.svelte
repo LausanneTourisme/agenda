@@ -2,27 +2,28 @@
     import Heading from "$lib/components/Heading.svelte";
     import DateRangePicker from "$lib/components/DateRangePicker.svelte";
     import {Calendar} from "lucide-svelte";
+    import {_} from "svelte-i18n";
 
     export let events = [];
 </script>
 
 <div class="p-7">
-    <Heading tag="h2">Agenda complet</Heading>
+    <Heading tag="h2">{$_('agenda.title')}</Heading>
 
-    <div class="search-zone py-6">
+    <div class="search-section py-6">
         <label for="today" class="text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
-            Aujourd'hui
+            {$_('agenda.search-section.today')}
             <input name="search_zone" id="today" value="today" type="radio" class="accent-indigo-500" hidden checked>
         </label>
         <label for="week-end" class="text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
-            Ce Week-end
+            {$_('agenda.search-section.weekend')}
             <input name="search_zone" id="week-end" value="week-end" type="radio" class="accent-indigo-500" hidden>
         </label>
 
         <label for="date" class="text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
                 <Calendar class="inline-block mr-2 mb-2"/>
             <span>
-                Date
+                {$_('agenda.search-section.date')}
             </span>
             <input name="search_zone" id="date" value="date" type="radio" class="accent-indigo-500" hidden>
         </label>

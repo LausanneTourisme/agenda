@@ -8,6 +8,8 @@
     }
 </script>
 <script lang="ts">
+    //TODO use shadcn-svelte
+    import {_} from 'svelte-i18n'
     import {Splide, SplideSlide} from '@splidejs/svelte-splide';
     import '@splidejs/svelte-splide/css/skyblue';
     import HighlightCard from "$lib/components/HighlightCard.svelte";
@@ -17,12 +19,12 @@
     //TODO pass parameters to call back
     export let onLoad: () => Highlight[];
 
-    export let title: string;
+    export let title: string | null;
 </script>
 
 <div class="w-full bg-yellow-400">
     <Heading tag="h2" class="pt-7 pl-7" {title}>
-        {title}
+        {title ?? $_('hightlights.title', {default: 'Home'})}
     </Heading>
 
     <div class="highlights">

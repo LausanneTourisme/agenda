@@ -1,4 +1,6 @@
 <script lang="ts">
+    import {_} from 'svelte-i18n';
+
     import {fade} from "svelte/transition";
     import Clickable from "$lib/components/Clickable.svelte";
     import Heading from "$lib/components//Heading.svelte";
@@ -6,11 +8,9 @@
     import {Calendar} from "lucide-svelte";
 
     import moment from "moment/moment";
-    import 'moment/locale/en-gb';
     import 'moment/locale/fr-ch';
+    import 'moment/locale/en-gb';
     import 'moment/locale/de';
-    import 'moment/locale/it';
-    import 'moment/locale/es';
 
     export let imgSrc: string;
     export let imgCopyright: string;
@@ -22,10 +22,7 @@
 
 
     let style: ClassList = ClassList.make("card w-72 rounded-none shadow-none flex-shrink-0");
-
     $: style;
-    moment().locale('fr')
-    //TODO convert dates to Date and display day 3letters month year
 </script>
 
 <div class="{style.merge($$props.class)}" transition:fade>
@@ -47,8 +44,8 @@
                 <p class="flex w-full text-sm">
                     {#each dates as date, i}
                         {@const d =  moment(date, 'YYYY-MM-DD')}
-                        <span title="{d.locale('fr-ch').format('DD MMMM YYYY')}">
-                            {d.locale('fr-ch').format('DD MMM')}
+                        <span title="{d.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                            {d.locale($_('date.locale')).format('DD MMM')}
                         </span>
                         {#if (i < (dates.length - 1))}
                             <span class="px-2">-</span>

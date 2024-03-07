@@ -1,8 +1,18 @@
 <script lang="ts">
     import Highlights, {type Highlight} from "$lib/composables/Highlights.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
+    import {isLoading, register, init, getLocaleFromNavigator, locale, locales} from 'svelte-i18n';
+    import {Moon} from "svelte-loading-spinners";
+    import Loader from "$lib/components/Loader.svelte";
+    register('en', () => import('$lib/i18n/en.json'));
+    register('fr', () => import('$lib/i18n/fr.json'));
 
-    export const highlightTitle = "Our Recommandations";
+    init({
+        fallbackLocale: 'en',
+        initialLocale: getLocaleFromNavigator()?.slice(0,2) ?? 'en',
+    });
+
+    export const highlightTitle: string|null = null;
     let getHightlightEvents: () => Highlight[] = () => [
         {
             title: "Moto #01",
@@ -89,12 +99,22 @@
             href: "#Moto12",
         },
     ];
-
+    // $locale = 'fr';
 </script>
 
 <main>
-    <Highlights title={highlightTitle} onLoad={getHightlightEvents}/>
-    <Agenda/>
+<!--    <input bind:value={$locale}>-->
+    <select bind:value={$locale}>
+        {#each $locales as locale}
+            <option value={locale}>{locale}</option>
+        {/each}
+    </select>
+    {#if $isLoading}
+        <Loader />
+    {:else}
+        <Highlights title={highlightTitle} onLoad={getHightlightEvents}/>
+        <Agenda/>
+    {/if}
 </main>
 
 <style>
