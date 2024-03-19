@@ -37,11 +37,19 @@
 
     <!--    <DateRangePicker/>-->
 
-    <div>
-        <button>tag#01</button>
-        <button>tag#02</button>
-        <button>tag#03</button>
-        <button>tag#04</button>
+    <div class="tags-section py-3">
+        {#each tags as tag}
+            <button class="inline-block text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent px-6 mr-2"
+                    title="{tag}">{tag}
+            </button>
+        {/each}
+    </div>
+    <div class="tags-section py-3">
+        {#each tags as tag}
+            <button class="inline-block text-black border border-black rounded-tl-lg rounded-br-lg hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2"
+                    title="{tag}">{tag}
+            </button>
+        {/each}
     </div>
 
     {events.length} événement{events.length > 1 ? 's' : ''} correspond{events.length > 1 ? 'ent' : ''} à ces critères
