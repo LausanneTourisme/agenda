@@ -12,5 +12,9 @@
       "weekend": "Ce week-end",
       "date": "Date"
     }
+  },
+  "event-card": {
+    "date-separator": "au",
+    "from": "Dès"
   }
 }

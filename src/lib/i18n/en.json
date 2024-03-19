@@ -12,5 +12,9 @@
       "weekend": "This weekend",
       "date": "Date"
     }
+  },
+  "event-card": {
+    "date-separator": "to",
+    "from": "From"
   }
 }
