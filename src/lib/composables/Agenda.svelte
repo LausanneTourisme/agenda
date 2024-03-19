@@ -3,6 +3,9 @@
     import DateRangePicker from "$lib/components/DateRangePicker.svelte";
     import {Calendar} from "lucide-svelte";
     import {_} from "svelte-i18n";
+    import EventCard from "$lib/components/EventCard.svelte";
+    import type {Event} from "$lib/types";
+
 
     let tags = events.flatMap(x => x.tags).filter((a, i) => events.flatMap(x => x.tags).findIndex((s) => a.public_name === s.public_name) === i).map(x => x.public_name);
 
@@ -52,7 +55,16 @@
         {/each}
     </div>
 
-    {events.length} événement{events.length > 1 ? 's' : ''} correspond{events.length > 1 ? 'ent' : ''} à ces critères
+    <p class="text-3xl font-semibold leading-tight tracking-tighter py-3">
+        {events.length} événement{events.length > 1 ? 's' : ''} correspond{events.length > 1 ? 'ent' : ''} à ces
+        critères
+    </p>
+
+    <div class="grid xl:grid-cols-2 gap-4">
+        {#each events as event, index}
+            <EventCard class="" {...event}/>
+        {/each}
+    </div>
 
 
 </div>
