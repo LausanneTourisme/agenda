@@ -103,17 +103,20 @@
 </script>
 
 <main>
-<!--    <input bind:value={$locale}>-->
-    <select bind:value={$locale}>
-        {#each $locales as locale}
-            <option value={locale}>{locale}</option>
-        {/each}
-    </select>
+    <div class="w-full flex justify-center fixed z-40">
+        <select bind:value={$locale} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/12 p-2.5">
+            {#each $locales as locale}
+                <option value={locale}>{locale}</option>
+            {/each}
+        </select>
+    </div>
     {#if $isLoading}
         <Loader />
     {:else}
         <Highlights title={highlightTitle} onLoad={getHightlightEvents}/>
-        <Agenda/>
+        <div class="md:px-7">
+            <Agenda/>
+        </div>
     {/if}
 </main>
 
