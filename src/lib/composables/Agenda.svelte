@@ -9,21 +9,25 @@
     $: events;
 </script>
 
-<div class="p-7">
-    <Heading tag="h2">{$_('agenda.title')}</Heading>
+<div class="agenda p-5 md:p-7 md:px-12">
+    <Heading tag="h2" class="">{$_('agenda.title')}</Heading>
 
-    <div class="search-section py-6">
-        <label for="today" class="text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
+    <div class="search-section py-3">
+
+        <label for="today"
+               class="inline-block text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
             {$_('agenda.search-section.today')}
             <input name="search_zone" id="today" value="today" type="radio" class="accent-indigo-500" hidden checked>
         </label>
-        <label for="week-end" class="text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
+        <label for="week-end"
+               class="inline-block text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
             {$_('agenda.search-section.weekend')}
             <input name="search_zone" id="week-end" value="week-end" type="radio" class="accent-indigo-500" hidden>
         </label>
 
-        <label for="date" class="text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
-                <Calendar class="inline-block mr-2 mb-2"/>
+        <label for="date"
+               class="inline-block text-black border border-black hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent mr-2">
+            <Calendar class="inline-block mr-2 -mt-1.5"/>
             <span>
                 {$_('agenda.search-section.date')}
             </span>
@@ -31,7 +35,7 @@
         </label>
     </div>
 
-    <DateRangePicker/>
+    <!--    <DateRangePicker/>-->
 
     <div>
         <button>tag#01</button>
