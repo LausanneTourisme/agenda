@@ -23,81 +23,23 @@
 </script>
 
 <div class="w-full bg-yellow-400">
-    <Heading tag="h2" class="pt-7 pl-7" {title}>
-        {title ?? $_('hightlights.title', {default: 'Home'})}
-    </Heading>
+    <div class="pt-7 md:px-7">
+        <Heading tag="h2" class="p-5 md:pl-12" {title}>
+            {title ?? $_('hightlights.title', {default: 'Home'})}
+        </Heading>
+    </div>
 
-    <div class="highlights">
+    <div class="highlights pb-4">
         <Splide aria-label="{title}" options={{
             rewind: false,
             drag: 'free',
-            snap: true,
-            perPage: 10,
+            fixedWidth : 'auto',
             padding: "4rem",
+            snap: true,
             pagination: false,
             breakpoints: {
-                3000: {
-                    padding: "4rem",
-                    perPage:8
-                },
-                2500: {
-                    padding: "4rem",
-                    perPage:7
-                },
-                2000: {
-                    padding: "4rem",
-                    perPage:6
-                },
-                1700: {
-                    padding: "4rem",
-                    perPage:4
-                },
-                1190: {
-                    padding: "4rem",
-                    perPage:3
-                },
-                900: {
-                    padding: "2rem",
-                    perPage:3
-                },
-                850: {
-                    padding: "4rem",
-                    perPage:2
-                },
-                650: {
+                500: {
                     padding: "3rem",
-                    perPage:2
-                },
-                630: {
-                    padding: "auto",
-                    focus: 'center',
-                    perPage:2
-                },
-                620: {
-                    padding: "2rem",
-                    focus: 'center',
-                  trimSpace  : true,
-                    perPage:2
-                },
-                600: {
-                    padding: '9rem',
-                    perPage    : 1,
-
-                    trimSpace  : true,
-                },
-                575: {
-                    padding: '5rem',
-                    perPage    : 1,
-                    focus      : 'center',
-                    trimSpace  : false,
-                },
-                420: {
-                    padding: '2.5rem',
-                    perPage    : 1,
-                },
-                340: {
-                    padding: '1.5rem',
-                    perPage    : 1,
                 },
             }
         }}>
