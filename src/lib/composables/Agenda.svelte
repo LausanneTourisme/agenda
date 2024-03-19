@@ -4,7 +4,9 @@
     import {Calendar} from "lucide-svelte";
     import {_} from "svelte-i18n";
 
-    export let events = [];
+    let tags = events.flatMap(x => x.tags).filter((a, i) => events.flatMap(x => x.tags).findIndex((s) => a.public_name === s.public_name) === i).map(x => x.public_name);
+
+    $: events;
 </script>
 
 <div class="p-7">
