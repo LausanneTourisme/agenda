@@ -1,7 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+@font-face {
+  font-family: 'Euclid Flex', sans-serif;
+  src: local('Euclid Flex'), url(./assets/fonts/EuclidCircularA-Medium.otf) format("truetype");
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -66,45 +71,19 @@
  
     --ring: 0 0% 83.1%;
   }
-}
- 
-@layer base {
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Euclid Flex', sans-serif;
+  }
+
+  img {
+    image-rendering: auto;
   }
 }
 
-
-@font-face {
-  font-family: 'Euclid Flex', sans-serif;
-  src: local('Euclid Flex'), url(./assets/fonts/EuclidCircularA-Medium.otf) format("truetype");
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Euclid Flex', sans-serif;
-}
-
-img {
-  image-rendering: auto;
-}
-
-
-.splide__arrow {
-
-
-  svg {
-    fill: #E7302F !important;
-
-    &:hover:not(:disabled){
-      fill: red !important;
-    }
-
-  }
-}
+@import "assets/custom-splidejs";
