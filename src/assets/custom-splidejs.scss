@@ -1,0 +1,41 @@
+
+.highlights {
+  .splide__arrow {
+    svg {
+      fill: #E7302F !important;
+
+      &:hover:not(:disabled){
+        fill: red !important;
+      }
+
+    }
+  }
+}
+
+.event-card {
+  .splide__arrow {
+    height: 2rem;
+    width: 2rem;
+    background: rgba(204, 204, 204, 0.55);
+    border-radius: 9999px;
+
+    &--prev {
+      left: 0;
+    }
+
+    &--next {
+      right: 0;
+    }
+
+    svg {
+      fill: #E7302F !important;
+      height: 1em;
+      width: 1em;
+
+      &:hover:not(:disabled){
+        fill: red !important;
+      }
+
+    }
+  }
+}
