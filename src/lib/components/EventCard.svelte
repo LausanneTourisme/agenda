@@ -93,7 +93,7 @@
                     </span>
                     {#if (i === 0)}
                         <span class="px-1 sm:hidden"> - </span>
-                        <span class="px-2 hidden sm:inline-block"> {$_('event-card.date-separator')} </span>
+                        <span class="px-1 hidden sm:inline-block"> {$_('event-card.date-separator')} </span>
                     {/if}
                 {/each}
             </p>
