@@ -2,7 +2,23 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
+import moment, {type Moment} from "moment/moment";
 
+export const randomString = () => Math.random().toString(36).slice(-8);
+
+/**
+ *
+ * min and max included
+ * @param min
+ * @param max
+ *
+ * @return {number}
+ */
+export const randomNumber = (min: number, max: number) : number => {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+/** methods required for popover **/
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
