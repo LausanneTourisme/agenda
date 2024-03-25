@@ -15,6 +15,19 @@ const config = {
         },
         extend: {
             colors: {
+                honey: {
+                    '50': '#fffdea',
+                    '100': '#fffbc5',
+                    '200': '#fff687',
+                    '300': '#ffeb48',
+                    '400': '#ffdc1e',
+                    '500': '#fcbd05',
+                    '600': '#df9100',
+                    '700': '#b96704',
+                    '800': '#964f0a',
+                    '900': '#7b410c',
+                    '950': '#472101',
+                },
                 border: "hsl(var(--border) / <alpha-value>)",
                 input: "hsl(var(--input) / <alpha-value>)",
                 ring: "hsl(var(--ring) / <alpha-value>)",
