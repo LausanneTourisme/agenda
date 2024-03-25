@@ -47,14 +47,12 @@
                 fixedWidth : 'auto',
                 padding: "4rem",
                 snap: true,
+                arrows: false,
                 pagination: false,
                 breakpoints: {
-                    500: {
-                        padding: "3rem",
+                    767: {
+                        padding: "0.5rem",
                     },
-                    300: {
-                        padding: "2rem",
-                    }
                 }
             }}>
                 {#each highlights as highlight}

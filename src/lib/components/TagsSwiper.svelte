@@ -21,24 +21,24 @@
 <div class="{$$props.class}">
     <Splide options={{
         wheel:true,
-                        drag: 'free',
-                        rewind : false,
-                        fixedWidth : 'auto',
-                        fixedHeight : 'auto',
-                        isNavigation : false,
-                        gap : 0,
-                        padding: swipePadding,
-                        pagination : withPagination,
-                        perPage: perPage,
-                        snap : true,
-                        cover : false,
-                        arrows : withArrow,
-                        dragMinThreshold: {
-                            mouse: 4,
-                            touch: 10,
-                        },
-                        breakpoints: swipeBreakpoints,
-                    }}>
+        drag: 'free',
+        rewind : false,
+        fixedWidth : 'auto',
+        fixedHeight : 'auto',
+        isNavigation : false,
+        gap : 0,
+        padding: swipePadding,
+        pagination : withPagination,
+        perPage: perPage,
+        snap : true,
+        cover : false,
+        arrows : withArrow,
+        dragMinThreshold: {
+            mouse: 4,
+            touch: 10,
+        },
+        breakpoints: swipeBreakpoints,
+    }}>
         {#each tags as tag}
             <SplideSlide>
                 <div class="{tagClass}" title="{tag.public_name[key]}">{tag.public_name[key]}</div>
