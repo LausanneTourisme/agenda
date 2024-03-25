@@ -11,8 +11,12 @@
     }
   }
 }
+.agenda {
+  .splide__pagination{
+    position: unset;
+    padding: 1em;
+  }
 
-.event-card {
   .splide__arrow {
     height: 2rem;
     width: 2rem;
