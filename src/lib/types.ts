@@ -24,10 +24,10 @@ export type ExceptionDate = {
 
 export type Translatable = {
     fr: string,
-    en: string,
-    de: string,
-    it: string,
-    es: string,
+    en?: string,
+    de?: string,
+    it?: string,
+    es?: string,
 }
 
 export type ShortDay = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
@@ -49,19 +49,19 @@ export type Range = {
     to: RawDate,
 }
 export type Media = {
-    is_cover: boolean,
-    is_in_gallery: boolean,
+    is_cover?: boolean,
+    is_in_gallery?: boolean,
     cloudinary_id: string,
-    original_width: number,
-    copyright: string,
+    original_width?: number,
+    copyright?: string,
 }
 export type Tag = {
     name: string,
-    public_name: string,
+    public_name: Translatable,
 }
 export type Category  = {
     name: string,
-    public_name: string,
+    public_name: Translatable,
     main_category: boolean,
 }
 export type Geolocation = {
@@ -76,14 +76,28 @@ export type Geolocation = {
     latitude: string | undefined | null,
 }
 
+export type Seo = {
+    noindex: boolean | "true" | "false",
+    name: Translatable,
+    slug: Translatable,
+    description: Translatable,
+    medias: Media[]
+}
+
 export type Event = {
-    name: string,
+    name: Translatable,
     highlight: boolean,
     categories: Category[],
     tags: Tag[],
     medias: Media[],
     schedules: Schedules,
     geolocations: Geolocation[],
+    seo: Seo
+}
+
+export type optionsSortEvents = {
+    onlyAvailable: boolean,
+    onlyHighlights: boolean,
 }
 
 type oneToNine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
