@@ -1,56 +1,85 @@
 <script lang="ts">
-    import {_} from 'svelte-i18n';
+    import {_, locale} from 'svelte-i18n';
 
     import {fade} from "svelte/transition";
     import Clickable from "$lib/components/Clickable.svelte";
     import Heading from "$lib/components//Heading.svelte";
-    import {ClassList} from "$lib/ClassList";
     import {Calendar} from "lucide-svelte";
-
+    import type {Event, Media, Period, ScheduleDate} from "$lib/types";
     import moment from "moment/moment";
     import 'moment/locale/fr-ch';
     import 'moment/locale/en-gb';
     import 'moment/locale/de';
+    import {CldImage} from "svelte-cloudinary";
 
-    export let imgSrc: string;
-    export let imgCopyright: string;
-    export let title: string;
-    export let href: string;
+    // trick to bypass error type...
+    const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
 
-    //Y-m-d
-    export let dates: string[]
+    export let event: Event;
 
+    const media: Media | undefined = event.medias.find(x => x.is_cover);
 
-    let style: ClassList = ClassList.make("card w-72 rounded-none shadow-none flex-shrink-0");
-    $: style;
+    const isSameDays = event.schedules.dates[0].periods[0].start === event.schedules.dates[0].periods[0].end;
+    const date = {
+        start: moment(event.schedules.dates[0].periods[0].start, "YYYY-MM-DD"),
+        end: moment(event.schedules.dates[0].periods[0].end, "YYYY-MM-DD")
+    };
 </script>
 
-<div class="{style.merge($$props.class)}" transition:fade>
-    <Clickable {href} class="h-full">
+<div class="card w-56 sm:w-72 rounded-none shadow-none flex-shrink-0 {$$props.class}" transition:fade>
+
+    <Clickable href="{'#TODO'}" class="h-full">
         <div class="card-body p-4">
-            <figure class="h-64">
-                <img src="{imgSrc}" alt="{imgCopyright}" title="{imgCopyright}" class="object-cover w-full h-full"/>
-            </figure>
-            <div class="title">
-                <Heading tag="h3" class="line-clamp-2 text-clip" {title}>
-                    {title}
-                </Heading>
+            <!--        TODO add placeholder -->
+            <div class="aspect-square sm:h-64">
+                {#if media}
+                    <CldImage
+                            src="{media.cloudinary_id}"
+                            alt="{media.copyright}"
+                            title="{media.copyright}"
+                            height="{500}"
+                            width="{500}"
+                            sizes="100vw"
+                            class="object-cover bg-gray-300"
+                    />
+                {:else}
+                    <img src="./TODO_placeholder.png"
+                         alt="image invalide"
+                         title="image invalided"
+                         height="500"
+                         width="500"
+                         class="object-cover"
+                    />
+                {/if}
             </div>
+            <Heading tag="h3" class="title line-clamp-2 h-14 max-h-14 text-clip" title="{event.seo.name[key]}">
+                {event.seo.name[key]}
+            </Heading>
             <div class="flex items-center">
                 <div class="mb-1 mr-2">
-                    <Calendar color="#E7302F" size="24px"/>
+                    <Calendar class="text-black" size="24px"/>
                 </div>
 
                 <p class="flex w-full text-sm">
-                    {#each dates as date, i}
-                        {@const d =  moment(date, 'YYYY-MM-DD')}
-                        <span title="{d.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {d.locale($_('date.locale')).format('DD MMM')}
+                    {#if isSameDays}
+                        <span class="hidden sm:inline-block"
+                              title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}"
+                        >
+                            {date.start.locale($_('date.locale')).format('DD MMM')}
                         </span>
-                        {#if (i < (dates.length - 1))}
-                            <span class="px-2">-</span>
-                        {/if}
-                    {/each}
+                    {:else}
+                        <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                            {date.start.locale($_('date.locale')).format('DD MMM')}
+                        </span>
+
+                        <span class="px-1" title="{$_('date.separator')}"> - </span>
+
+                        <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                            {date.end.locale($_('date.locale')).format('DD MMM')}
+                        </span>
+                    {/if}
+
+
                 </p>
             </div>
         </div>
@@ -59,8 +88,6 @@
 
 <style lang="scss">
   .card {
-    height: 400px;
-
     .card-body {
       display: flex;
       flex-flow: column;

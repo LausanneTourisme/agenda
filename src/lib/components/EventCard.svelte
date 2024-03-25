@@ -1,117 +1,109 @@
 <script lang="ts">
-    import moment from "moment";
-    import {_} from "svelte-i18n";
+    import {_, locale} from "svelte-i18n";
     import {Calendar, Clock, MapPin} from "lucide-svelte";
-    import {Splide, SplideSlide} from "@splidejs/svelte-splide";
-    import type {Category, Geolocation, Media, Period, ScheduleDate, Schedules, Tag} from "$lib/types";
+    import type {Event, Category, Geolocation, Media, Period, ScheduleDate, Schedules, Tag} from "$lib/types";
 
-    export let name: string;
-    export let highlight: boolean;
-    export let categories: Category[];
-    export let tags: Tag[];
-    export let medias: Media[];
-    export let geolocations: Geolocation[];
-    export let schedules: Schedules;
+    import moment from "moment/moment";
+    import 'moment/locale/fr-ch';
+    import 'moment/locale/en-gb';
+    import 'moment/locale/de';
+    import TagsSwiper from "$lib/components/TagsSwiper.svelte";
+    import {CldImage} from "svelte-cloudinary";
 
-    //TODO should we display all periods or only the current / next period available ?
-    const date: ScheduleDate | undefined = schedules?.dates?.find((d: ScheduleDate) => {
-        return d.periods.find((p: Period) => {
-            const start = moment(p.start, 'YYYY-MM-DD');
-            const end = moment(p.end, 'YYYY-MM-DD');
+    // trick to bypass error type...
+    const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
 
-            return moment().isBetween(start.startOf('day'), end.endOf('day'), undefined, "[]")
-        }) ?? false;
-    });
+    export let event: Event;
 
-    const geolocation: Geolocation | undefined = geolocations?.find(x => x.main_address);
+    const isSameDays = event.schedules.dates[0].periods[0].start === event.schedules.dates[0].periods[0].end;
+    const date = {
+        start: moment(event.schedules.dates[0].periods[0].start, "YYYY-MM-DD"),
+        end: moment(event.schedules.dates[0].periods[0].end, "YYYY-MM-DD"),
+    };
 
-    const periodsLength: number = date?.periods?.length ?? 0;
-    const periods = date ? [(periodsLength > 1) ? date.periods[0].start : date.periods[0].start, (periodsLength > 1) ? date.periods[periodsLength - 1].end : date.periods[0].end] : [];
+    const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address);
 
-    let media = medias.find(x => x.is_cover)
+    const media = event.medias.find(x => x.is_cover)
 </script>
 
 <div class="event-card flex flex-row w-full block bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class}">
     <div class="image-wrapper aspect-square h-40 sm:h-64">
-        <img src="https://www.yamaha-motor.eu/content/dam/yme/ch/hostettler-ag/experience/events/trackdays/yamaha-fun-day/Yamaha-Fun-Day_R1-2022.jpg"
-             class="aspect-square h-full object-cover"
-             title="{media?.copyright}"
-             alt="{media?.copyright}"/>
+        <!--        TODO add placeholder -->
+        {#if media}
+            <CldImage
+                    src="{media.cloudinary_id}"
+                    alt="{media.copyright}"
+                    title="{media.copyright}"
+                    height="{500}"
+                    width="{500}"
+                    sizes="100vw"
+                    class="object-cover bg-gray-300"
+            />
+        {:else}
+            <img src="./TODO_placeholder.png"
+                 alt="image invalide"
+                 title="image invalided"
+                 height="500"
+                 width="500"
+                 class="object-cover"
+            />
+        {/if}
     </div>
     <div class="informations p-2 sm:p-4 flex flex-col flex-1 overflow-hidden">
         <!--TAGS-->
-        <div class="tags w-full sm:mb-3">
-            <Splide options={{
-                        drag: 'free',
-                        rewind : false,
-                        fixedWidth : 'auto',
-                        fixedHeight : 'auto',
-                        isNavigation : false,
-                        gap : 0,
-                        padding: "2.5rem",
-                        pagination : false,
-                        snap : true,
-                        cover : false,
-                        arrows : true,
-                        dragMinThreshold: {
-                            mouse: 4,
-                            touch: 10,
-                        },
-                    }}>
-                {#each tags as tag}
-                    <SplideSlide>
-                        <div class="inline-block text-sm text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center ring-2 ring-transparent p-1 px-3 mr-2"
-                             title="{tag.public_name}">{tag.public_name}</div>
-                    </SplideSlide>
-                    <SplideSlide>
-                        <div class="inline-block text-sm text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center ring-2 ring-transparent p-1 px-3 mr-2"
-                             title="{tag.public_name}">{tag.public_name}</div>
-                    </SplideSlide>
-                {/each}
-            </Splide>
-        </div>
+        <TagsSwiper class="tags w-full sm:mb-3 cursor-pointer"
+                    withArrow="{false}"
+                    withPagination="{false}"
+                    tags="{event.tags}"
+                    tagClass="inline-block text-sm text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center ring-2 ring-transparent p-1 px-3 mr-2"/>
+
         <!--TITLE-->
-        <p class="title flex-grow line-clamp-2 max-h-14 text-md font-bold sm:text-xl leading-snug tracking-tight font-semibold my-1">
-            {name}
+        <p class="title flex-grow line-clamp-2 max-h-14 text-md font-bold sm:text-xl leading-snug tracking-tight font-semibold my-1"
+           title="{event.seo.name[key]}">
+            {event.seo.name[key]}
         </p>
         <!--DATE-->
         <div class="date flex items-center sm:mt-1">
             <div class="mb-1 mr-2">
-                <Calendar color="#E7302F" size="24px"/>
+                <Calendar class="text-honey-500" size="24px"/>
             </div>
 
-            <p class="flex w-full leading-snug tracking-tight truncate text-sm sm:text-md mt-1">
-                {#each periods as period, i}
-                    {@const d =  moment(period, 'YYYY-MM-DD')}
-                    <span class="sm:hidden"
-                            title="{d.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                        {d.locale($_('date.locale')).format('DD.MM.YY')}
+            <p class="flex w-full leading-snug tracking-tight truncate mt-1">
+                {#if isSameDays}
+                    <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                        {date.start.locale($_('date.locale')).format('DD.MM.YY')}
                     </span>
-                    <span class="hidden sm:inline-block"
-                            title="{d.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                        {d.locale($_('date.locale')).format('DD.MM.YYYY')}
+                {:else}
+                    <span class="hidden sm:inline-block pr-1" title="{$_('date.start')}">{$_('date.start')}</span>
+
+                    <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                        {date.start.locale($_('date.locale')).format('DD.MM.YY')}
                     </span>
-                    {#if (i === 0)}
-                        <span class="px-1 sm:hidden"> - </span>
-                        <span class="px-1 hidden sm:inline-block"> {$_('event-card.date-separator')} </span>
-                    {/if}
-                {/each}
+
+                    <span class="px-1 sm:hidden" title="{$_('date.separator')}"> - </span>
+                    <span class="px-1 hidden sm:inline-block"
+                          title="{$_('date.separator')}"> {$_('date.separator')} </span>
+
+                    <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                        {date.end.locale($_('date.locale')).format('DD.MM.YY')}
+                    </span>
+                {/if}
             </p>
         </div>
         <!--SCHEDULE-->
         <div class="schedule hidden sm:flex w-full sm:mt-4 ">
             <div class="mr-2">
-                <Clock color="#E7302F" size="24px"/>
+                <Clock class="text-honey-500" size="24px"/>
             </div>
             <p class="leading-snug tracking-tight mt-1"
-               title="{$_('event-card.from')} 17:00">
-                {$_('event-card.from')} 17:00
+               title="{$_('date.from')} 17:00">
+                {$_('date.from')} 17:00
             </p>
         </div>
         <!--LOCATION-->
         <div class="location flex w-full mt-2 sm:mt-4">
             <div class="mr-2">
-                <MapPin color="#E7302F" size="24px"/>
+                <MapPin class="text-honey-500" size="24px"/>
             </div>
             <p class="leading-snug tracking-tight truncate text-sm sm:text-md mt-1"
                title="{geolocation?.venue}">
@@ -122,4 +114,16 @@
 </div>
 
 <style lang="scss">
+  /**
+  when we have pagination splide__pagination class, title needs to change 2 lines to 1
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  max-height: 2rem;
+
+  or
+
+  @apply line-clamp-2 max-h-6
+  */
 </style>

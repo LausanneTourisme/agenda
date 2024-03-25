@@ -8,5 +8,5 @@ $: style;
 </script>
 
 <div class="{style.merge($$props.class)}" style="{$$props.style}">
-    <Moon size="60" color="#E7302F" unit="px" duration="1s" />
+    <Moon size="60" class="text-honey-500" unit="px" duration="1s" />
 </div>

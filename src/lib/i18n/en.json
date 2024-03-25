@@ -1,6 +1,9 @@
 {
   "date": {
-    "locale": "en-gb"
+    "locale": "en-gb",
+    "separator": "to",
+    "from": "From",
+    "start": "From"
   },
   "hightlights": {
     "title": "Our recommendations !"
@@ -12,9 +15,5 @@
       "weekend": "This weekend",
       "date": "Date"
     }
-  },
-  "event-card": {
-    "date-separator": "to",
-    "from": "From"
   }
 }
