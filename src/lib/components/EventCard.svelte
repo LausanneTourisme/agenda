@@ -56,15 +56,17 @@
                     withArrow="{false}"
                     withPagination="{false}"
                     tags="{event.tags}"
-                    tagClass="inline-block text-sm text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center ring-2 ring-transparent p-1 px-3 mr-2"/>
+                    tagClass="flex justify-content items-center text-sm sm:text-md sm:pt-1 text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center ring-2 ring-transparent px-2 mr-2"/>
 
         <!--TITLE-->
-        <p class="title flex-grow line-clamp-2 max-h-14 text-md font-bold sm:text-xl leading-snug tracking-tight font-semibold my-1"
-           title="{event.seo.name[key]}">
-            {event.seo.name[key]}
-        </p>
+        <div class="flex-grow flex items-center">
+            <p class="title mt-3 mb-1 ml-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle"
+               title="{event.seo.name[key]}">
+                {event.seo.name[key]}
+            </p>
+        </div>
         <!--DATE-->
-        <div class="date flex items-center sm:mt-1">
+        <div class="date text-sm sm:text-md flex items-center sm:mt-3">
             <div class="mb-1 mr-2">
                 <Calendar class="text-honey-500" size="24px"/>
             </div>
@@ -92,7 +94,7 @@
             </p>
         </div>
         <!--SCHEDULE-->
-        <div class="schedule hidden sm:flex w-full sm:mt-4 ">
+        <div class="schedule text-sm sm:text-md hidden sm:flex w-full sm:mt-4 ">
             <div class="mr-2">
                 <Clock class="text-honey-500" size="24px"/>
             </div>
@@ -102,11 +104,11 @@
             </p>
         </div>
         <!--LOCATION-->
-        <div class="location flex w-full mt-2 sm:mt-4">
+        <div class="location text-sm sm:text-md flex w-full mt-2 sm:mt-4">
             <div class="mr-2">
                 <MapPin class="text-honey-500" size="24px"/>
             </div>
-            <p class="leading-snug tracking-tight truncate text-sm sm:text-md mt-1"
+            <p class="leading-snug tracking-tight truncate mt-1"
                title="{geolocation?.venue}">
                 {geolocation?.venue}
             </p>
@@ -115,16 +117,4 @@
 </div>
 
 <style lang="scss">
-  /**
-  when we have pagination splide__pagination class, title needs to change 2 lines to 1
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  max-height: 2rem;
-
-  or
-
-  @apply line-clamp-2 max-h-6
-  */
 </style>
