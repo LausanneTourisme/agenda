@@ -15,10 +15,11 @@
 
     export let event: Event;
 
-    const isSameDays = event.schedules.dates[0].periods[0].start === event.schedules.dates[0].periods[0].end;
+    //TODO fix duplicata + hardcoded first date
+    const isSameDays = event.schedules.dates[0].periods[0].start === event.schedules.dates[0].periods[event.schedules.dates.length - 1].end;
     const date = {
         start: moment(event.schedules.dates[0].periods[0].start, "YYYY-MM-DD"),
-        end: moment(event.schedules.dates[0].periods[0].end, "YYYY-MM-DD"),
+        end: moment(event.schedules.dates[0].periods[event.schedules.dates.length - 1].end, "YYYY-MM-DD"),
     };
 
     const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address);
