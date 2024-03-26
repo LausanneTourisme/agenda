@@ -19,10 +19,11 @@
 
     const media: Media | undefined = event.medias.find(x => x.is_cover);
 
-    const isSameDays = event.schedules.dates[0].periods[0].start === event.schedules.dates[0].periods[0].end;
+    // TODO Remove hardcoded first dates
+    const isSameDays = event.schedules.dates[0].periods[0].start === event.schedules.dates[0].periods[event.schedules.dates[0].periods.length - 1].end;
     const date = {
         start: moment(event.schedules.dates[0].periods[0].start, "YYYY-MM-DD"),
-        end: moment(event.schedules.dates[0].periods[0].end, "YYYY-MM-DD")
+        end: moment(event.schedules.dates[0].periods[event.schedules.dates[0].periods.length - 1].end, "YYYY-MM-DD")
     };
 </script>
 
@@ -65,17 +66,17 @@
                         <span class="hidden sm:inline-block"
                               title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}"
                         >
-                            {date.start.locale($_('date.locale')).format('DD MMM')}
+                            {date.start.locale($_('date.locale')).format('DD.MM.YY')}
                         </span>
                     {:else}
                         <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {date.start.locale($_('date.locale')).format('DD MMM')}
+                            {date.start.locale($_('date.locale')).format('DD.MM.YY')}
                         </span>
 
                         <span class="px-1" title="{$_('date.separator')}"> - </span>
 
                         <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {date.end.locale($_('date.locale')).format('DD MMM')}
+                            {date.end.locale($_('date.locale')).format('DD.MM.YY')}
                         </span>
                     {/if}
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-    //TODO use shadcn-svelte
     import {_} from 'svelte-i18n'
     import {Splide, SplideSlide} from '@splidejs/svelte-splide';
     import '@splidejs/svelte-splide/css/skyblue';
