@@ -13,7 +13,11 @@
     "search-section": {
       "today": "Today",
       "weekend": "This weekend",
-      "date": "Date"
-    }
+      "date": "Date",
+      "by-name-placeholder": "Search an event..."
+    },
+    "event-found": "{quantity} event correspond to these criteria",
+    "events-found": "{quantity} events correspond to these criteria",
+    "by-tags": "By category"
   }
 }
