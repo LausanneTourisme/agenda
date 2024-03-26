@@ -1,5 +1,6 @@
 <script lang="ts">
     import Heading from "$lib/components/Heading.svelte";
+    import Drawer from 'svelte-drawer-component'
     import DateRangePicker from "$lib/components/DateRangePicker.svelte";
     import {Calendar} from "lucide-svelte";
     import {_} from "svelte-i18n";
@@ -10,6 +11,7 @@
     export let events: Event[];
 
     let tags: Tag[] = events.flatMap(x => x.tags).filter((a, i) => events.flatMap(x => x.tags).findIndex((s) => a.name === s.name) === i);
+    let dateDrawerIsOpen: boolean = false;
 
     $: events;
 </script>
@@ -75,8 +77,6 @@
             />
         </div>
 
-        {events.length} événement{events.length > 1 ? 's' : ''} correspond{events.length > 1 ? 'ent' : ''} à ces
-        critères
         <!-- TODO bind to var an search in loaded events -->
         <div class="by-name w-full">
             <input type="search" class="bg-stone-100 w-full focus:outline-none p-4 font-semibold border-0 focus:ring-0" name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}">
@@ -85,6 +85,7 @@
 
     <hr class="mt-4">
     <p class="text-xl sm:text-2xl font-semibold leading-tight tracking-tighter my-5">
+        {$_(`agenda.event${events.length === 1 ? '' : 's'}-found`, {values: {quantity: events.length}})}
     </p>
 
     <div class="grid xl:grid-cols-2 gap-4">
@@ -93,6 +94,9 @@
         {/each}
     </div>
 
+    <Drawer open="{ dateDrawerIsOpen }" placement="bottom" size='400px' on:clickAway="{() => dateDrawerIsOpen = false}">
+        <button on:click={() => dateDrawerIsOpen = false}>Close</button>
+    </Drawer>
 
 </div>
 
