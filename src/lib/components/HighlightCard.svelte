@@ -29,8 +29,8 @@
 
 <div class="card h-full w-56 sm:w-72 rounded-none shadow-none {$$props.class}" transition:fade>
 
-    <Clickable href="{'#TODO'}" class="h-full">
-        <div class="card-body p-4">
+    <Clickable href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}" class="h-full flex flex-col">
+        <div class="card-body flex flex-col h-full p-4">
             <!--        TODO add placeholder -->
             <div class="aspect-square sm:h-64">
                 {#if media}
