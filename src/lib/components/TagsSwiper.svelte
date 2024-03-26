@@ -15,12 +15,12 @@
      */
     export let swipeBreakpoints: Record<string | number, Object> = {};
     export let swipePadding: string = "0"
-    export let tagClass: string = "inline-block text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 p-4 ring-2 ring-transparent px-6 mr-2"
+    export let tagClass: string = "inline-flex justify-center items-center text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center gap-6 ring-2 ring-transparent  py-2 px-5 mr-2"
 </script>
 
 <div class="{$$props.class}">
     <Splide options={{
-        wheel:true,
+        wheel:false,
         drag: 'free',
         rewind : false,
         fixedWidth : 'auto',
