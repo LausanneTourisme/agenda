@@ -80,6 +80,7 @@ export type Seo = {
     noindex: boolean | "true" | "false",
     name: Translatable,
     slug: Translatable,
+    hreflang: Translatable,
     description: Translatable,
     medias: Media[]
 }

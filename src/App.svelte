@@ -20,6 +20,144 @@
     const events: Event[] = [
         {
             name: {
+                fr: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous, RAH!`,
+                en: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous, RAH!`,
+                de: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous, RAH!`,
+            },
+            seo: {
+                name: {
+                    fr: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous RAH!`,
+                    en: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous RAH!`,
+                    de: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous RAH!`,
+                },
+                hreflang: {
+                    fr: "/fr/evenement/un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah",
+                    en: "/en/event/un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah",
+                    de: "/de/veranstaltung/un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah"
+                },
+                description: {
+                    fr: "Une moto",
+                    en: "Ein Motorrad",
+                    de: "A Motorcycle",
+                },
+                medias: [],
+                noindex: false,
+                slug: {
+                    fr: `un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah`,
+                    en: `un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah`,
+                    de: `un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah`,
+                },
+            },
+            highlight: true,
+            categories: [
+                {
+                    name: "vehicles",
+                    public_name: {
+                        fr: "Véhicules",
+                        en: "Vehicles",
+                        de: "Fahrzeuge",
+                    },
+                    main_category: true
+                },
+            ],
+            tags: [
+                {
+                    name: "moto",
+                    public_name: {
+                        fr: "Moto",
+                        en: "Motorrad",
+                        de: "Motorcycle",
+                    }
+                },
+            ],
+            medias: [
+                {
+                    is_cover: true,
+                    is_in_gallery: true,
+                    cloudinary_id: "woman.jpg",
+                    original_width: 3000,
+                    copyright: `© ${randomString()}`
+                }
+            ],
+            schedules: {
+                dates: [
+                    {
+                        label: null,
+                        every_year: "false",
+                        open_days: [
+                            "tue",
+                            "wed",
+                            "thu",
+                            "fri",
+                            "sat"
+                        ],
+                        week: [
+                            {
+                                days: [
+                                    "tue",
+                                    "wed",
+                                    "thu",
+                                    "fri"
+                                ],
+                                times: [
+                                    {
+                                        start: "09:00",
+                                        end: "12:30"
+                                    },
+                                    {
+                                        start: "13:30",
+                                        end: "18:30"
+                                    }
+                                ]
+                            },
+                            {
+                                days: [
+                                    "sat"
+                                ],
+                                times: [
+                                    {
+                                        start: "09:00",
+                                        end: "12:30"
+                                    },
+                                    {
+                                        start: "13:00",
+                                        end: "17:00"
+                                    }
+                                ]
+                            }
+                        ],
+                        periods: [
+                            {
+                                start: "2024-01-12",
+                                end: "2024-06-12"
+                            }
+                        ]
+                    }
+                ],
+                exceptions: {
+                    range: {
+                        from: "2024-01-12",
+                        to: "2024-06-12",
+                    },
+                    dates: []
+                }
+            },
+            geolocations: [
+                {
+                    zip: "1006",
+                    city: "Lausanne",
+                    venue: "Boulevard de Grancy",
+                    address: "",
+                    address_2: null,
+                    main_address: true,
+                    elevation: null,
+                    longitude: "6.62919774",
+                    latitude: "46.51534478"
+                }
+            ]
+        },
+        {
+            name: {
                 fr: "Exposition des pâtes",
                 en: "Pasta exhibition",
                 de: "Ausstellung von Nudeln",
@@ -81,6 +219,11 @@
                     en: "pasta-exhibition",
                     de: "ausstellung-von-nudeln",
                 },
+                hreflang: {
+                    fr: "/fr/evenement/exposition-des-pates",
+                    en: "/en/event/pasta-exhibition",
+                    de: "/de/veranstaltung/ausstellung-von-nudeln"
+                },
             },
             schedules: {
                 dates: [
@@ -130,7 +273,7 @@
                         periods: [
                             {
                                 "start": "2024-01-01",
-                                "end": "2024-12-31"
+                                "end": "2024-03-26"
                             },
                             {
                                 "start": "2025-03-01",
@@ -188,6 +331,11 @@
                     fr: "exposition-des-pates-perimees",
                     en: "displaying-expired-pasta",
                     de: "ausstellung-abgelaufener-nudeln",
+                },
+                hreflang: {
+                    fr: "/fr/evenement/exposition-des-pates-perimees",
+                    en: "/en/event/displaying-expired-pasta",
+                    de: "/de/veranstaltung/ausstellung-abgelaufener-nudeln",
                 },
             },
             highlight: false,
@@ -282,12 +430,12 @@
                                 "end": "2022-12-31"
                             },
                             {
-                                "start": "2023-03-01",
-                                "end": "2023-03-31"
+                                "start": "2024-03-01",
+                                "end": "2024-03-31"
                             },
                             {
-                                "start": "2023-04-01",
-                                "end": "2023-04-01"
+                                "start": "2024-04-01",
+                                "end": "2024-04-01"
                             }
                         ]
                     }
@@ -295,7 +443,7 @@
                 exceptions: {
                     range: {
                         from: "2023-01-01",
-                        to: "2023-12-31"
+                        to: "2024-04-01"
                     },
                     dates: []
                 }
@@ -337,6 +485,11 @@
                     fr: "rock-and-roll-dans-la-cite-avec-toutes-les-grandes-starts-des-annees-80-le-tout-gratuitement-profitez",
                     en: "rock-and-roll-in-the-city-with-all-the-big-80s-hits-all-free-of-charge",
                     de: "rock-and-roll-in-der-stadt-mit-allen-grossen-stars-der-80er-jahre-alles-kostenlos-geniessen",
+                },
+                hreflang: {
+                    fr: "/fr/evenement/rock-and-roll-dans-la-cite-avec-toutes-les-grandes-starts-des-annees-80-le-tout-gratuitement-profitez",
+                    en: "/en/event/rock-and-roll-in-the-city-with-all-the-big-80s-hits-all-free-of-charge",
+                    de: "/de/veranstaltung/rock-and-roll-in-der-stadt-mit-allen-grossen-stars-der-80er-jahre-alles-kostenlos-geniessen",
                 },
             },
             highlight: false,
@@ -480,6 +633,11 @@
                     en: "macron-s-visit",
                     de: "besuch-von-macron",
                 },
+                hreflang: {
+                    fr: "/fr/evenement/visite-de-macron",
+                    en: "/en/event/macron-s-visit",
+                    de: "/de/veranstaltung/besuch-von-macron",
+                },
             },
             highlight: false,
             categories: [
@@ -620,6 +778,11 @@
                     fr: "festival-aquatique",
                     en: "aquatic-festival",
                     de: "wasserfestival",
+                },
+                hreflang: {
+                    fr: "/fr/evenement/festival-aquatique",
+                    en: "/en/event/aquatic-festival",
+                    de: "/de/veranstaltung/wasserfestival",
                 },
             },
             highlight: false,
@@ -784,6 +947,11 @@
                     fr: `moto-${i.toString().padStart(2, '0')}`,
                     en: `moto-${i.toString().padStart(2, '0')}`,
                     de: `moto-${i.toString().padStart(2, '0')}`,
+                },
+                hreflang: {
+                    fr: `/fr/evenement/moto-${i.toString().padStart(2, '0')}`,
+                    en: `/en/event/moto-${i.toString().padStart(2, '0')}`,
+                    de: `/de/veranstaltung/moto-${i.toString().padStart(2, '0')}`,
                 },
             },
             highlight: true,
