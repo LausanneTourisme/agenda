@@ -27,7 +27,7 @@
     };
 </script>
 
-<div class="card w-56 sm:w-72 rounded-none shadow-none flex-shrink-0 {$$props.class}" transition:fade>
+<div class="card h-full w-56 sm:w-72 rounded-none shadow-none {$$props.class}" transition:fade>
 
     <Clickable href="{'#TODO'}" class="h-full">
         <div class="card-body p-4">
@@ -53,7 +53,7 @@
                     />
                 {/if}
             </div>
-            <Heading tag="h3" class="title line-clamp-2 h-14 max-h-14 text-clip" title="{event.seo.name[key]}">
+            <Heading tag="h3" class="title flex-grow line-clamp-2 max-h-18 text-clip align-middle" title="{event.seo.name[key]}">
                 {event.seo.name[key]}
             </Heading>
             <div class="flex items-center">
@@ -88,15 +88,4 @@
 </div>
 
 <style lang="scss">
-  .card {
-    .card-body {
-      display: flex;
-      flex-flow: column;
-      height: 100%;
-
-      .title {
-        flex: 1 1 auto;
-      }
-    }
-  }
 </style>
