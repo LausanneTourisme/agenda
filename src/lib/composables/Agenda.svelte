@@ -1,7 +1,6 @@
 <script lang="ts">
     import Heading from "$lib/components/Heading.svelte";
     import Drawer from 'svelte-drawer-component'
-    import DateRangePicker from "$lib/components/DateRangePicker.svelte";
     import {Calendar} from "lucide-svelte";
     import {_} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
@@ -75,6 +74,10 @@
                                 },
                             }}"
             />
+
+            <Drawer open="{ dateDrawerIsOpen }" placement="bottom" size='400px' on:clickAway="{() => dateDrawerIsOpen = false}">
+                <button on:click={() => dateDrawerIsOpen = false}>Close</button>
+            </Drawer>
         </div>
 
         <!-- TODO bind to var an search in loaded events -->
@@ -93,10 +96,6 @@
             <EventCard class="" {event}/>
         {/each}
     </div>
-
-    <Drawer open="{ dateDrawerIsOpen }" placement="bottom" size='400px' on:clickAway="{() => dateDrawerIsOpen = false}">
-        <button on:click={() => dateDrawerIsOpen = false}>Close</button>
-    </Drawer>
 
 </div>
 
