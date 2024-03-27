@@ -40,7 +40,7 @@
         breakpoints: swipeBreakpoints,
     }}>
         {#each tags as tag}
-            <SplideSlide>
+            <SplideSlide class="pb-0.5">
                 <div class="{tagClass}" title="{tag.public_name[key]}">{tag.public_name[key]}</div>
             </SplideSlide>
         {/each}
