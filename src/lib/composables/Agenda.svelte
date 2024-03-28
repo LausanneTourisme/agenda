@@ -1,18 +1,50 @@
 <script lang="ts">
     import Heading from "$lib/components/Heading.svelte";
-    import Drawer from 'svelte-drawer-component'
     import {Calendar} from "lucide-svelte";
     import {_} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
-    import type {Event, Tag} from "$lib/types";
-    import TagsSwiper from "$lib/components/TagsSwiper.svelte";
+    import type {DispatchTagSelect, Event, Tag} from "$lib/types";
+    import Tags from "$lib/composables/Tags.svelte";
 
     export let events: Event[];
+    let eventsToDisplay: Event[] = events;
 
-    let tags: Tag[] = events.flatMap(x => x.tags).filter((a, i) => events.flatMap(x => x.tags).findIndex((s) => a.name === s.name) === i);
-    let dateDrawerIsOpen: boolean = false;
+    let selectedTags: Tag[] = []
+
+    let tags: Tag[] = events
+        .flatMap(x => x.tags)
+        .filter((a, i) => events.flatMap(x => x.tags).findIndex((s) => a.name === s.name) === i);
+
+    if (selectedTags.length > 0) {
+        tags = tags.filter((tag: Tag) => selectedTags.includes(tag));
+    }
+
+    const handle = (event: DispatchTagSelect) => {
+        // add / remove Tag
+        if (selectedTags.includes(event.detail.tag)) {
+            selectedTags = selectedTags.filter(t => t != event.detail.tag);
+        } else {
+            selectedTags = [...selectedTags, event.detail.tag];
+        }
+
+        eventsToDisplay = sortEventsByTags();
+    }
+
+    function sortEventsByTags(): Event[] {
+        if (selectedTags.length === 0) {
+            return events;
+        }
+
+        const tags: string[] = selectedTags.map(t => t.name)
+
+        return events.filter((event: Event) => {
+            return event.tags.some(tag => tags.includes(tag.name))
+        })
+    }
 
     $: events;
+    $: eventsToDisplay;
+    $: selectedTags;
 </script>
 
 <div class="agenda p-5 md:p-7 md:px-12">
@@ -32,7 +64,7 @@
 
             <!--    DATE    -->
             <button class="by-date text-center flex-grow inline-block text-black border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 items-center gap-6 p-3 ring-2 ring-transparent"
-                    on:click={() => dateDrawerIsOpen = true}
+                    on:click={() => console.log('agenda opened')}
             >
                 <Calendar class="inline-block mr-2 -mt-1.5"/>
                 <span>
@@ -42,47 +74,20 @@
         </div>
 
         <div class="by-tags my-3">
-            <button class="sm:hidden w-full inline-block text-black border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 items-center gap-6 p-2 ring-2 ring-transparent">
-                {$_('agenda.by-tags')}
-            </button>
-
-            <TagsSwiper class="hidden sm:block py-3 cursor-pointer"
+            {#key selectedTags.map(t => t.name)}
+                <Tags
                         {tags}
-                        withPagination="{false}"
-                        perPage="{10}"
-                        swipeBreakpoints="{{
-                                500: {
-                                    perPage: 3
-                                },
-                                600 : {
-                                    perPage: 4
-                                },
-                                700 : {
-                                    perPage: 5
-                                },
-                                900 : {
-                                    perPage: 6
-                                },
-                                1200 : {
-                                    perPage: 8
-                                },
-                                1400 : {
-                                    perPage: 9
-                                },
-                                1600 : {
-                                    perPage: 10
-                                },
-                            }}"
-            />
-
-            <Drawer open="{ dateDrawerIsOpen }" placement="bottom" size='400px' on:clickAway="{() => dateDrawerIsOpen = false}">
-                <button on:click={() => dateDrawerIsOpen = false}>Close</button>
-            </Drawer>
+                        {selectedTags}
+                        tagClass="px-5"
+                        on:tagSelect={handle}
+                />
+            {/key}
         </div>
 
         <!-- TODO bind to var an search in loaded events -->
         <div class="by-name w-full">
-            <input type="search" class="bg-stone-100 w-full focus:outline-none p-4 font-semibold border-0 focus:ring-0" name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}">
+            <input type="search" class="bg-stone-100 w-full focus:outline-none p-4 font-semibold border-0 focus:ring-0"
+                   name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}">
         </div>
     </div>
 
@@ -92,7 +97,7 @@
     </p>
 
     <div class="grid xl:grid-cols-2 gap-4">
-        {#each events as event, index}
+        {#each eventsToDisplay as event, index}
             <EventCard class="" {event}/>
         {/each}
     </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import {_, locale} from "svelte-i18n";
     import {Calendar, Clock, MapPin} from "lucide-svelte";
-    import type {Event, Category, Geolocation, Media, Period, ScheduleDate, Schedules, Tag} from "$lib/types";
+    import type {Event, Geolocation} from "$lib/types";
 
     import moment from "moment/moment";
     import 'moment/locale/fr-ch';
@@ -28,7 +28,7 @@
     const media = event.medias.find(x => x.is_cover)
 </script>
 
-    <div class="event-card flex flex-row w-full block bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class}">
+    <div class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class}">
         <div class="image-wrapper aspect-square h-40 sm:h-64">
 
             <Clickable href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
@@ -56,11 +56,11 @@
         </div>
         <div class="informations flex flex-col flex-1 overflow-hidden">
             <!--TAGS-->
-            <TagsSwiper class="tags p-2 pb-0 sm:p-4 sm:pb-0  w-full sm:mb-3 cursor-pointer"
+            <TagsSwiper class="tags p-2 pb-0 sm:pt-4 sm:pb-2 sm:px-4 w-full cursor-pointer"
                         withArrow="{false}"
                         withPagination="{false}"
                         tags="{event.tags}"
-                        tagClass="flex justify-content items-center text-sm sm:text-md sm:pt-1 text-black border border-black rounded-full hover:border-yellow-400 has-[:checked]:border-yellow-400 hover:bg-yellow-400 has-[:checked]:bg-yellow-400 items-center ring-2 ring-transparent px-2 mr-2"/>
+                        tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 py-0.5 sm:py-1 sm:px-2 text-black border border-black rounded-full hover:border-honey-500 has-[:checked]:border-honey-500 hover:bg-honey-500 has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent"/>
 
 
             <Clickable class=" px-2 pb-2 sm:px-4 sm:pb-4 flex-grow flex flex-col" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
@@ -72,7 +72,7 @@
                 </p>
             </div>
             <!--DATE-->
-            <div class="date text-sm sm:text-md flex items-center sm:mt-3">
+            <div class="date text-sm sm:text-md flex items-center sm:mt-2">
                 <div class="mb-1 mr-2">
                     <Calendar class="text-honey-500" size="24px"/>
                 </div>

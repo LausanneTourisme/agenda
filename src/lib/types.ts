@@ -8,7 +8,7 @@ export type Schedules = {
 
 export type ScheduleDate = {
     label: string | null | undefined,
-    every_year: boolean|"true"|"false",
+    every_year: boolean | "true" | "false",
     open_days: ShortDay[],
     week: Week[],
     periods: Period[]
@@ -59,7 +59,7 @@ export type Tag = {
     name: string,
     public_name: Translatable,
 }
-export type Category  = {
+export type Category = {
     name: string,
     public_name: Translatable,
     main_category: boolean,
@@ -125,3 +125,7 @@ type HH = `${0 | 1 | 2}${zeroToNine}` | zeroToNine
  * Minutes
  */
 type mm = `${zeroToFive}${zeroToNine}`
+
+export type DispatchTagSelect = CustomEvent<{
+    tag: Tag;
+}>;

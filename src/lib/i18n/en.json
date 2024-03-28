@@ -18,6 +18,7 @@
     },
     "event-found": "{quantity} event correspond to these criteria",
     "events-found": "{quantity} events correspond to these criteria",
-    "by-tags": "By category"
+    "by-tags": "By category",
+    "tags": "Categories"
   }
 }

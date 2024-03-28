@@ -18,6 +18,7 @@
     },
     "event-found": "{quantity} événement correspond à ces critères",
     "events-found": "{quantity} événements correspondent à ces critères",
-    "by-tags": "Par catégorie"
+    "by-tags": "Par catégorie",
+    "tags": "Catégories"
   }
 }
