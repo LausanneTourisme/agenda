@@ -11,7 +11,7 @@
     let target: NullableString = blankable(href)
 
     let style: ClassList = ClassList.make([
-        "clickable-elem block group/clickable cursor-pointer",
+        "clickable block group/clickable cursor-pointer",
         !overflow && "overflow-hidden",
     ]);
 
@@ -32,7 +32,4 @@
 {/if}
 
 <style lang="scss">
-    .clickable-elem {
-      pointer-events: none;
-    }
 </style>
