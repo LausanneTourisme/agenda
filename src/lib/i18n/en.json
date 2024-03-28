@@ -6,10 +6,10 @@
     "start": "From"
   },
   "hightlights": {
-    "title": "Our recommendations !"
+    "title": "Our recommendations"
   },
   "agenda": {
-    "title": "Complete agenda",
+    "title": "Full agenda",
     "search-section": {
       "today": "Today",
       "weekend": "This weekend",
@@ -19,6 +19,13 @@
     "event-found": "{quantity} event correspond to these criteria",
     "events-found": "{quantity} events correspond to these criteria",
     "by-tags": "By category",
-    "tags": "Categories"
+    "tags": {
+      "title": "Categories",
+      "display-all": "Display all"
+    },
+    "tags-drawer": {
+      "singular": "Show {quantity} result",
+      "plural": "Show {quantity} results"
+    }
   }
 }
