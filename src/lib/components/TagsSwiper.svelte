@@ -4,7 +4,7 @@
     import {locale} from "svelte-i18n";
     import { createEventDispatcher } from 'svelte';
 
-    const dispatch = createEventDispatcher<{tagSelect: { tag: Tag}}>();
+    const dispatch = createEventDispatcher<{tagSelect: { tag: Tag|null|undefined }}>();
 
     // trick to bypass error type...
     const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
