@@ -127,5 +127,5 @@ type HH = `${0 | 1 | 2}${zeroToNine}` | zeroToNine
 type mm = `${zeroToFive}${zeroToNine}`
 
 export type DispatchTagSelect = CustomEvent<{
-    tag: Tag;
+    tag: Tag|null|undefined
 }>;
