@@ -12,6 +12,7 @@
     const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
 
     export let events: Event[];
+
     let eventsToDisplay: Event[] = events;
 
     let selectedTags: Tag[] = []
@@ -61,7 +62,7 @@
 </script>
 
 <div class="agenda p-5 md:p-7 md:px-12">
-    <Heading tag="h2" class="">{$_('agenda.title')}</Heading>
+    <Heading tag="h3" class="mb-5">{$_('agenda.title')}</Heading>
 
     <div class="search-section">
         <div class="flex justify-between sm:block search-section sm:w-full">
@@ -86,13 +87,43 @@
             </button>
         </div>
 
-        <div class="by-tags my-3">
+        <div class="by-tags">
             {#key selectedTags.map(t => t.name)}
-                <Tags
-                        {tags}
-                        {selectedTags}
-                        tagClass="px-5"
-                        on:tagSelect={handle}
+                <button on:click={() => openTagsDrawer = true}
+                        class="sm:hidden block w-full p-3 mb-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent">
+                    {$_('agenda.by-tags')}
+                </button>
+
+                <TagsSwiper class="hidden sm:block py-3 cursor-pointer"
+                            {tags}
+                            {selectedTags}
+                            on:tagSelect={handle}
+                            tagClass="px-5"
+                            withPagination="{false}"
+                            perPage="{10}"
+                            swipeBreakpoints="{{
+                                500: {
+                                    perPage: 3
+                                },
+                                600 : {
+                                    perPage: 4
+                                },
+                                700 : {
+                                    perPage: 5
+                                },
+                                900 : {
+                                    perPage: 6
+                                },
+                                1200 : {
+                                    perPage: 8
+                                },
+                                1400 : {
+                                    perPage: 9
+                                },
+                                1600 : {
+                                    perPage: 10
+                                },
+                            }}"
                 />
             {/key}
 
@@ -137,7 +168,7 @@
 
     <hr class="mt-4">
     <p class="text-xl sm:text-2xl font-semibold leading-tight tracking-tighter my-5">
-        {$_(`agenda.event${events.length === 1 ? '' : 's'}-found`, {values: {quantity: events.length}})}
+        {$_(`agenda.event${eventsToDisplay.length === 1 ? '' : 's'}-found`, {values: {quantity: eventsToDisplay.length}})}
     </p>
 
     <div class="grid xl:grid-cols-2 gap-4">
