@@ -95,6 +95,37 @@
                         on:tagSelect={handle}
                 />
             {/key}
+
+
+            <Drawer open="{ openTagsDrawer }" placement="bottom" size='400px'
+                    on:clickAway="{() => openTagsDrawer = false}">
+                <button on:click={() => openTagsDrawer = false} class="flex w-full px-2 text-left">
+                    <Heading tag="h3" class="flex-grow mt-2">
+                        {$_('agenda.tags.title')}
+                    </Heading>
+
+                    <span class="mt-3"><Cross1/></span>
+                </button>
+                <div class="mt-2 h-72 overflow-y-scroll flex flex-wrap">
+                    <button on:click={() => {sortEventsByTags()}}
+                            class="inline-flex justify-center items-center py-2 m-2  text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 gap-6 ring-2 ring-transparent {selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} px-5"
+                            title="{$_('agenda.tags.display-all')}">{$_('agenda.tags.display-all')}</button>
+
+                    {#each tags as tag}
+                        {@const elementSelected =  selectedTagsName.includes(tag.name) ? 'border-honey-500 bg-honey-500' : ''}
+
+                        <button on:click={() => sortEventsByTags(tag)}
+                                class="inline-flex justify-center items-center py-2 m-2  text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 gap-6 ring-2 ring-transparent px-5 {elementSelected} "
+                                title="{tag.public_name[key]}">{tag.public_name[key]}</button>
+
+                    {/each}
+
+                </div>
+                <div class="w-full p-2">
+                    <button on:click={() => openTagsDrawer = false}
+                            class="border border-honey-500 bg-honey-500 py-2 px-4 float-right">{$_(`agenda.tags-drawer.${eventsToDisplay.length === 1 ? 'singular' : 'plural'}`, {values: {quantity: eventsToDisplay.length}})}</button>
+                </div>
+            </Drawer>
         </div>
 
         <!-- TODO bind to var an search in loaded events -->
