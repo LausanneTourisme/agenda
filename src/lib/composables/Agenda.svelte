@@ -1,44 +1,57 @@
 <script lang="ts">
     import Heading from "$lib/components/Heading.svelte";
     import {Calendar} from "lucide-svelte";
-    import {_} from "svelte-i18n";
+    import {_, locale} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
     import type {DispatchTagSelect, Event, Tag} from "$lib/types";
-    import Tags from "$lib/composables/Tags.svelte";
+    import TagsSwiper from "$lib/components/TagsSwiper.svelte";
+    import Drawer from "svelte-drawer-component";
+    import {Cross1} from "svelte-radix";
+
+    // trick to bypass error type...
+    const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
 
     export let events: Event[];
     let eventsToDisplay: Event[] = events;
 
     let selectedTags: Tag[] = []
+    let selectedTagsName: string[] = []
 
     let tags: Tag[] = events
         .flatMap(x => x.tags)
         .filter((a, i) => events.flatMap(x => x.tags).findIndex((s) => a.name === s.name) === i);
+
+    let openTagsDrawer = false;
 
     if (selectedTags.length > 0) {
         tags = tags.filter((tag: Tag) => selectedTags.includes(tag));
     }
 
     const handle = (event: DispatchTagSelect) => {
-        // add / remove Tag
-        if (selectedTags.includes(event.detail.tag)) {
-            selectedTags = selectedTags.filter(t => t != event.detail.tag);
-        } else {
-            selectedTags = [...selectedTags, event.detail.tag];
-        }
-
-        eventsToDisplay = sortEventsByTags();
+        sortEventsByTags(event.detail.tag)
     }
 
-    function sortEventsByTags(): Event[] {
-        if (selectedTags.length === 0) {
-            return events;
+    function sortEventsByTags(tag: Tag | null | undefined = null): void {
+        if (!tag) {
+            selectedTags = []
+        }
+        // add / remove Tag
+        else if (selectedTags.includes(tag)) {
+            selectedTags = selectedTags.filter(t => t != tag);
+        } else {
+            selectedTags = [...selectedTags, tag];
         }
 
-        const tags: string[] = selectedTags.map(t => t.name)
+        selectedTagsName = selectedTags.map(t => t.name)
 
-        return events.filter((event: Event) => {
-            return event.tags.some(tag => tags.includes(tag.name))
+        if (selectedTags.length === 0) {
+            eventsToDisplay = events;
+            return;
+        }
+
+
+        eventsToDisplay = events.filter((event: Event) => {
+            return event.tags.some(tag => selectedTagsName.includes(tag.name))
         })
     }
 
