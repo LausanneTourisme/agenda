@@ -32,7 +32,7 @@
         <Moon size="60" color="#FCBD05" unit="px" duration="1s"/>
     {:else}
         <div class="pt-7 md:px-7">
-            <Heading tag="h2" class="p-5 md:pl-12" {title}>
+            <Heading tag="h3" class="pl-5 md:pl-12" {title}>
                 {title ?? $_('hightlights.title', {default: 'Home'})}
             </Heading>
         </div>
