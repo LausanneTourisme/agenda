@@ -1069,17 +1069,17 @@
 </script>
 
 <main>
-    <div class="lang-changer w-full flex justify-center fixed">
-        <select bind:value={$locale}
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/12 p-2.5">
-            {#each $locales as locale}
-                <option value={locale}>{locale}</option>
-            {/each}
-        </select>
-    </div>
     {#if $isLoading}
         <Loader/>
     {:else}
+        <div class="lang-changer w-full flex justify-center fixed">
+            <select bind:value={$locale}
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/12 p-2.5">
+                {#each $locales as locale}
+                    <option value={locale}>{locale}</option>
+                {/each}
+            </select>
+        </div>
         <Highlights title={highlightTitle} onLoad={getHightlightEvents}/>
         <div class="md:px-7">
             <Agenda events={sortEvents(events)}/>

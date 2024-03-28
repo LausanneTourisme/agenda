@@ -1,6 +1,6 @@
 <script lang="ts">
     import Heading from "$lib/components/Heading.svelte";
-    import {Calendar} from "lucide-svelte";
+    import {Calendar, Search} from "lucide-svelte";
     import {_, locale} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
     import type {DispatchTagSelect, Event, Tag} from "$lib/types";
@@ -65,29 +65,37 @@
     <Heading tag="h3" class="mb-5">{$_('agenda.title')}</Heading>
 
     <div class="search-section">
-        <div class="flex justify-between sm:block search-section sm:w-full">
+        <div class="w-full xs:flex xs:justify-start search-section">
             <!--    TODAY    -->
-            <button class="by-today text-center flex-grow inline-block text-black border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 items-center gap-6 p-3 ring-2 ring-transparent mr-2">
+            <button class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent">
                 {$_('agenda.search-section.today')}
             </button>
 
             <!--    WEEKEND   -->
-            <button class="by-weekend text-center flex-grow inline-block text-black border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 items-center gap-6 p-3 ring-2 ring-transparent mr-2">
+            <button class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent">
                 {$_('agenda.search-section.weekend')}
             </button>
 
             <!--    DATE    -->
-            <button class="by-date text-center flex-grow inline-block text-black border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 items-center gap-6 p-3 ring-2 ring-transparent"
-                    on:click={() => console.log('agenda opened')}
-            >
-                <Calendar class="inline-block mr-2 -mt-1.5"/>
-                <span>
+            <button class="block w-full p-3 mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent">
+                <span class="flex justify-center items-center w-max">
+                    <Calendar class="w-5 h-5 -mt-1"/>
+                    &nbsp;
                     {$_('agenda.search-section.date')}
                 </span>
             </button>
+
+            <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500 ring-transparent active:ring-transparent">
+            <input type="search"
+                   class="h-full w-full"
+                   name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}"
+            />
+                <Search class="text-honey-500"/>
+            </div>
+
         </div>
 
-        <div class="by-tags">
+        <div class="by-tags sm:mt-4">
             {#key selectedTags.map(t => t.name)}
                 <button on:click={() => openTagsDrawer = true}
                         class="sm:hidden block w-full p-3 mb-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent">
@@ -160,13 +168,13 @@
         </div>
 
         <!-- TODO bind to var an search in loaded events -->
-        <div class="by-name w-full">
-            <input type="search" class="bg-stone-100 w-full focus:outline-none p-4 font-semibold border-0 focus:ring-0"
+        <div class="by-name w-full sm:hidden">
+            <input type="search" class="bg-stone-100 w-full focus:outline-none p-4 font-light border-0 focus:ring-0"
                    name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}">
         </div>
     </div>
 
-    <hr class="mt-4">
+    <hr class="mt-4 sm:hidden">
     <p class="text-xl sm:text-2xl font-semibold leading-tight tracking-tighter my-5">
         {$_(`agenda.event${eventsToDisplay.length === 1 ? '' : 's'}-found`, {values: {quantity: eventsToDisplay.length}})}
     </p>

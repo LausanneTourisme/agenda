@@ -14,6 +14,9 @@ const config = {
             }
         },
         extend: {
+            screens: {
+                "xs": "359px"
+            },
             colors: {
                 honey: {
                     '50': '#fffdea',

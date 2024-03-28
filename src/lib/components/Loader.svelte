@@ -1,12 +1,7 @@
 <script lang="ts">
-import {Moon} from "svelte-loading-spinners";
-import {ClassList} from "$lib/ClassList";
-
-let style: ClassList = ClassList.make();
-
-$: style;
+    import {Moon} from "svelte-loading-spinners";
 </script>
 
-<div class="{style.merge($$props.class)}" style="{$$props.style}">
-    <Moon size="60" class="text-honey-500" unit="px" duration="1s" />
+<div class="w-full h-full flex justify-center items-center {$$props.class}" style="{$$props.style}">
+    <Moon size="60" unit="px" duration="1s"/>
 </div>
