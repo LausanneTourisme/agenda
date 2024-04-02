@@ -78,7 +78,7 @@
 
             <!--    DATE    -->
             <button class="block w-full p-3 mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent">
-                <span class="flex justify-center items-center w-max">
+                <span class="flex justify-center items-center w-max  m-auto">
                     <Calendar class="w-5 h-5 -mt-1"/>
                     &nbsp;
                     {$_('agenda.search-section.date')}
