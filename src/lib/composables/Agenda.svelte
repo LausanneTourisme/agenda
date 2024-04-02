@@ -86,10 +86,10 @@
             </button>
 
             <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500 ring-transparent active:ring-transparent">
-            <input type="search"
-                   class="h-full w-full"
-                   name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}"
-            />
+                <input type="search"
+                       class="h-full w-full"
+                       name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}"
+                />
                 <Search class="text-honey-500"/>
             </div>
 
@@ -105,6 +105,7 @@
                 <TagsSwiper class="hidden sm:block py-3 cursor-pointer"
                             {tags}
                             {selectedTags}
+                            displayAllBtn="{true}"
                             on:tagSelect={handle}
                             tagClass="px-5"
                             withPagination="{false}"
