@@ -86,6 +86,7 @@ export type Seo = {
 }
 
 export type Event = {
+    id: number,
     name: Translatable,
     highlight: boolean,
     categories: Category[],
@@ -127,5 +128,38 @@ type HH = `${0 | 1 | 2}${zeroToNine}` | zeroToNine
 type mm = `${zeroToFive}${zeroToNine}`
 
 export type DispatchTagSelect = CustomEvent<{
-    tag: Tag|null|undefined
+    tag: Tag | null | undefined
 }>;
+
+export type GraphqlResponse = {
+    type: "events" | "highlight"
+    result: {
+        data: {
+            items: {
+                total?: number
+                per_page?: number
+                current_page: number
+                has_more_pages: boolean
+                from?: number
+                to?: number
+                data: Event[]
+            }
+        }
+    }
+}
+
+export type HistoryStatus = {
+    hasMore: boolean,
+    page: number,
+}
+
+export type History = {
+    highlights: HistoryStatus,
+    events: HistoryStatus,
+};
+
+export type GqlOption = {
+    getEvents: boolean,
+    getHighlights: boolean,
+    currentPage?: number
+}

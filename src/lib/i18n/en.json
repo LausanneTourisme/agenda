@@ -14,7 +14,10 @@
       "today": "Today",
       "weekend": "This weekend",
       "date": "Date",
-      "by-name-placeholder": "Search an event..."
+      "by-name-placeholder": "Search an event...",
+      "load-more": "Load more events",
+      "load-complete": "It's the end, do you want start a new search?",
+      "again": "Refine my search"
     },
     "event-found": "{quantity} event correspond to these criteria",
     "events-found": "{quantity} events correspond to these criteria",

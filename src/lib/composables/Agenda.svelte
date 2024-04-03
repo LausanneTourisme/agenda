@@ -1,16 +1,20 @@
 <script lang="ts">
     import Heading from "$lib/components/Heading.svelte";
-    import {Calendar, Search} from "lucide-svelte";
+    import {Calendar, ChevronDown, Search} from "lucide-svelte";
     import {_, locale} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
-    import type {DispatchTagSelect, Event, Tag} from "$lib/types";
+    import type {DispatchTagSelect, Event, HistoryStatus, Tag} from "$lib/types";
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import Drawer from "svelte-drawer-component";
     import {Cross1} from "svelte-radix";
+    import {createEventDispatcher} from "svelte";
 
+    const dispatch = createEventDispatcher<{ loadMore:{ event: any }}>();
     // trick to bypass error type...
     const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
 
+    export let historyStatus: HistoryStatus;
+    export let title: string | null | undefined;
     export let events: Event[];
 
     let eventsToDisplay: Event[] = events;
@@ -62,7 +66,7 @@
 </script>
 
 <div class="agenda p-5 md:p-7 md:px-12">
-    <Heading tag="h3" class="mb-5">{$_('agenda.title')}</Heading>
+    <Heading tag="h3" class="mb-5">{title ?? $_('agenda.title')}</Heading>
 
     <div class="search-section">
         <div class="w-full xs:flex xs:justify-start search-section">
@@ -85,10 +89,11 @@
                 </span>
             </button>
 
-            <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500 ring-transparent active:ring-transparent">
+            <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500 ">
                 <input type="search"
-                       class="h-full w-full"
-                       name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}"
+                       class="h-full w-full outline-0 ring-transparent outline-none"
+                       name="search-event"
+                       placeholder="{$_('agenda.search-section.by-name-placeholder')}"
                 />
                 <Search class="text-honey-500"/>
             </div>
@@ -185,7 +190,24 @@
             <EventCard class="" {event}/>
         {/each}
     </div>
-
+    <div class="flex flex-col items-center mt-5">
+        {#if historyStatus.hasMore}
+            <button
+                    on:click={(e) => dispatch('loadMore', {event: e})}
+                    class="flex justify-center w-full xs:w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent">
+                <ChevronDown/>
+                &nbsp;
+                {$_('agenda.search-section.load-more')}
+            </button>
+        {:else }
+            <p class="w-full align-middle text-center">
+                {$_('agenda.search-section.load-complete')}
+            </p>
+            <button class="block w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent">
+                {$_('agenda.search-section.again')}
+            </button>
+        {/if}
+    </div>
 </div>
 
 <style>

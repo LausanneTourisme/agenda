@@ -1,12 +1,19 @@
+<svelte:options
+        customElement="{{
+		tag: 'swc-lt-agenda'
+	}}"
+/>
 <script lang="ts">
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, locales, register} from 'svelte-i18n';
-    import type {Event, Period, RawDate, ScheduleDate} from "$lib/types";
+    import type {Event, History, RawDate} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import {randomNumber, randomString} from "$lib/utils";
     import {randomDate, sortEvents} from "$lib/date-utils";
     import moment from "moment/moment";
     import Agenda from "$lib/composables/Agenda.svelte";
+    import {createEventDispatcher} from "svelte";
+
 
     register('en', () => import('$lib/i18n/en.json'));
     register('fr', () => import('$lib/i18n/fr.json'));
@@ -16,9 +23,26 @@
         initialLocale: getLocaleFromNavigator()?.slice(0, 2) ?? 'en',
     });
 
-    export const highlightTitle: string | null = null;
+
+    const dispatch = createEventDispatcher();
+
+    export let highlightTitle: string | null | undefined = $$props['highlight-title'];
+    export let agendaTitle: string | null | undefined = $$props['agenda-title'];
+
+    const history: History = {
+        highlights: {
+            hasMore: true,
+            page: 0,
+        },
+        events: {
+            hasMore: true,
+            page: 0,
+        }
+    };
+
     const events: Event[] = [
         {
+            id: 1,
             name: {
                 fr: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous, RAH!`,
                 en: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous, RAH!`,
@@ -157,6 +181,7 @@
             ]
         },
         {
+            id: 2,
             name: {
                 fr: "Exposition des pâtes",
                 en: "Pasta exhibition",
@@ -309,6 +334,7 @@
             ],
         },
         {
+            id: 4,
             name: {
                 fr: "Exposition des pâtes périmées",
                 en: "Displaying expired pasta",
@@ -463,6 +489,7 @@
             ]
         },
         {
+            id: 5,
             name: {
                 fr: "Rock & Roll dans la cité avec toutes les grandes starts des années 80, le tout gratuitement profitez !",
                 en: "Rock & Roll in the city with all the big 80s hits, all free of charge!",
@@ -609,6 +636,7 @@
             ]
         },
         {
+            id: 9,
             name: {
                 fr: "Visite de Macron",
                 en: "Macron's visit",
@@ -756,6 +784,7 @@
             ]
         },
         {
+            id: 3,
             name: {
                 fr: "Festival aquatique",
                 en: "Festival aquatique",
@@ -925,6 +954,7 @@
         const end = moment(start).add(randomNumber(1, 10), randomNumber(0, 1) ? "days" : "weeks");
 
         events.push({
+            id: 10 + i,
             name: {
                 fr: `Moto #${i.toString().padStart(2, '0')}`,
                 en: `Moto #${i.toString().padStart(2, '0')}`,
@@ -1064,8 +1094,41 @@
         });
     }
     //TODO on mount execute this method and use events to prevents calls
-    let getHightlightEvents: () => Promise<Event[]> = async () => sortEvents(events)
+    // export let getHightlightEvents: (data: any) => Promise<GraphqlResponse> = async (data: any) => ({
+    //     data: {
+    //         items: {
+    //             has_more_pages: false,
+    //             data: sortEvents(events)
+    //         }
+    //     }
+    // })
+    // export let getEvents: (data: any) => Promise<GraphqlResponse> = async (data: any) => ({
+    //     data: {
+    //         items: {
+    //             has_more_pages: true,
+    //             data: sortEvents(events)
+    //         }
+    //     }
+    // })
 
+    // export let getEvents: (callback: (options: GqlOption) => Promise<GraphqlResponse> ) => Promise<Event[]> = async (callback) => {
+    //     if(!history.events.hasMore) return [];
+    //
+    //     const nextPage = history.events.page + 1;
+    //     const response: GraphqlResponse = await callback({
+    //         getEvents: true,
+    //         getHighlights: false,
+    //         currentPage: nextPage
+    //     });
+    //
+    //     history.events.page = nextPage;
+    //     history.events.hasMore = response.result.data.items.has_more_pages;
+    //
+    //     const newEvents: Event[] = sortEvents(response.result.data.items.data);
+    //
+    //     // prevent duplicate due to search by name
+    //     return uniqueEvents(events, newEvents);
+    // }
 </script>
 
 <main>
@@ -1080,15 +1143,22 @@
                 {/each}
             </select>
         </div>
-        <Highlights title={highlightTitle} onLoad={getHightlightEvents}/>
+        <Highlights title={highlightTitle}
+                    onLoad="{async () => sortEvents(events, {onlyHighlights: true, onlyAvailable: true})}"
+                    historyStatus="{history.highlights}"/>
         <div class="md:px-7">
-            <Agenda events={sortEvents(events)}/>
+            <Agenda title="{agendaTitle}" events={sortEvents(events)} historyStatus="{history.events}" on:loadMore="{(e) => {
+                console.log('dispatch loadMore !')
+
+                e.detail.event.target.dispatchEvent(new CustomEvent('refresh', {detail: {getEvents: true, currentPage: history.events.page}, composed: true }))
+                dispatch('getEvents',{getEvents: true, currentPage: history.events.page})}
+            }"/>
         </div>
     {/if}
 </main>
 
 <style>
-.lang-changer{
-    z-index: 999;
-}
+    .lang-changer {
+        z-index: 999;
+    }
 </style>

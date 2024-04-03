@@ -49,6 +49,12 @@ export const sortEvents = (events: Event[], options: optionsSortEvents = {
     })
 }
 
+export const uniqueEvents = (arr1: Event[], arr2: Event[]) : Event[] => {
+    const result: Event[] = arr2.filter(x => !arr1.find(e => e.id === x.id))
+
+    return arr1.concat(result);
+}
+
 const availablePeriods = (event: Event): Array<Period[]> => {
     const dates: Array<Period[]> = event.schedules.dates.map((d: ScheduleDate) => d.periods);
 

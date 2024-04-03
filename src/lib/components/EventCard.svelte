@@ -45,8 +45,8 @@
                 />
             {:else}
                 <img src="./TODO_placeholder.png"
-                     alt="image invalide"
-                     title="image invalided"
+                     alt="invalide"
+                     title="invalided"
                      height="500"
                      width="500"
                      class="object-cover"

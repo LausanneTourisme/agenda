@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My web component test</title>
+</head>
+<body>
+<swc-lt-agenda highlight-title="aaaaaaaaaaaa"></swc-lt-agenda>
+<script type="module" src="./dist/swc-lt-agenda.js"></script>
+    <script>
+        document.querySelector('swc-lt-agenda').addEventListener('refresh', (e) => {
+        console.log('swc-lt-agenda has triggered a refresh!')
+    })
+</script>
+</body>
+</html>

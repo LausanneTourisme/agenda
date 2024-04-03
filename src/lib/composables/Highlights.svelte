@@ -4,13 +4,14 @@
     import '@splidejs/svelte-splide/css/skyblue';
     import HighlightCard from "$lib/components/HighlightCard.svelte";
     import Heading from "$lib/components/Heading.svelte";
-    import type {Event} from "$lib/types";
+    import type {Event, HistoryStatus} from "$lib/types";
     import {Moon} from "svelte-loading-spinners";
     import {onMount} from "svelte";
     import {sortEvents} from "$lib/date-utils";
 
     //TODO pass parameters to call back
     export let onLoad: () => Promise<Event[]>;
+    export let historyStatus: HistoryStatus;
 
     let loading = true;
     let highlights: Event[] = [];
@@ -24,7 +25,7 @@
 
     $: loading;
 
-    export let title: string | null;
+    export let title: string | null | undefined;
 </script>
 
 <div class="w-full bg-honey-500">
