@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {_, locale} from 'svelte-i18n';
+    import {_, isLoading, locale} from 'svelte-i18n';
 
     import {fade} from "svelte/transition";
     import Clickable from "$lib/components/Clickable.svelte";
@@ -12,8 +12,7 @@
     import 'moment/locale/de';
     import {CldImage} from "svelte-cloudinary";
 
-    // trick to bypass error type...
-    const key: TwoLetters = ($locale ?? "en") as TwoLetters;
+    let key: string;
 
     export let draggable: boolean = false;
     export let event: Event;
@@ -29,45 +28,48 @@
         end: moment(event.schedules.dates[0].periods[event.schedules.dates[0].periods.length - 1].end, "YYYY-MM-DD")
     };
 
-    let mouse
     const mouseDown = (e: Event) => {
         // e.clientX
         console.log(e)
     }
+
     $: preventClick;
+    $: locale;
+    $: key = ($locale ?? "en");
 </script>
 
 <div class="card h-full w-56 sm:w-72 rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
      {draggable} transition:fade>
-
-    <Clickable class="h-full" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}"
+    <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}"
                on:mousedown={mouseDown}>
         <div class="card-body flex flex-col h-full">
             <!--        TODO add placeholder -->
-            <div class="aspect-square sm:h-64">
+            <div class="aspect-square h-40 sm:h-64">
                 {#if media}
                     <CldImage
                             src="{media.cloudinary_id}"
                             alt="{media.copyright}"
                             title="{media.copyright}"
-                            height="{500}"
-                            width="{500}"
+                            height={500}
+                            width={500}
                             sizes="100vw"
-                            class="object-cover bg-gray-300"
+                            class="object-cover bg-honey-800"
                             draggable="false"
                     />
                 {:else}
                     <img src="./TODO_placeholder.png"
                          alt="invalide"
                          title="invalided"
-                         height="500"
-                         width="500"
-                         class="object-cover"
+                         height=500
+                         width=500
+                         class="object-cover bg-honey-800"
                     />
                 {/if}
             </div>
-            <Heading class="title flex-grow line-clamp-2 text-wrap h-16 max-h-16 text-clip align-middle my-2" tag="h3"
-                     title="{event.seo.name[key]}"> {event.seo.name[key]}
+            <Heading class="title line-clamp-2 h-16 max-h-16 text-clip my-2"
+                     tag="h3"
+                     title="{event.seo.name[key]}">
+                {event.seo.name[key]}
             </Heading>
             <div class="flex items-center">
                 <div class="mb-1 mr-2">

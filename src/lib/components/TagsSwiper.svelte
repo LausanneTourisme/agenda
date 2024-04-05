@@ -6,8 +6,7 @@
 
     const dispatch = createEventDispatcher<{ tagSelect: { tag: Tag | null | undefined } }>();
 
-    // trick to bypass error type...
-    const key: TwoLetters = ($locale ?? "en") as TwoLetters;
+    let key: string;
 
     export let tags: Tag[];
     export let displayBtnAll: boolean = false
@@ -34,12 +33,13 @@
     }
 
     $: selectedTags;
+    $: key = ($locale ?? "en");
 </script>
 
-<Swiper class="{$$props.class ?? ''}" maxContent="{tags.length + (displayBtnAll ? 1:0)}">
+<Swiper class="text-nowrap pb-2 {$$props.class ?? ''}" maxContent="{tags.length + (displayBtnAll ? 1:0)}">
     {#if displayBtnAll}
         <button on:click={() => dispatch('tagSelect', {tag: null})}
-                class="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent {selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
+                class="{selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
                 title="{$_('agenda.tags.display-all')}">{$_('agenda.tags.display-all')}
         </button>
     {/if}
@@ -48,7 +48,7 @@
 
         <button on:click={() => dispatch('tagSelect', {tag})}
 
-                class="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent {elementSelected} {tagClass}"
+                class="{elementSelected} {tagClass}"
                 title="{tag.public_name[key]}">{tag.public_name[key]}
         </button>
     {/each}

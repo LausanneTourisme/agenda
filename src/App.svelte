@@ -26,11 +26,9 @@
     let divElement: HTMLElement | undefined;
     $: applyStyling(divElement);
 
-    const translations = import.meta.glob('$lib/i18n/*.json')??[];
-    for (const translationsKey in translations) {
-        const lang = translationsKey.substring(translationsKey.lastIndexOf('/')+1,translationsKey.lastIndexOf('.'))
-        register(lang, () => import(translationsKey));
-    }
+    register('fr', () => import('$lib/i18n/fr.json'));
+    register('en', () => import('$lib/i18n/en.json'));
+    register('de', () => import('$lib/i18n/de.json'));
 
     init({
         fallbackLocale: 'en',
@@ -58,20 +56,20 @@
         {
             id: 1,
             name: {
-                fr: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous, RAH!`,
-                en: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous, RAH!`,
-                de: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous, RAH!`,
+                fr: `Un texte beaucoup trop long pour être lu en une seule et unique ligne, mais tant mieux!`,
+                en: `A text too long to be read in a single and unique line, but that's all we want!`,
+                de: `Der Text ist viel zu lang, um ihn in einer einzigen Zeile zu lesen, aber das ist auch gut so!`,
             },
             seo: {
                 name: {
-                    fr: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous RAH!`,
-                    en: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous RAH!`,
-                    de: `Un texte beaucoup trop long pour être lu par des humains flemmards tels que nous RAH!`,
+                    fr: `Un texte beaucoup trop long pour être lu en une seule et unique ligne, mais tant mieux!`,
+                    en: `A text too long to be read in a single and unique line, but that's all we want!`,
+                    de: `Der Text ist viel zu lang, um ihn in einer einzigen Zeile zu lesen, aber das ist auch gut so!`,
                 },
                 hreflang: {
-                    fr: "/fr/evenement/un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah",
-                    en: "/en/event/un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah",
-                    de: "/de/veranstaltung/un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah"
+                    fr: "/fr/evenement/un-texte-beaucoup-trop-long-pour-etre-lu-en-une-seule-et-unique-ligne-mais-tant-mieux",
+                    en: "/en/event/a-text-too-long-to-be-read-in-a-single-and-unique-line-but-thats-all-we-want",
+                    de: "/de/veranstaltung/der-text-ist-viel-zu-lang-um-ihn-in-einer-einzigen-zeile-zu-lesen-aber-das-ist-auch-gut-so"
                 },
                 description: {
                     fr: "Une moto",
@@ -81,9 +79,9 @@
                 medias: [],
                 noindex: false,
                 slug: {
-                    fr: `un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah`,
-                    en: `un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah`,
-                    de: `un-texte-beaucoup-trop-long-pour-etre-lu-par-des-humains-flemmards-tels-que-nous-rah`,
+                    fr: `un-texte-beaucoup-trop-long-pour-etre-lu-en-une-seule-et-unique-ligne-mais-tant-mieux`,
+                    en: `a-text-too-long-to-be-read-in-a-single-and-unique-line-but-thats-all-we-want`,
+                    de: `der-text-ist-viel-zu-lang-um-ihn-in-einer-einzigen-zeile-zu-lesen-aber-das-ist-auch-gut-so`,
                 },
             },
             highlight: true,
@@ -350,15 +348,15 @@
         {
             id: 4,
             name: {
-                fr: "Exposition des pâtes périmées",
-                en: "Displaying expired pasta",
-                de: "Ausstellung abgelaufener Nudeln",
+                fr: "Exposition de pinceaux volants",
+                en: "Flying brush exhibition",
+                de: "Ausstellung Fliegender Pinsel",
             },
             seo: {
                 name: {
-                    fr: "Exposition des pâtes périmées",
-                    en: "Displaying expired pasta",
-                    de: "Ausstellung abgelaufener Nudeln",
+                    fr: "Exposition de pinceaux volants",
+                    en: "Flying brush exhibition",
+                    de: "Ausstellung Fliegender Pinsel",
                 },
                 description: {
                     fr: "Qui n'a jamais souhaité découvrir la décomposition ddes différentes pâtes existantes dans le monde ?",
@@ -368,14 +366,14 @@
                 medias: [],
                 noindex: false,
                 slug: {
-                    fr: "exposition-des-pates-perimees",
-                    en: "displaying-expired-pasta",
-                    de: "ausstellung-abgelaufener-nudeln",
+                    fr: "exposition-de-pinceaux-volants",
+                    en: "flying-brush-exhibition",
+                    de: "ausstellung-fliegender-pinsel",
                 },
                 hreflang: {
-                    fr: "/fr/evenement/exposition-des-pates-perimees",
-                    en: "/en/event/displaying-expired-pasta",
-                    de: "/de/veranstaltung/ausstellung-abgelaufener-nudeln",
+                    fr: "/fr/evenement/exposition-de-pinceaux-volants",
+                    en: "/en/event/flying-brush-exhibition",
+                    de: "/de/veranstaltung/ausstellung-fliegender-pinsel",
                 },
             },
             highlight: false,
@@ -1107,42 +1105,7 @@
             ]
         });
     }
-    //TODO on mount execute this method and use events to prevents calls
-    // export let getHightlightEvents: (data: any) => Promise<GraphqlResponse> = async (data: any) => ({
-    //     data: {
-    //         items: {
-    //             has_more_pages: false,
-    //             data: sortEvents(events)
-    //         }
-    //     }
-    // })
-    // export let getEvents: (data: any) => Promise<GraphqlResponse> = async (data: any) => ({
-    //     data: {
-    //         items: {
-    //             has_more_pages: true,
-    //             data: sortEvents(events)
-    //         }
-    //     }
-    // })
-
-    // export let getEvents: (callback: (options: GqlOption) => Promise<GraphqlResponse> ) => Promise<Event[]> = async (callback) => {
-    //     if(!history.events.hasMore) return [];
-    //
-    //     const nextPage = history.events.page + 1;
-    //     const response: GraphqlResponse = await callback({
-    //         getEvents: true,
-    //         getHighlights: false,
-    //         currentPage: nextPage
-    //     });
-    //
-    //     history.events.page = nextPage;
-    //     history.events.hasMore = response.result.data.items.has_more_pages;
-    //
-    //     const newEvents: Event[] = sortEvents(response.result.data.items.data);
-    //
-    //     // prevent duplicate due to search by name
-    //     return uniqueEvents(events, newEvents);
-    // }
+    //TODO get callback to call external api by passing {get_events/get_highlights, page: X}
 </script>
 
 <main bind:this={divElement}>

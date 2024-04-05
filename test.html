@@ -5,11 +5,13 @@
     <title>My web component test</title>
 </head>
 <body>
-<swc-lt-agenda highlight-title="aaaaaaaaaaaa"></swc-lt-agenda>
+<!--<div id="lt-agenda"></div>-->
+<swc-lt-agenda agenda-title="aaaaaaaaaaaa"></swc-lt-agenda>
 <template id="swc-lt-agenda-styling">
     <style>
-        @import url("/src/assets/tailwind.css");
-        @import url("/src/assets/custom-splidejs.css");
+        @import url("/dist/tailwind.css");
+        @import url("/dist/style.css");
+        @import url("/dist/custom-splidejs.css");
     </style>
 </template>
 <script type="module" src="./dist/swc-lt-agenda.js"></script>

@@ -3,15 +3,15 @@
     import {Calendar, ChevronDown, Search} from "lucide-svelte";
     import {_, locale} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
-    import type {DispatchTagSelect, Event, HistoryStatus, Tag} from "$lib/types";
+    import type {DispatchTagSelect, Event, HistoryStatus, Tag, TwoLetters} from "$lib/types";
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import Drawer from "svelte-drawer-component";
     import {Cross1} from "svelte-radix";
     import {createEventDispatcher} from "svelte";
 
     const dispatch = createEventDispatcher<{ loadMore: { event: any } }>();
-    // trick to bypass error type...
-    const key: TwoLetters = ($locale ?? "en") as TwoLetters;
+
+    let key: string;
 
     export let historyStatus: HistoryStatus;
     export let title: string | null | undefined;
@@ -63,6 +63,7 @@
     $: events;
     $: eventsToDisplay;
     $: selectedTags;
+    $: key = ($locale ?? "en");
 </script>
 
 <div class="agenda p-5 md:p-7 md:px-12">
@@ -112,7 +113,7 @@
                             {selectedTags}
                             displayBtnAll="{true}"
                             on:tagSelect={handle}
-                            tagClass="px-5"
+                            tagClass="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent px-5"
                 />
             {/key}
 

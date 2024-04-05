@@ -11,8 +11,7 @@
     import {CldImage} from "svelte-cloudinary";
     import Clickable from "$lib/components/Clickable.svelte";
 
-    // trick to bypass error type...
-    const key: TwoLetters = ($locale ?? "en") as TwoLetters;
+    let key: string;
 
     export let event: Event;
 
@@ -26,6 +25,8 @@
     const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address);
 
     const media = event.medias.find(x => x.is_cover)
+
+    $: key = ($locale ?? "en");
 </script>
 
 <div class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
@@ -56,8 +57,8 @@
     </div>
     <div class="informations flex flex-col flex-1 overflow-hidden">
         <!--TAGS-->
-        <TagsSwiper class="tags mx-3 sm:mt-4 sm:mx-5 cursor-pointer"
-                    tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 py-0.5 sm:py-1 sm:px-2 text-black border border-black rounded-full hover:border-honey-500 has-[:checked]:border-honey-500 hover:bg-honey-500 has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent"
+        <TagsSwiper class="tags mx-3 mt-1.5 sm:mt-4 sm:mx-5 cursor-pointer"
+                    tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full hover:border-honey-500 has-[:checked]:border-honey-500 hover:bg-honey-500 has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent"
                     tags="{event.tags}"/>
 
 
@@ -65,7 +66,7 @@
                    href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
             <!--TITLE-->
             <div class="flex-grow flex items-center">
-                <p class="title mt-1 mb-1 ml-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle"
+                <p class="title my-1 ml-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle"
                    title="{event.seo.name[key]}">
                     {event.seo.name[key]}
                 </p>
