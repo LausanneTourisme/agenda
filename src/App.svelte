@@ -13,7 +13,6 @@
     import moment from "moment/moment";
     import Agenda from "$lib/composables/Agenda.svelte";
     import {createEventDispatcher} from "svelte";
-
     //trick to bypass problem with tailwind and shadow dom
     function applyStyling(divElement: HTMLElement | undefined) {
         if (!divElement) return;
@@ -27,8 +26,11 @@
     let divElement: HTMLElement | undefined;
     $: applyStyling(divElement);
 
-    register('en', () => import('$lib/i18n/en.json'));
-    register('fr', () => import('$lib/i18n/fr.json'));
+    const translations = import.meta.glob('$lib/i18n/*.json')??[];
+    for (const translationsKey in translations) {
+        const lang = translationsKey.substring(translationsKey.lastIndexOf('/')+1,translationsKey.lastIndexOf('.'))
+        register(lang, () => import(translationsKey));
+    }
 
     init({
         fallbackLocale: 'en',

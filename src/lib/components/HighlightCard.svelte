@@ -5,7 +5,7 @@
     import Clickable from "$lib/components/Clickable.svelte";
     import Heading from "$lib/components//Heading.svelte";
     import {Calendar} from "lucide-svelte";
-    import type {Event, Media} from "$lib/types";
+    import type {Event, Media, TwoLetters} from "$lib/types";
     import moment from "moment/moment";
     import 'moment/locale/fr-ch';
     import 'moment/locale/en-gb';
@@ -13,7 +13,7 @@
     import {CldImage} from "svelte-cloudinary";
 
     // trick to bypass error type...
-    const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
+    const key: TwoLetters = ($locale ?? "en") as TwoLetters;
 
     export let draggable: boolean = false;
     export let event: Event;
@@ -40,7 +40,7 @@
 <div class="card h-full w-56 sm:w-72 rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
      {draggable} transition:fade>
 
-    <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}"
+    <Clickable class="h-full" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}"
                on:mousedown={mouseDown}>
         <div class="card-body flex flex-col h-full">
             <!--        TODO add placeholder -->
@@ -66,7 +66,7 @@
                     />
                 {/if}
             </div>
-            <Heading class="title flex-grow line-clamp-2 max-h-18 text-clip align-middle" tag="h3"
+            <Heading class="title flex-grow line-clamp-2 text-wrap h-16 max-h-16 text-clip align-middle my-2" tag="h3"
                      title="{event.seo.name[key]}"> {event.seo.name[key]}
             </Heading>
             <div class="flex items-center">

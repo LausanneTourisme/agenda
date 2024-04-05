@@ -11,7 +11,7 @@
 
     const dispatch = createEventDispatcher<{ loadMore: { event: any } }>();
     // trick to bypass error type...
-    const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
+    const key: TwoLetters = ($locale ?? "en") as TwoLetters;
 
     export let historyStatus: HistoryStatus;
     export let title: string | null | undefined;
@@ -162,7 +162,7 @@
 
     <div class="grid xl:grid-cols-2 gap-4">
         {#each eventsToDisplay as event, index}
-            <EventCard class="" {event}/>
+            <EventCard {event}/>
         {/each}
     </div>
     <div class="flex flex-col items-center mt-5">

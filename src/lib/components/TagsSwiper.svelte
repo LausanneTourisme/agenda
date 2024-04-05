@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Tag} from "$lib/types";
+    import type {Tag,TwoLetters} from "$lib/types";
     import {_, locale} from "svelte-i18n";
     import {createEventDispatcher} from 'svelte';
     import Swiper from "$lib/components/Swiper.svelte";
@@ -7,7 +7,7 @@
     const dispatch = createEventDispatcher<{ tagSelect: { tag: Tag | null | undefined } }>();
 
     // trick to bypass error type...
-    const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
+    const key: TwoLetters = ($locale ?? "en") as TwoLetters;
 
     export let tags: Tag[];
     export let displayBtnAll: boolean = false
