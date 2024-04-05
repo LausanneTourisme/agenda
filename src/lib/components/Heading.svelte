@@ -1,7 +1,7 @@
 <script lang="ts">
-
     export let tag: string = "h2";
 
+    //this solution allows tailwind to see all classes for when compiling to obtain a css file
 </script>
 
 {#if tag === 'h1'}
@@ -24,13 +24,13 @@
     </svelte:element>
 {:else if tag === 'h4'}
     <svelte:element this="{tag}"
-                    class="text-xl leading-snug tracking-tight font-medium mb-2 {$$props.class??''}"
+                    class="text-xl leading-snug tracking-tight font-medium mb-2 {$$props.class ?? ''}"
                     title="{$$props.title}">
         <slot/>
     </svelte:element>
 {:else}
     <svelte:element this="{tag}"
-                    class="text-lg {$$props.class??''}"
+                    class="text-lg {$$props.class ?? ''}"
                     title="{$$props.title}">
         <slot/>
     </svelte:element>
