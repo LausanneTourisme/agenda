@@ -53,7 +53,7 @@
         aria-valuemin=0
         aria-valuenow=0
         bind:this={carousel}
-        class="swipper flex flex-nowrap overflow-y-hidden overflow-x-scroll {$$props.class ?? ''}"
+        class="swipper flex flex-nowrap overflow-y-hidden overflow-x-scroll no-scrollbar {$$props.class ?? ''}"
         on:pointerdown={startDragging}
         on:pointerleave={stopDragging}
         on:pointermove={move}

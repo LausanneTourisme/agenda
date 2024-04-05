@@ -38,13 +38,13 @@
     $: key = ($locale ?? "en");
 </script>
 
-<div class="card h-full w-56 sm:w-72 rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
+<div class="card h-full rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
      {draggable} transition:fade>
     <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}"
                on:mousedown={mouseDown}>
         <div class="card-body flex flex-col h-full">
             <!--        TODO add placeholder -->
-            <div class="aspect-square h-40 sm:h-64">
+            <div class="aspect-square w-44 sm:w-72">
                 {#if media}
                     <CldImage
                             src="{media.cloudinary_id}"
