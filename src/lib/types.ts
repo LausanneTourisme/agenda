@@ -101,7 +101,9 @@ export type optionsSortEvents = {
     onlyAvailable: boolean,
     onlyHighlights: boolean,
 }
-
+type oneLetter =
+    | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm'
+    | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
 type oneToNine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 type zeroToNine = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 type oneToFive = 1 | 2 | 3 | 4 | 5
@@ -126,6 +128,8 @@ type HH = `${0 | 1 | 2}${zeroToNine}` | zeroToNine
  * Minutes
  */
 type mm = `${zeroToFive}${zeroToNine}`
+
+export type TwoLetters = `${oneLetter}${oneLetter}`
 
 export type DispatchTagSelect = CustomEvent<{
     tag: Tag | null | undefined
