@@ -5,7 +5,7 @@
     import Clickable from "$lib/components/Clickable.svelte";
     import Heading from "$lib/components//Heading.svelte";
     import {Calendar} from "lucide-svelte";
-    import type {Event, Media, Period, ScheduleDate} from "$lib/types";
+    import type {Event, Media} from "$lib/types";
     import moment from "moment/moment";
     import 'moment/locale/fr-ch';
     import 'moment/locale/en-gb';
@@ -15,7 +15,10 @@
     // trick to bypass error type...
     const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
 
+    export let draggable: boolean = false;
     export let event: Event;
+
+    export let preventClick: boolean = false;
 
     const media: Media | undefined = event.medias.find(x => x.is_cover);
 
@@ -25,12 +28,21 @@
         start: moment(event.schedules.dates[0].periods[0].start, "YYYY-MM-DD"),
         end: moment(event.schedules.dates[0].periods[event.schedules.dates[0].periods.length - 1].end, "YYYY-MM-DD")
     };
+
+    let mouse
+    const mouseDown = (e: Event) => {
+        // e.clientX
+        console.log(e)
+    }
+    $: preventClick;
 </script>
 
-<div class="card h-full w-56 sm:w-72 rounded-none shadow-none {$$props.class}" transition:fade>
+<div class="card h-full w-56 sm:w-72 rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
+     {draggable} transition:fade>
 
-    <Clickable href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}" class="h-full flex flex-col">
-        <div class="card-body flex flex-col h-full p-4">
+    <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}"
+               on:mousedown={mouseDown}>
+        <div class="card-body flex flex-col h-full">
             <!--        TODO add placeholder -->
             <div class="aspect-square sm:h-64">
                 {#if media}
@@ -42,6 +54,7 @@
                             width="{500}"
                             sizes="100vw"
                             class="object-cover bg-gray-300"
+                            draggable="false"
                     />
                 {:else}
                     <img src="./TODO_placeholder.png"
@@ -53,8 +66,8 @@
                     />
                 {/if}
             </div>
-            <Heading tag="h3" class="title flex-grow line-clamp-2 max-h-18 text-clip align-middle" title="{event.seo.name[key]}">
-                {event.seo.name[key]}
+            <Heading class="title flex-grow line-clamp-2 max-h-18 text-clip align-middle" tag="h3"
+                     title="{event.seo.name[key]}"> {event.seo.name[key]}
             </Heading>
             <div class="flex items-center">
                 <div class="mb-1 mr-2">

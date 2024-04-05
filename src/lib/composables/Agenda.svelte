@@ -9,7 +9,7 @@
     import {Cross1} from "svelte-radix";
     import {createEventDispatcher} from "svelte";
 
-    const dispatch = createEventDispatcher<{ loadMore:{ event: any }}>();
+    const dispatch = createEventDispatcher<{ loadMore: { event: any } }>();
     // trick to bypass error type...
     const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
 
@@ -66,7 +66,7 @@
 </script>
 
 <div class="agenda p-5 md:p-7 md:px-12">
-    <Heading tag="h3" class="mb-5">{title ?? $_('agenda.title')}</Heading>
+    <Heading class="mb-5" tag="h3">{title ?? $_('agenda.title')}</Heading>
 
     <div class="search-section">
         <div class="w-full xs:flex xs:justify-start search-section">
@@ -90,10 +90,10 @@
             </button>
 
             <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500 ">
-                <input type="search"
-                       class="h-full w-full outline-0 ring-transparent outline-none"
+                <input class="h-full w-full outline-0 ring-transparent outline-none"
                        name="search-event"
                        placeholder="{$_('agenda.search-section.by-name-placeholder')}"
+                       type="search"
                 />
                 <Search class="text-honey-500"/>
             </div>
@@ -107,53 +107,28 @@
                     {$_('agenda.by-tags')}
                 </button>
 
-                <TagsSwiper class="hidden sm:block py-3 cursor-pointer"
+                <TagsSwiper class="hidden sm:flex"
                             {tags}
                             {selectedTags}
-                            displayAllBtn="{true}"
+                            displayBtnAll="{true}"
                             on:tagSelect={handle}
                             tagClass="px-5"
-                            withPagination="{false}"
-                            perPage="{10}"
-                            swipeBreakpoints="{{
-                                500: {
-                                    perPage: 3
-                                },
-                                600 : {
-                                    perPage: 4
-                                },
-                                700 : {
-                                    perPage: 5
-                                },
-                                900 : {
-                                    perPage: 6
-                                },
-                                1200 : {
-                                    perPage: 8
-                                },
-                                1400 : {
-                                    perPage: 9
-                                },
-                                1600 : {
-                                    perPage: 10
-                                },
-                            }}"
                 />
             {/key}
 
 
-            <Drawer open="{ openTagsDrawer }" placement="bottom" size='400px'
-                    on:clickAway="{() => openTagsDrawer = false}">
-                <button on:click={() => openTagsDrawer = false} class="flex w-full px-2 text-left">
-                    <Heading tag="h3" class="flex-grow mt-2">
+            <Drawer on:clickAway="{() => openTagsDrawer = false}" open="{ openTagsDrawer }" placement="bottom"
+                    size='400px'>
+                <button class="flex w-full px-2 text-left" on:click={() => openTagsDrawer = false}>
+                    <Heading class="flex-grow mt-2" tag="h3">
                         {$_('agenda.tags.title')}
                     </Heading>
 
                     <span class="mt-3"><Cross1/></span>
                 </button>
                 <div class="mt-2 h-72 overflow-y-scroll flex flex-wrap">
-                    <button on:click={() => {sortEventsByTags()}}
-                            class="inline-flex justify-center items-center py-2 m-2  text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 gap-6 ring-2 ring-transparent {selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} px-5"
+                    <button class="inline-flex justify-center items-center py-2 m-2  text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 gap-6 ring-2 ring-transparent {selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} px-5"
+                            on:click={() => {sortEventsByTags()}}
                             title="{$_('agenda.tags.display-all')}">{$_('agenda.tags.display-all')}</button>
 
                     {#each tags as tag}
@@ -167,16 +142,16 @@
 
                 </div>
                 <div class="w-full p-2">
-                    <button on:click={() => openTagsDrawer = false}
-                            class="border border-honey-500 bg-honey-500 py-2 px-4 float-right">{$_(`agenda.tags-drawer.${eventsToDisplay.length === 1 ? 'singular' : 'plural'}`, {values: {quantity: eventsToDisplay.length}})}</button>
+                    <button class="border border-honey-500 bg-honey-500 py-2 px-4 float-right"
+                            on:click={() => openTagsDrawer = false}>{$_(`agenda.tags-drawer.${eventsToDisplay.length === 1 ? 'singular' : 'plural'}`, {values: {quantity: eventsToDisplay.length}})}</button>
                 </div>
             </Drawer>
         </div>
 
         <!-- TODO bind to var an search in loaded events -->
         <div class="by-name w-full sm:hidden">
-            <input type="search" class="bg-stone-100 w-full focus:outline-none p-4 font-light border-0 focus:ring-0"
-                   name="search-event" placeholder="{$_('agenda.search-section.by-name-placeholder')}">
+            <input class="bg-stone-100 w-full focus:outline-none p-4 font-light border-0 focus:ring-0" name="search-event"
+                   placeholder="{$_('agenda.search-section.by-name-placeholder')}" type="search">
         </div>
     </div>
 

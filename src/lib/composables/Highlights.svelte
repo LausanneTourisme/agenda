@@ -1,6 +1,5 @@
 <script lang="ts">
     import {_} from 'svelte-i18n'
-    import {Splide, SplideSlide} from '@splidejs/svelte-splide';
     import '@splidejs/svelte-splide/css/skyblue';
     import HighlightCard from "$lib/components/HighlightCard.svelte";
     import Heading from "$lib/components/Heading.svelte";
@@ -8,13 +7,18 @@
     import {Moon} from "svelte-loading-spinners";
     import {onMount} from "svelte";
     import {sortEvents} from "$lib/date-utils";
+    import Swiper from "$lib/components/Swiper.svelte";
 
     //TODO pass parameters to call back
     export let onLoad: () => Promise<Event[]>;
+    export let title: string | null | undefined;
+
     export let historyStatus: HistoryStatus;
 
-    let loading = true;
+    let loading: boolean = true;
+    let isDragging: boolean = false;
     let highlights: Event[] = [];
+
 
     onMount(async () => {
         const events = await onLoad();
@@ -24,8 +28,7 @@
     });
 
     $: loading;
-
-    export let title: string | null | undefined;
+    $: isDragging;
 </script>
 
 <div class="w-full bg-honey-500">
@@ -38,28 +41,15 @@
             </Heading>
         </div>
 
-        <div class="highlights pb-4">
-            <Splide options={{
-                rewind: false,
-                drag: 'free',
-                fixedWidth : 'auto',
-                padding: "4rem",
-                snap: true,
-                arrows: false,
-                pagination: false,
-                breakpoints: {
-                    767: {
-                        padding: "0.5rem"
-                    }
-                }
-            }}>
-                {#each highlights as highlight}
-                    <SplideSlide>
-                        <HighlightCard event="{highlight}"/>
-                    </SplideSlide>
-                {/each}
-            </Splide>
-        </div>
+        <Swiper
+                class="highlights pb-4 px-2 sm:px-16 select-none"
+                maxContent="{highlights.length}"
+                on:dragging={(e) => isDragging = e.detail.isDragging}
+        >
+            {#each highlights as highlight}
+                <HighlightCard preventClick="{isDragging}" event="{highlight}" draggable="{false}"/>
+            {/each}
+        </Swiper>
     {/if}
 </div>
 

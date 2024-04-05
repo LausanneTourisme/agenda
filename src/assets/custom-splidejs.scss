@@ -4,15 +4,16 @@
     svg {
       fill: #E7302F !important;
 
-      &:hover:not(:disabled){
+      &:hover:not(:disabled) {
         fill: red !important;
       }
 
     }
   }
 }
+
 .agenda {
-  .splide__pagination{
+  .splide__pagination {
     position: unset;
     padding: 1em;
   }
@@ -36,7 +37,7 @@
       height: 1em;
       width: 1em;
 
-      &:hover:not(:disabled){
+      &:hover:not(:disabled) {
         fill: red !important;
       }
 

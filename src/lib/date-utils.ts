@@ -16,20 +16,20 @@ export const sortEvents = (events: Event[], options: optionsSortEvents = {
 
         const dates: Array<Period[]> = availablePeriods(event);
 
-        if(options.onlyAvailable){
+        if (options.onlyAvailable) {
             let indexesToDelete = [];
-            for (let i = 0; i < dates.length; i++){
-                if(dates[i].length===0){
+            for (let i = 0; i < dates.length; i++) {
+                if (dates[i].length === 0) {
                     indexesToDelete.push(i);
                 } else {
                     //remove old periods
-                    event.schedules.dates[i].periods = dates[i].sort((d1: Period, d2:Period) => {
+                    event.schedules.dates[i].periods = dates[i].sort((d1: Period, d2: Period) => {
                         const a = moment(d1.start, "YYYY-MM-DD");
                         const b = moment(d2.start, "YYYY-MM-DD");
 
-                        if( a < b){
+                        if (a < b) {
                             return -1;
-                        } else if( a > b){
+                        } else if (a > b) {
                             return 1;
                         } else {
                             return 0;
@@ -38,9 +38,9 @@ export const sortEvents = (events: Event[], options: optionsSortEvents = {
                 }
             }
             //delete higher index first to prevent calculation
-            indexesToDelete.reverse().forEach(x => event.schedules.dates.splice(x,1));
+            indexesToDelete.reverse().forEach(x => event.schedules.dates.splice(x, 1));
 
-            if(event.schedules.dates.length === 0){
+            if (event.schedules.dates.length === 0) {
                 return false
             }
         }
@@ -49,7 +49,7 @@ export const sortEvents = (events: Event[], options: optionsSortEvents = {
     })
 }
 
-export const uniqueEvents = (arr1: Event[], arr2: Event[]) : Event[] => {
+export const uniqueEvents = (arr1: Event[], arr2: Event[]): Event[] => {
     const result: Event[] = arr2.filter(x => !arr1.find(e => e.id === x.id))
 
     return arr1.concat(result);
@@ -62,7 +62,7 @@ const availablePeriods = (event: Event): Array<Period[]> => {
 
     const today: Moment = moment();
 
-    for (let i: number = 0; i < dates.length; i++){
+    for (let i: number = 0; i < dates.length; i++) {
         const periods = dates[i];
 
         for (const period of periods) {

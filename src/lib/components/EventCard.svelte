@@ -28,10 +28,10 @@
     const media = event.medias.find(x => x.is_cover)
 </script>
 
-    <div class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class}">
-        <div class="image-wrapper aspect-square h-40 sm:h-64">
+<div class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
+    <div class="image-wrapper aspect-square h-40 sm:h-64">
 
-            <Clickable href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
+        <Clickable href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
             <!--        TODO add placeholder -->
             {#if media}
                 <CldImage
@@ -52,18 +52,17 @@
                      class="object-cover"
                 />
             {/if}
-            </Clickable>
-        </div>
-        <div class="informations flex flex-col flex-1 overflow-hidden">
-            <!--TAGS-->
-            <TagsSwiper class="tags p-2 pb-0 sm:pt-4 sm:pb-2 sm:px-4 w-full cursor-pointer"
-                        withArrow="{false}"
-                        withPagination="{false}"
-                        tags="{event.tags}"
-                        tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 py-0.5 sm:py-1 sm:px-2 text-black border border-black rounded-full hover:border-honey-500 has-[:checked]:border-honey-500 hover:bg-honey-500 has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent"/>
+        </Clickable>
+    </div>
+    <div class="informations flex flex-col flex-1 overflow-hidden">
+        <!--TAGS-->
+        <TagsSwiper class="tags mx-3 sm:mt-4 sm:mx-5 w-full cursor-pointer"
+                    tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 py-0.5 sm:py-1 sm:px-2 text-black border border-black rounded-full hover:border-honey-500 has-[:checked]:border-honey-500 hover:bg-honey-500 has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent"
+                    tags="{event.tags}"/>
 
 
-            <Clickable class=" px-2 pb-2 sm:px-4 sm:pb-4 flex-grow flex flex-col" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
+        <Clickable class=" px-2 pb-2 sm:px-4 sm:pb-4 flex-grow flex flex-col"
+                   href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
             <!--TITLE-->
             <div class="flex-grow flex items-center">
                 <p class="title mt-1 mb-1 ml-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle"
@@ -119,9 +118,9 @@
                     {geolocation?.venue}
                 </p>
             </div>
-            </Clickable>
-        </div>
+        </Clickable>
     </div>
+</div>
 
 <style lang="scss">
 </style>

@@ -1,8 +1,8 @@
 <script lang="ts">
     import type {Tag} from "$lib/types";
-    import {Splide, SplideSlide} from "@splidejs/svelte-splide";
     import {_, locale} from "svelte-i18n";
     import {createEventDispatcher} from 'svelte';
+    import Swiper from "$lib/components/Swiper.svelte";
 
     const dispatch = createEventDispatcher<{ tagSelect: { tag: Tag | null | undefined } }>();
 
@@ -10,59 +10,46 @@
     const key: "fr" | "en" | "de" | "it" | "es" = ($locale ?? "en") as "fr" | "en" | "de" | "it" | "es";
 
     export let tags: Tag[];
-    export let displayAllBtn: boolean = false
+    export let displayBtnAll: boolean = false
     export let selectedTags: Tag[] | undefined = undefined;
-    export let withArrow: boolean = false;
-    export let withPagination: boolean = false;
-    export let perPage: number = 1;
-    /**
-     * look ResponsiveOptions of splideSvelte's package
-     */
-    export let swipeBreakpoints: Record<string | number, Object> = {};
-    export let swipePadding: string = "0"
+
     export let tagClass: string = ''
 
     const selectedTagsName: string[] = selectedTags?.map(t => t.name) ?? [];
 
+    let carousel = HTMLElement;
+    let mouseDown: boolean = false;
+
+    const startDragging = (event: Event) => {
+        mouseDown = true;
+    }
+
+    const stopDragging = (event: Event) => {
+        mouseDown = false;
+    }
+    const move = (event: Event) => {
+        if (!mouseDown) return;
+
+        carousel.scrollLeft -= event.movementX
+    }
+
     $: selectedTags;
 </script>
 
-<div class="{$$props.class}">
-    <Splide options={{
-        wheel:false,
-        drag: 'free',
-        rewind : false,
-        fixedWidth : 'auto',
-        fixedHeight : 'auto',
-        isNavigation : false,
-        gap : 0,
-        padding: swipePadding,
-        pagination : withPagination,
-        perPage: perPage,
-        snap : true,
-        cover : false,
-        arrows : withArrow,
-        dragMinThreshold: {
-            mouse: 4,
-            touch: 10,
-        },
-        breakpoints: swipeBreakpoints,
-    }}>
-        {#if displayAllBtn}
-            <SplideSlide class="pb-0.5">
-                <button on:click={() => dispatch('tagSelect', {tag: null})}
-                        class="flex flex-nowrap justify-center items-center py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent {selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
-                        title="{$_('agenda.tags.display-all')}">{$_('agenda.tags.display-all')}</button>
-            </SplideSlide>
-        {/if}
-        {#each tags as tag}
-            {@const elementSelected = selectedTagsName.includes(tag.name) ? 'border-honey-500 bg-honey-500' : ''}
+<Swiper class="{$$props.class ?? ''}" maxContent="{tags.length + (displayBtnAll ? 1:0)}">
+    {#if displayBtnAll}
+        <button on:click={() => dispatch('tagSelect', {tag: null})}
+                class="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent {selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
+                title="{$_('agenda.tags.display-all')}">{$_('agenda.tags.display-all')}
+        </button>
+    {/if}
+    {#each tags as tag, i}
+        {@const elementSelected = selectedTagsName.includes(tag.name) ? 'border-honey-500 bg-honey-500' : ''}
 
-            <SplideSlide class="pb-0.5">
-                <button on:click={() => dispatch('tagSelect', {tag})}
-                        class="flex flex-nowrap justify-center items-center py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent {elementSelected} {tagClass}"
-                        title="{tag.public_name[key]}">{tag.public_name[key]}</button>
-            </SplideSlide>
-        {/each}
-    </Splide>
-</div>
+        <button on:click={() => dispatch('tagSelect', {tag})}
+
+                class="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent {elementSelected} {tagClass}"
+                title="{tag.public_name[key]}">{tag.public_name[key]}
+        </button>
+    {/each}
+</Swiper>

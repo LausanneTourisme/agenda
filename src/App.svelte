@@ -14,6 +14,18 @@
     import Agenda from "$lib/composables/Agenda.svelte";
     import {createEventDispatcher} from "svelte";
 
+    //trick to bypass problem with tailwind and shadow dom
+    function applyStyling(divElement: HTMLElement | undefined) {
+        if (!divElement) return;
+        const template = document.getElementById("swc-lt-agenda-styling");
+
+        if (!template?.content) return;
+        const node = document.importNode(template.content, true);
+        divElement?.parentNode?.appendChild(node);
+    }
+
+    let divElement: HTMLElement | undefined;
+    $: applyStyling(divElement);
 
     register('en', () => import('$lib/i18n/en.json'));
     register('fr', () => import('$lib/i18n/fr.json'));
@@ -1131,7 +1143,7 @@
     // }
 </script>
 
-<main>
+<main bind:this={divElement}>
     {#if $isLoading}
         <Loader/>
     {:else}
