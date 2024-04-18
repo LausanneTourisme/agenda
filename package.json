@@ -8,9 +8,8 @@
     "prestart": "npm run nvm",
     "preinstall": "npm run nvm",
     "dev": "npm run nvm && vite",
-    "build-splider": "sass ./src/assets/custom-splidejs.scss ./dist/custom-splidejs.css ",
     "build-tailwind": "tailwindcss -o ./dist/tailwind.css",
-    "build": "vite build && npm run build-tailwind && npm run build-splider",
+    "build": "vite build && npm run build-tailwind",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
@@ -18,7 +17,6 @@
     "@internationalized/date": "^3.5.2",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@splidejs/svelte-splide": "^0.2.9",
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
     "@tsconfig/svelte": "^5.0.4",
     "@types/node": "^20.11.25",
@@ -41,7 +39,7 @@
     "tailwindcss": "^3.4.1",
     "tslib": "^2.6.2",
     "typescript": "^5.4.3",
-    "vite": "^5.1.4"
+    "vite": "^5.2.9"
   },
   "dependencies": {
     "lucide-svelte": "^0.350.0",
