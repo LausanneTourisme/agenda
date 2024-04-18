@@ -9,8 +9,12 @@ let app: App | null = null;
 if (ltAgenda) {
     app = new App({
         target: ltAgenda,
+        props: {
+            apiUrl: import.meta.env.VITE_API_URL
+        }
     })
 } else {
-    console.error("class lt-agenda not found")
+    if(!document.querySelector('swc-lt-agenda'))    console.error("class lt-agenda not found")
+    else console.warn('currently using web component')
 }
 export default app
