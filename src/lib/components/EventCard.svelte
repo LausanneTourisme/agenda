@@ -67,8 +67,8 @@
             <!--TITLE-->
             <div class="flex-grow flex items-center">
                 <p class="title my-1 ml-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle"
-                   title="{event.seo.name[key]}">
-                    {event.seo.name[key]}
+                   title="{event.name[key]}">
+                    {event.name[key]}
                 </p>
             </div>
             <!--DATE-->

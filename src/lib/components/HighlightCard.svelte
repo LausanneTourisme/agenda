@@ -40,13 +40,13 @@
 
 <div class="card h-full rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
      {draggable} transition:fade>
-    <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}"
-               on:mousedown={mouseDown}>
+    <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event?.seo?.hreflang[key]}"
+               on:mousedown={(e) => mouseDown(e)}>
         <div class="card-body flex flex-col h-full">
             <!--        TODO add placeholder -->
             <div class="aspect-square w-44 sm:w-72">
                 {#if media}
-                    <CldImage
+                    <!-- <CldImage
                             src="{media.cloudinary_id}"
                             alt="{media.copyright}"
                             title="{media.copyright}"
@@ -55,6 +55,14 @@
                             sizes="100vw"
                             class="object-cover bg-honey-800"
                             draggable="false"
+                    /> -->
+                    <img src="./TODO_placeholder.png"
+                         alt="A remplacer lors de mise en prod"
+                         title="A remplacer lors de mise en prod"
+                         height=500
+                         width=500
+                         class="object-cover bg-honey-800"
+                         draggable="false"
                     />
                 {:else}
                     <img src="./TODO_placeholder.png"
@@ -68,8 +76,8 @@
             </div>
             <Heading class="title line-clamp-2 h-16 max-h-16 text-clip my-2"
                      tag="h3"
-                     title="{event.seo.name[key]}">
-                {event.seo.name[key]}
+                     title="{event.name[key]}">
+                {event.name[key]}
             </Heading>
             <div class="flex items-center">
                 <div class="mb-1 mr-2">
