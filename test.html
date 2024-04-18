@@ -6,17 +6,16 @@
 </head>
 <body>
 <!--<div id="lt-agenda"></div>-->
-<swc-lt-agenda agenda-title="aaaaaaaaaaaa"></swc-lt-agenda>
+<swc-lt-agenda agenda-title="example of agenda" api-url="http://my-api.com/agenda"></swc-lt-agenda>
 <template id="swc-lt-agenda-styling">
     <style>
         @import url("/dist/tailwind.css");
         @import url("/dist/style.css");
-        @import url("/dist/custom-splidejs.css");
     </style>
 </template>
 <script type="module" src="./dist/swc-lt-agenda.js"></script>
 <script>
-    document.querySelector('swc-lt-agenda').addEventListener('refresh', (e) => {
+    document.querySelector('swc-lt-agenda').addEventListener('loadMore', (e) => {
         console.log('swc-lt-agenda has triggered a refresh!')
     })
 </script>
