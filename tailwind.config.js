@@ -10,12 +10,13 @@ const config = {
             center: true,
             padding: "2rem",
             screens: {
-                "2xl": "1400px"
+                "2xl": "1400px",
             }
         },
         extend: {
             screens: {
-                "xs": "359px"
+                "xs": "359px",
+                '3xl': "3000px"
             },
             colors: {
                 honey: {
