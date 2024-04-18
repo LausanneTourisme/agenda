@@ -1,3 +1,8 @@
+import type {EventHandler} from "svelte/elements";
+import type {Moment} from "moment";
+
+export type Locales = "fr" | "en" | "de" | "it" | "es"
+
 export type Schedules = {
     dates: ScheduleDate[],
     exceptions: {
@@ -8,7 +13,7 @@ export type Schedules = {
 
 export type ScheduleDate = {
     label: string | null | undefined,
-    every_year: boolean | "true" | "false",
+    every_year: boolean,
     open_days: ShortDay[],
     week: Week[],
     periods: Period[]
@@ -75,7 +80,6 @@ export type Geolocation = {
     longitude: string | undefined | null,
     latitude: string | undefined | null,
 }
-
 export type Seo = {
     noindex: boolean | "true" | "false",
     name: Translatable,
@@ -84,9 +88,9 @@ export type Seo = {
     description: Translatable,
     medias: Media[]
 }
-
 export type Event = {
     id: number,
+    languages: Locales,
     name: Translatable,
     highlight: boolean,
     categories: Category[],
@@ -97,10 +101,16 @@ export type Event = {
     seo: Seo
 }
 
-export type optionsSortEvents = {
-    onlyAvailable: boolean,
-    onlyHighlights: boolean,
+export type OptionsSortEvents = {
+    locale?: string | null,
+    onlyAvailable?: boolean,
+    onlyHighlights?: boolean,
+    startingDate?: Moment | null,
+    endingDate?: Moment | null,
 }
+
+export type NullableString = string | null;
+
 type oneLetter =
     | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm'
     | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
@@ -111,7 +121,7 @@ type zeroToFive = 0 | 1 | 2 | 3 | 4 | 5
 /**
  * Years
  */
-type YYYY = `19${zeroToNine}${zeroToNine}` | `20${zeroToNine}${zeroToNine}`
+type YYYY = `20${zeroToNine}${zeroToNine}` | `20${zeroToNine}${zeroToNine}`
 /**
  * Months
  */
@@ -135,22 +145,11 @@ export type DispatchTagSelect = CustomEvent<{
     tag: Tag | null | undefined
 }>;
 
-export type GraphqlResponse = {
-    type: "events" | "highlight"
-    result: {
-        data: {
-            items: {
-                total?: number
-                per_page?: number
-                current_page: number
-                has_more_pages: boolean
-                from?: number
-                to?: number
-                data: Event[]
-            }
-        }
-    }
-}
+export type DispatchApiEvents = CustomEvent<{
+    loadMore: { event: any }; //Click event, I've types conflict
+    search: { value: string };
+}>;
+
 
 export type HistoryStatus = {
     hasMore: boolean,
@@ -162,8 +161,28 @@ export type History = {
     events: HistoryStatus,
 };
 
-export type GqlOption = {
-    getEvents: boolean,
-    getHighlights: boolean,
-    currentPage?: number
+export type GqlOptions = {
+    option: "search" | "getEvents" | "getHighlights" | "getevents" | "gethighlights" | 'dates' | 'tags'
+    locale?: string
+    value?: number
+    page?: number
+}
+
+export type GqlResponse = {
+    // type: "events" | "highlight"
+    result: {
+        data: {
+            items: GqlItems
+        }
+    }
+}
+
+export type GqlItems = {
+    total?: number
+    per_page?: number
+    current_page: number
+    has_more_pages: boolean
+    from?: number
+    to?: number
+    data: Event[]
 }
