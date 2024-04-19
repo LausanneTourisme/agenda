@@ -7,13 +7,12 @@
 <script lang="ts">
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, locales, register} from "svelte-i18n";
-    import type {DispatchApiEvents, Event as ApiEvent, History, RawDate} from "$lib/types";
+    import type {Event as ApiEvent, Histories, Locales, RawDate} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
-    import {sortEvents, uniqueEvents} from "$lib/date-utils";
     import Agenda from "$lib/composables/Agenda.svelte";
-    import {createEventDispatcher, onMount} from "svelte";
+    import {onMount} from "svelte";
     import moment from "moment";
-    import {fetchEvents} from "$lib/utils";
+    import {applyStyling, handleMoreEvents, sortEvents, updateEvents} from "$lib/utils";
 
     register("fr", () => import("$lib/i18n/fr.json"));
     register("en", () => import("$lib/i18n/en.json"));
@@ -23,94 +22,60 @@
         fallbackLocale: "en",
         initialLocale: getLocaleFromNavigator()?.slice(0, 2) ?? "en"
     });
+
     export let disableHighlights: boolean | null | undefined = $$props["disable-highlights"] ?? false;
     export let disableAgenda: boolean | null | undefined = $$props["disable-agenda"] ?? false;
 
     export let highlightTitle: string | null | undefined = $$props["highlight-title"];
     export let agendaTitle: string | null | undefined = $$props["agenda-title"];
     export let apiUrl: string | null | undefined = $$props["api-url"];
-
     //default we display all events starting today to indefinitely
     export let startDate: RawDate | null | undefined = $$props["start-date"] ?? moment().format("YYYY-MM-DD");
+
     let endDate: RawDate | null = null;
 
     let divStyleElement: HTMLElement | undefined;
-    const dispatch = createEventDispatcher();
 
-    const history: History = {
-        highlights: {
-            hasMore: true,
-            page: 0
-        },
-        events: {
-            hasMore: true,
-            page: 0
-        }
-    };
-
-    let key: string;
+    let key: Locales;
     let events: ApiEvent[] = []; //fakeEvents
 
-    //trick to bypass problem with tailwind and shadow dom
-    function applyStyling(divStyleElement: HTMLElement | undefined) {
-        if (!divStyleElement) return;
-        const template = document.getElementById("swc-lt-agenda-styling");
+    const history: Histories = $locales.reduce((previous, current) => {
+        previous[current] = {
+            highlights: {
+                hasMore: true,
+            },
+            events: {
+                hasMore: true,
+            }
+        };
+        return previous;
+    }, {} as Histories);
 
-        if (!template?.content) return;
-        const node = document.importNode(template.content, true);
-        divStyleElement?.parentNode?.appendChild(node);
-    }
-
-    async function updateEvents(type: "events" | "highlights" = "events"): Promise<void> {
-        const items = await fetchEvents(apiUrl, {
-            option: `get${type}`,
-            page: history.events.page + 1
-        });
-
-        events = uniqueEvents(events, items?.data ?? []);
-
-        history[type].page = items?.current_page ?? history[type].page;
-        history[type].hasMore = items?.has_more_pages ?? history[type].hasMore;
-    }
-
-    async function handleMoreEvents(e: DispatchApiEvents) {
-        await updateEvents();
-
-        console.log("dispatch loadMore !");
-
-        e.detail.event.target.dispatchEvent(
-            new CustomEvent("loadMore", {
-                detail: {
-                    option: "getEvents",
-                    page: history.events.page + 1
-                },
-                composed: true
-            })
-        );
-
-        dispatch("loadMore", {
-            option: "getEvents",
-            page: history.events.page + 1
-        });
-    }
 
     onMount(async () => {
         console.log("Mounting App");
 
         if (!disableHighlights) {
-            await updateEvents("highlights");
+            const result = await updateEvents(apiUrl, events, key, "highlights");
+            events = result.events;
+
+            history[key].highlights.hasMore = result.hasMore;
         }
 
         if (!disableAgenda) {
-            await updateEvents();
+            const result = await updateEvents(apiUrl, events, key);
+            events = result.events;
+
+            history[key].events.hasMore = result.hasMore;
         }
 
         console.log("App mounted");
     });
 
     $: applyStyling(divStyleElement);
+    $: key = ($locale ?? "en") as Locales;
     $: events;
-    $: key = ($locale ?? "en");
+    $: history
 </script>
 
 <main bind:this={divStyleElement}>
@@ -143,20 +108,25 @@
             <div class="md:px-7">
                 <Agenda
                         title={agendaTitle}
+                        hasMoreEvents="{history[key].events.hasMore}"
                         events={sortEvents(events, {
-                        locale: key,
-                        onlyAvailable: true,
-                        onlyHighlights: false,
-                        startingDate: moment(startDate, "YYYY-MM-DD"),
-                        endingDate: endDate ? moment(endDate, "YYYY-MM-DD") : null
-                    })}
-                        historyStatus={history.events}
+                            locale: key,
+                            onlyAvailable: true,
+                            onlyHighlights: false,
+                            startingDate: moment(startDate, "YYYY-MM-DD"),
+                            endingDate: endDate ? moment(endDate, "YYYY-MM-DD") : null
+                        })}
                         on:search={(e) => {
-                        const searchValue = e.detail.value;
+                            const searchValue = e.detail.value;
 
-                        if (!searchValue) return;
-                    }}
-                        on:loadMore={(e) => handleMoreEvents(e)}
+                            if (!searchValue) return;
+                        }}
+                        on:loadMore={async (e) => {
+                            const result = await handleMoreEvents(e, apiUrl, events, key)
+                            events = result.events;
+
+                            history[key].events.hasMore = result.hasMore;
+                        }}
                 />
             </div>
         {/if}

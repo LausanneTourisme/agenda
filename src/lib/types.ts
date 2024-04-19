@@ -1,4 +1,3 @@
-import type {EventHandler} from "svelte/elements";
 import type {Moment} from "moment";
 
 export type Locales = "fr" | "en" | "de" | "it" | "es"
@@ -151,18 +150,18 @@ export type DispatchApiEvents = CustomEvent<{
 }>;
 
 
-export type HistoryStatus = {
-    hasMore: boolean,
-    page: number,
-}
+export type Histories = {
+    [key in Locales]: History; //equivalent to write every locale: History
+};
 
 export type History = {
-    highlights: HistoryStatus,
-    events: HistoryStatus,
+    highlights: { hasMore: boolean };
+    events: { hasMore: boolean };
 };
 
 export type GqlOptions = {
-    option: "search" | "getEvents" | "getHighlights" | "getevents" | "gethighlights" | 'dates' | 'tags'
+    options: "search" | "getEvents" | "getHighlights" | "getevents" | "gethighlights" | 'dates' | 'tags'
+    ignoreIds: number[]
     locale?: string
     value?: number
     page?: number
@@ -185,4 +184,9 @@ export type GqlItems = {
     from?: number
     to?: number
     data: Event[]
+}
+
+export type EventsResult = {
+    hasMore: boolean,
+    events:Event[],
 }

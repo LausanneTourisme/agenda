@@ -1,11 +1,37 @@
-import type {NullableString, Event, GqlOptions, GqlItems, GqlResponse} from "$lib/types";
+import type {
+    Event,
+    EventsResult,
+    GqlItems,
+    GqlOptions,
+    Locales,
+    NullableString,
+    OptionsSortEvents,
+    ScheduleDate
+} from "$lib/types";
+import {findAvailablePeriod} from "$lib/date-utils";
+import {createEventDispatcher} from "svelte";
 
 /**
- * @param size max 36
+ * trick to bypass problem with tailwind and shadow dom
  */
-export const randomString = (size: number = 8) => Math.random().toString(36).slice(-size);
+export const applyStyling = (element: HTMLElement | undefined): void => {
+    if (!element) return;
+    const template = document.getElementById("swc-lt-agenda-styling");
 
-export const warn = (information: string, content: any) => console.warn({ information, content })
+    // @ts-ignore
+    if (!template?.content) return;
+    // @ts-ignore
+    const node = document.importNode(template.content, true);
+    element?.parentNode?.appendChild(node);
+}
+/**
+ * @param {number} [size = 8] size max 36
+ */
+export const randomString = (size: number = 8): string => Math.random().toString(36).slice(-size);
+
+export const warn = (information: string, content: any): void => console.warn({information, content})
+
+export const logIgnoredEvent = (event: Event, information?: string): void => warn(`Event skipped${information ? `, beacause: ${information}` : null}`, event)
 
 /**
  *
@@ -19,16 +45,16 @@ export const randomNumber = (min: number, max: number): number => Math.floor(Mat
 
 export const blankable = (href: NullableString): NullableString => (href && href.includes('http')) ? "_blank" : null;
 
-export async function fetchEvents(url: string | null | undefined, options: GqlOptions): Promise<GqlItems | null> {
+export const fetchEvents = async (url: string | null | undefined, options: GqlOptions): Promise<GqlItems | null> => {
     if (url) {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
 
-        const params: URLSearchParams = new URLSearchParams()
-        params.append("options", options.option)
-        params.append("page", options.page?.toString() ?? '1');
-
-        const response: Response = await fetch(`${url}?${params}`, {redirect: 'follow'});
+        const response: Response = await fetch(url, {
+            method: 'POST',
+            redirect: 'follow',
+            body: options
+        });
 
         const gqlResponse = await response.json();
 
@@ -37,4 +63,110 @@ export async function fetchEvents(url: string | null | undefined, options: GqlOp
 
     console.error('no api url defined')
     return null;
+}
+
+export const handleMoreEvents = async (e: CustomEvent, apiUrl: string | undefined | null, events: Event[], locale: Locales, type: "events" | "highlights" = "events"): Promise<EventsResult> => {
+    const result = await updateEvents(apiUrl, events, locale, type);
+
+    console.log("dispatch loadMore !");
+
+    e.detail.event.target.dispatchEvent(
+        new CustomEvent("loadMore", {
+            detail: {
+                options: `get${type}`,
+            },
+            composed: true
+        })
+    );
+
+
+    const dispatch = createEventDispatcher();
+    dispatch("loadMore", {
+        options: `get${type}`,
+    });
+
+    return result
+}
+
+export const updateEvents = async (url: string | undefined | null, events: Event[], locale: Locales, type: "events" | "highlights" = "events"): Promise<EventsResult> => {
+    if (!url) throw new Error("Api url not configured")
+
+    const items = await fetchEvents(url, {
+        options: `get${type}`,
+        ignoreIds: events.map(e => e.id),
+        locale,
+    });
+
+    const elements = items?.data ?? [];
+
+    return {
+        hasMore: elements.length > 0,
+        events: uniqueEvents(events, elements),
+    }
+}
+export const sortEvents = (events: Event[], options: OptionsSortEvents): Event[] => {
+    options = {
+        locale: null,
+        onlyAvailable: true,
+        onlyHighlights: false,
+        startingDate: null,
+        endingDate: null,
+        ...options
+    }
+
+    return [...events].filter((e: Event, index: number) => {
+        const event = {...e};
+
+        if (options.locale && !event.languages.includes(options.locale)) {
+            logIgnoredEvent(events[index], 'locale not found')
+
+            return false;
+        }
+
+        if (event.schedules.dates.length === 0) {
+            logIgnoredEvent(events[index], 'empty dates')
+
+            return false;
+        }
+
+        //when only highlighted event
+        if (options.onlyHighlights && !event.highlight) {
+            logIgnoredEvent(events[index], 'not highlighted')
+            return false;
+        }
+
+        if (options.onlyAvailable) {
+            const availableDates: ScheduleDate[] = []
+            //I love shadow reference ❤️
+            const schedules = {...event.schedules}
+
+            for (const date of schedules.dates) {
+                const d = {...date}
+                const period = findAvailablePeriod(d, options.startingDate, options.endingDate);
+                if (!period) continue;
+
+                d.periods = [{...period}];
+                availableDates.push(d);
+            }
+
+            if (!availableDates) {
+                logIgnoredEvent(events[index], 'invalid dates')
+                return false
+            }
+
+            //prevent references
+            schedules.dates = availableDates
+            event.schedules = schedules;
+
+            return true;
+        }
+
+        return true;
+    })
+}
+
+export const uniqueEvents = (arr1: Event[], arr2: Event[]): Event[] => {
+    const result: Event[] = arr2.filter(x => arr1.find(e => e.id === x.id) === undefined)
+
+    return [...arr1, ...result];
 }
