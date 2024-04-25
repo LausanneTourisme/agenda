@@ -9,7 +9,6 @@ import type {
     ScheduleDate
 } from "$lib/types";
 import {findAvailablePeriod} from "$lib/date-utils";
-import {createEventDispatcher} from "svelte";
 
 /**
  * trick to bypass problem with tailwind and shadow dom
@@ -50,10 +49,16 @@ export const fetchEvents = async (url: string | null | undefined, options: GqlOp
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
 
+        // @ts-ignore
         const response: Response = await fetch(url, {
             method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
             redirect: 'follow',
-            body: options
+            body: JSON.stringify(options),
         });
 
         const gqlResponse = await response.json();
@@ -65,12 +70,14 @@ export const fetchEvents = async (url: string | null | undefined, options: GqlOp
     return null;
 }
 
-export const handleMoreEvents = async (e: CustomEvent, apiUrl: string | undefined | null, events: Event[], locale: Locales, type: "events" | "highlights" = "events"): Promise<EventsResult> => {
+export const handleMoreEvents = async (e: HTMLElement|CustomEvent, apiUrl: string | undefined | null, events: Event[], locale: Locales, type: "events" | "highlights" = "events"): Promise<EventsResult> => {
     const result = await updateEvents(apiUrl, events, locale, type);
 
     console.log("dispatch loadMore !");
 
-    e.detail.event.target.dispatchEvent(
+    const elem = e instanceof HTMLElement ? e : e.target;
+
+    elem?.dispatchEvent(
         new CustomEvent("loadMore", {
             detail: {
                 options: `get${type}`,
@@ -78,12 +85,6 @@ export const handleMoreEvents = async (e: CustomEvent, apiUrl: string | undefine
             composed: true
         })
     );
-
-
-    const dispatch = createEventDispatcher();
-    dispatch("loadMore", {
-        options: `get${type}`,
-    });
 
     return result
 }
@@ -100,7 +101,8 @@ export const updateEvents = async (url: string | undefined | null, events: Event
     const elements = items?.data ?? [];
 
     return {
-        hasMore: elements.length > 0,
+        // @ts-ignore
+        hasMore: items?.has_more_pages ?? items?.data?.length > 0 ,
         events: uniqueEvents(events, elements),
     }
 }
@@ -118,7 +120,7 @@ export const sortEvents = (events: Event[], options: OptionsSortEvents): Event[]
         const event = {...e};
 
         if (options.locale && !event.languages.includes(options.locale)) {
-            logIgnoredEvent(events[index], 'locale not found')
+            // logIgnoredEvent(events[index], 'locale not found')
 
             return false;
         }
@@ -131,7 +133,7 @@ export const sortEvents = (events: Event[], options: OptionsSortEvents): Event[]
 
         //when only highlighted event
         if (options.onlyHighlights && !event.highlight) {
-            logIgnoredEvent(events[index], 'not highlighted')
+            // logIgnoredEvent(events[index], 'not highlighted')
             return false;
         }
 
