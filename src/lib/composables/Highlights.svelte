@@ -2,15 +2,23 @@
     import {_} from 'svelte-i18n'
     import HighlightCard from "$lib/components/HighlightCard.svelte";
     import Heading from "$lib/components/Heading.svelte";
-    import type {Event, HistoryStatus} from "$lib/types";
+    import type {Event} from "$lib/types";
     import Swiper from "$lib/components/Swiper.svelte";
+    import IntersectionObserver from "$lib/components/IntersectionObserver.svelte";
+    import {createEventDispatcher} from "svelte";
+
+    const dispatch = createEventDispatcher<{
+        loadMore: { event: any };
+    }>();
 
     export let events: Event[];
     export let title: string | null | undefined;
 
     let isDragging: boolean = false;
 
-    $: events;
+    let lastEvent: Event | null = null
+
+    $: events, lastEvent = events[events.length - 1] ?? null;
     $: isDragging;
 </script>
 
@@ -26,8 +34,10 @@
             maxContent="{events.length}"
             on:dragging={(e) => isDragging = e.detail.isDragging}
     >
-        {#each events as event}
-            <HighlightCard preventClick="{isDragging}" {event} draggable="{false}"/>
+        {#each events as event (event.id)}
+            <IntersectionObserver {event} enable="{event.id===lastEvent?.id}" on:intersecting={(e) => {dispatch("loadMore", { event: e })}}>
+                <HighlightCard preventClick="{isDragging}" {event} draggable="{false}"/>
+            </IntersectionObserver>
         {/each}
     </Swiper>
 </div>

@@ -94,14 +94,9 @@
                             {date.end.locale($_('date.locale')).format('DD.MM.YY')}
                         </span>
                         {/if}
-
-
                     </p>
                 </div>
             </div>
         </Clickable>
     </div>
 {/key}
-
-<style lang="scss">
-</style>

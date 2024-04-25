@@ -10,7 +10,7 @@
     import type {Event as ApiEvent, Histories, Locales, RawDate} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
-    import {onMount} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import moment from "moment";
     import {applyStyling, handleMoreEvents, sortEvents, updateEvents} from "$lib/utils";
 
@@ -23,6 +23,7 @@
         initialLocale: getLocaleFromNavigator()?.slice(0, 2) ?? "en"
     });
 
+
     export let disableHighlights: boolean | null | undefined = $$props["disable-highlights"] ?? false;
     export let disableAgenda: boolean | null | undefined = $$props["disable-agenda"] ?? false;
 
@@ -31,6 +32,8 @@
     export let apiUrl: string | null | undefined = $$props["api-url"];
     //default we display all events starting today to indefinitely
     export let startDate: RawDate | null | undefined = $$props["start-date"] ?? moment().format("YYYY-MM-DD");
+
+    const dispatch = createEventDispatcher();
 
     let endDate: RawDate | null = null;
 
@@ -75,7 +78,7 @@
     $: applyStyling(divStyleElement);
     $: key = ($locale ?? "en") as Locales;
     $: events;
-    $: history
+    $: history;
 </script>
 
 <main bind:this={divStyleElement}>
@@ -102,13 +105,25 @@
                       startingDate: moment(startDate, "YYYY-MM-DD"),
                       endingDate: endDate ? moment(endDate, "YYYY-MM-DD") : null
                     })}
+                    on:loadMore={async (e) => {
+                        if(!history[key].highlights.hasMore) return;
+
+                        const result = await handleMoreEvents(e, apiUrl, events, key, 'highlights')
+
+                        dispatch("loadMore", {
+                            options: `getHighlights`,
+                        });
+                        events = result.events;
+
+                        history[key].highlights.hasMore = result.hasMore;
+                    }}
             />
         {/if}
         {#if !disableAgenda}
             <div class="md:px-7">
                 <Agenda
                         title={agendaTitle}
-                        hasMoreEvents="{history[key].events.hasMore}"
+                        bind:hasMoreEvents="{history[key].events.hasMore}"
                         events={sortEvents(events, {
                             locale: key,
                             onlyAvailable: true,
@@ -123,6 +138,11 @@
                         }}
                         on:loadMore={async (e) => {
                             const result = await handleMoreEvents(e, apiUrl, events, key)
+
+                            dispatch("loadMore", {
+                                options: `getEvents`,
+                            });
+
                             events = result.events;
 
                             history[key].events.hasMore = result.hasMore;
