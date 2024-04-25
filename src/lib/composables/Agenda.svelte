@@ -18,6 +18,7 @@
 
     let key: string;
 
+    export let baseUrl: string;
     export let hasMoreEvents: boolean = true;
     export let title: string | null | undefined;
     export let events: Event[];
@@ -54,7 +55,7 @@
 
         selectedTagsName = selectedTags.map((t) => t.name);
 
-        debounce( () => eventsToDisplay = events.filter((event: Event) => {
+        debounce(() => eventsToDisplay = events.filter((event: Event) => {
             return event.tags.some((tag) =>
                 selectedTagsName.includes(tag.name),
             );
@@ -298,7 +299,7 @@
     </div>
     <div class="grid xl:grid-cols-2 3xl:grid-cols-3 gap-4">
         {#each eventsToDisplay as event, index}
-            <EventCard {event}/>
+            <EventCard {event} {baseUrl}/>
         {/each}
     </div>
     <div class="flex flex-col items-center mt-5">

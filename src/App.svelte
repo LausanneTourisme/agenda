@@ -30,6 +30,8 @@
     export let highlightTitle: string | null | undefined = $$props["highlight-title"];
     export let agendaTitle: string | null | undefined = $$props["agenda-title"];
     export let apiUrl: string | null | undefined = $$props["api-url"];
+    export let baseUrl: string = $$props["base-url"];
+
     //default we display all events starting today to indefinitely
     export let startDate: RawDate | null | undefined = $$props["start-date"] ?? moment().format("YYYY-MM-DD");
 
@@ -122,6 +124,7 @@
         {#if !disableAgenda}
             <div class="md:px-7">
                 <Agenda
+                        {baseUrl}
                         title={agendaTitle}
                         bind:hasMoreEvents="{history[key].events.hasMore}"
                         events={sortEvents(events, {

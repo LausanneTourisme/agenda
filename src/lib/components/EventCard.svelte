@@ -1,9 +1,7 @@
 <script lang="ts">
     import {_, locale} from "svelte-i18n";
     import {Calendar, Clock, MapPin} from "lucide-svelte";
-    import type {Event, Geolocation, TwoLetters} from "$lib/types";
-
-    import moment from "moment/moment";
+    import type {Event, Geolocation} from "$lib/types";
     import 'moment/locale/fr-ch';
     import 'moment/locale/en-gb';
     import 'moment/locale/de';
@@ -16,22 +14,25 @@
     let key: string;
 
     export let event: Event;
-    let date: {start:Moment, end: Moment};
+    export let baseUrl: string;
+
+    let date: { start: Moment, end: Moment };
 
 
     const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address);
 
     const media = event.medias.find(x => x.is_cover)
 
-    $: date=extractStartEndDate(event);
+    $: date = extractStartEndDate(event);
     $: key = ($locale ?? "en");
 </script>
 
 {#key event.id}
-    <div data-id="{event.id}" class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
+    <div data-id="{event.id}"
+         class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
         <div class="image-wrapper aspect-square h-40 sm:h-64">
 
-            <Clickable href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
+            <Clickable href="{baseUrl}{event.seo.hreflang[key]}">
                 <!--        TODO add placeholder -->
                 {#if media}
                     <CldImage
@@ -82,7 +83,8 @@
                             {date.start.locale($_('date.locale')).format('DD.MM.YY')}
                         </span>
                         {:else}
-                            <span class="hidden sm:inline-block pr-1" title="{$_('date.start')}">{$_('date.start')}</span>
+                            <span class="hidden sm:inline-block pr-1"
+                                  title="{$_('date.start')}">{$_('date.start')}</span>
 
                             <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
                             {date.start.locale($_('date.locale')).format('DD.MM.YY')}
