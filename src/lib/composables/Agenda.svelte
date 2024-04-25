@@ -4,11 +4,12 @@
     import {Calendar, ChevronDown, Search} from "lucide-svelte";
     import {_, locale} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
-    import type {DispatchTagSelect, Event, Tag,} from "$lib/types";
+    import type {Event, Tag,} from "$lib/types";
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import Drawer from "svelte-drawer-component";
     import {Cross1} from "svelte-radix";
-    import {createEventDispatcher} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
+    import Loader from "$lib/components/Loader.svelte";
 
     const dispatch = createEventDispatcher<{
         loadMore: { event: any };
@@ -21,6 +22,7 @@
     export let title: string | null | undefined;
     export let events: Event[];
 
+    let isLoading: boolean = true;
     let eventsToDisplay: Event[] = events;
 
     let selectedTags: Tag[] = [];
@@ -29,13 +31,9 @@
     let tags: Tag[];
     let openTagsDrawer = false;
 
-    if (selectedTags.length > 0) {
+    if (selectedTags?.length > 0) {
         tags = tags.filter((tag: Tag) => selectedTags.includes(tag));
     }
-
-    const handle = (event: DispatchTagSelect) => {
-        sortEventsByTags(event.detail.tag);
-    };
 
     function sortEventsByTags(tag: Tag | null | undefined = null): void {
         if (!tag) {
@@ -48,18 +46,19 @@
             selectedTags = [...selectedTags, tag];
         }
 
-        selectedTagsName = selectedTags.map((t) => t.name);
-
         if (selectedTags.length === 0) {
+            selectedTagsName = []
             eventsToDisplay = events;
             return;
         }
 
-        eventsToDisplay = events.filter((event: Event) => {
+        selectedTagsName = selectedTags.map((t) => t.name);
+
+        debounce( () => eventsToDisplay = events.filter((event: Event) => {
             return event.tags.some((tag) =>
                 selectedTagsName.includes(tag.name),
             );
-        });
+        }), 400)(); //reduce lag when user select multiple tags
     }
 
     let oldSearchValue: string | undefined | null;
@@ -84,20 +83,20 @@
             distance: 100,
             keys: [
                 {
-                    name:`name.${key}`,
-                    weight:1,
+                    name: `name.${key}`,
+                    weight: 1,
                 },
                 {
-                    name:`seo.name.${key}`,
-                    weight:0.9,
+                    name: `seo.name.${key}`,
+                    weight: 0.9,
                 },
                 {
-                    name:`categories.public_name.${key}`,
-                    weight:0.3,
+                    name: `categories.public_name.${key}`,
+                    weight: 0.3,
                 },
                 {
-                    name:`tags.public_name.${key}`,
-                    weight:0.1,
+                    name: `tags.public_name.${key}`,
+                    weight: 0.1,
                 },
             ]
         })
@@ -105,14 +104,23 @@
         eventsToDisplay = fuse.search(searchValue).map(e => e.item);
     };
 
-    const debounce = (fn: Function, delay = 1000) => {
-        let timerId: NodeJS.Timeout | undefined;
+    const debounce = (callback: Function, wait: number) => {
+        let timeoutId: NodeJS.Timeout | number | undefined;
 
-        return (...args: any[]) => {
-            clearTimeout(timerId);
-            timerId = setTimeout(() => fn(...args), delay);
+        return (...args: any[]): void => {
+            isLoading = true;
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(async () => {
+                callback(...args);
+                isLoading = false;
+            }, wait);
         };
-    };
+    }
+
+    const onTagSelected = (tag: Tag | null | undefined = null) => {
+        sortEventsByTags(tag)
+        searchValue = "";
+    }
 
     const onInput = debounce(() => {
         if (oldSearchValue !== searchValue) {
@@ -120,9 +128,11 @@
             if (searchValue) searchEvents();
             else eventsToDisplay = events
         }
-    }, 500);
+    }, 400);
 
-    $: events;
+    onMount(() => isLoading = false);
+
+    $: events, eventsToDisplay = events, isLoading = false;
     $: hasMoreEvents;
     $: tags = events
         .flatMap((x) => x.tags)
@@ -132,8 +142,8 @@
                     .flatMap((x) => x.tags)
                     .findIndex((s) => a.name === s.name) === i,
         );
-    $: tags, sortEventsByTags();
-    $: searchValue, searchEvents();
+    $: isLoading;
+    $: tags;
     $: selectedTags;
     $: selectedTagsName;
     $: eventsToDisplay;
@@ -176,9 +186,7 @@
                 <input
                         class="h-full w-full outline-0 ring-transparent outline-none"
                         name="search-event"
-                        placeholder={$_(
-                        "agenda.search-section.by-name-placeholder",
-                    )}
+                        placeholder={$_("agenda.search-section.by-name-placeholder")}
                         type="search"
                         bind:value={searchValue}
                         on:keyup={() => onInput()}
@@ -202,7 +210,7 @@
                         {tags}
                         {selectedTags}
                         displayBtnAll={true}
-                        on:tagSelect={(e) => handle(e)}
+                        on:tagSelect={(event) => onTagSelected(event.detail.tag)}
                         tagClass="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent px-5"
                 />
             {/key}
@@ -229,9 +237,7 @@
                         0
                             ? 'border-honey-500 bg-honey-500'
                             : ''} px-5"
-                            on:click={() => {
-                            sortEventsByTags();
-                        }}
+                            on:click={() => onTagSelected()}
                             title={$_("agenda.tags.display-all")}
                     >{$_("agenda.tags.display-all")}</button
                     >
@@ -244,7 +250,7 @@
                             : ""}
 
                         <button
-                                on:click={() => sortEventsByTags(tag)}
+                                on:click={() => onTagSelected(tag)}
                                 class="inline-flex justify-center items-center h-min py-2 m-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 gap-6 ring-2 ring-transparent px-5 {elementSelected} "
                                 title={tag.public_name[key]}
                         >{tag.public_name[key]}</button
@@ -271,35 +277,48 @@
                     name="search-event"
                     placeholder={$_("agenda.search-section.by-name-placeholder")}
                     type="search"
+                    bind:value={searchValue}
+                    on:keyup={() => onInput()}
             />
         </div>
     </div>
 
     <hr class="mt-4 sm:hidden"/>
-    <p
-            class="text-xl sm:text-2xl font-semibold leading-tight tracking-tighter my-5"
-    >
-        {$_(`agenda.event${eventsToDisplay.length === 1 ? "" : "s"}-found`, {
-            values: {quantity: eventsToDisplay.length},
-        })}
-    </p>
-
+    <div class="flex">
+        <p
+                class="text-xl sm:text-2xl font-semibold leading-tight tracking-tighter my-5"
+        >
+            {$_(`agenda.event${eventsToDisplay.length === 1 ? "" : "s"}-found`, {
+                values: {quantity: eventsToDisplay.length},
+            })}
+        </p>
+        {#if isLoading}
+            <Loader class="ml-3" size="{30}"/>
+        {/if}
+    </div>
     <div class="grid xl:grid-cols-2 3xl:grid-cols-3 gap-4">
         {#each eventsToDisplay as event, index}
             <EventCard {event}/>
         {/each}
     </div>
     <div class="flex flex-col items-center mt-5">
-        {#if hasMoreEvents}
+        {#if isLoading}
+            <Loader class="ml-3" size="{30}"/>
+        {/if}
+        {#if !isLoading && hasMoreEvents}
             <button
-                    on:click={(e) => dispatch("loadMore", { event: e })}
+                    on:click={(e) => {
+                        isLoading = true;
+                        dispatch("loadMore", { event: e })
+                    }}
                     class="flex justify-center w-full xs:w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
             >
                 <ChevronDown/>
                 &nbsp;
                 {$_("agenda.search-section.load-more")}
             </button>
-        {:else}
+        {/if}
+        {#if !isLoading && !hasMoreEvents}
             <p class="w-full align-middle text-center">
                 {$_("agenda.search-section.load-complete")}
             </p>
