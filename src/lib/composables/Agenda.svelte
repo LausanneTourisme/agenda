@@ -75,15 +75,34 @@
         oldSearchValue = searchValue;
         searchValue = searchValue.toLowerCase();
 
-        eventsToDisplay = events.filter((e: Event) => {
-            // let locale: 'fr' | 'en' | 'de' | 'it' | 'es';
+        const fuse = new Fuse(events, {
+            includeScore: true,
+            includeMatches: true,
+            findAllMatches: true,
+            threshold: 0.3,
+            location: 0,
+            distance: 100,
+            keys: [
+                {
+                    name:`name.${key}`,
+                    weight:1,
+                },
+                {
+                    name:`seo.name.${key}`,
+                    weight:0.9,
+                },
+                {
+                    name:`categories.public_name.${key}`,
+                    weight:0.3,
+                },
+                {
+                    name:`tags.public_name.${key}`,
+                    weight:0.1,
+                },
+            ]
+        })
 
-            const name = e.name[key];
-
-            if (!name || !searchValue) return;
-
-            return name.toLowerCase().includes(searchValue);
-        });
+        eventsToDisplay = fuse.search(searchValue).map(e => e.item);
     };
 
     const debounce = (fn: Function, delay = 1000) => {
@@ -104,6 +123,7 @@
     }, 500);
 
     $: events;
+    $: hasMoreEvents;
     $: tags = events
         .flatMap((x) => x.tags)
         .filter(
@@ -134,7 +154,7 @@
 
             <!--    WEEKEND   -->
             <button
-                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
+                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent break-keep whitespace-break-spaces"
             >
                 {$_("agenda.search-section.weekend")}
             </button>
@@ -292,5 +312,3 @@
     </div>
 </div>
 
-<style>
-</style>
