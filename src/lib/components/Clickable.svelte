@@ -9,7 +9,7 @@
     export let preload: true | "" | "hover" | "tap" | "off" | null | undefined = "tap";
 
     let blankableLinks_value: boolean = true;
-    blankableLinks.subscribe<boolean>((value: boolean) => {
+    blankableLinks.subscribe((value: boolean) => {
         blankableLinks_value = value;
     });
     let target: NullableString = blankableLinks_value ? blankable(href) : null;

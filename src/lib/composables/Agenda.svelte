@@ -13,7 +13,7 @@
 
     const dispatch = createEventDispatcher<{
         loadMore: { event: any };
-        search: { value: string };
+        search: { value: string, events: Event[] };
     }>();
 
     let key: string;
@@ -25,6 +25,7 @@
 
     let isLoading: boolean = true;
     let eventsToDisplay: Event[] = events;
+    let selectedDates: string[];
 
     let selectedTags: Tag[] = [];
     let selectedTagsName: string[] = [];
@@ -125,9 +126,10 @@
 
     const onInput = debounce(() => {
         if (oldSearchValue !== searchValue) {
-            dispatch("search", {value: searchValue});
             if (searchValue) searchEvents();
-            else eventsToDisplay = events
+            else eventsToDisplay = events;
+
+            dispatch("search", {value: searchValue, events: eventsToDisplay});
         }
     }, 400);
 

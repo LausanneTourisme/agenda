@@ -35,7 +35,7 @@
             on:dragging={(e) => isDragging = e.detail.isDragging}
     >
         {#each events as event (event.id)}
-            <IntersectionObserver {event} enable="{event.id===lastEvent?.id}" on:intersecting={(e) => {dispatch("loadMore", { event: e })}}>
+            <IntersectionObserver enable="{event.id===lastEvent?.id}" on:intersecting={(e) => {dispatch("loadMore", { event: e })}}>
                 <HighlightCard preventClick="{isDragging}" {event} draggable="{false}"/>
             </IntersectionObserver>
         {/each}

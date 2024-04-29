@@ -13,7 +13,7 @@
     import {createEventDispatcher, onMount} from "svelte";
     import moment from "moment";
     import {applyStyling, handleMoreEvents, sortEvents, updateEvents} from "$lib/utils";
-    import {blankableLinks} from "$lib/store";
+    import {blankableLinks, endDate, startDate} from "$lib/store";
 
     register("fr", () => import("$lib/i18n/fr.json"));
     register("en", () => import("$lib/i18n/en.json"));
@@ -34,11 +34,14 @@
     export let baseUrl: string = $$props["base-url"];
 
     //default we display all events starting today to indefinitely
-    export let startDate: RawDate = $$props["start-date"] ?? moment().format("YYYY-MM-DD");
+    if($$props["start-date"]){
+        startDate.set($$props["start-date"]);
+    }
+    if($$props["end-date"]){
+        endDate.set($$props["end-date"]);
+    }
 
     const dispatch = createEventDispatcher();
-
-    let endDate: RawDate | null = null;
 
     let divStyleElement: HTMLElement | undefined;
 
@@ -60,7 +63,7 @@
 
     onMount(async () => {
         console.log("Mounting App");
-console.log(blankLinks)
+
         blankableLinks.set(blankLinks)
 
         if (!disableHighlights) {
@@ -107,8 +110,8 @@ console.log(blankLinks)
                       locale: key,
                       onlyAvailable: true,
                       onlyHighlights: true,
-                      startingDate: moment(startDate, "YYYY-MM-DD"),
-                      endingDate: endDate ? moment(endDate, "YYYY-MM-DD") : null
+                      startingDate: moment($startDate, "YYYY-MM-DD"),
+                      endingDate: $endDate ? moment($endDate, "YYYY-MM-DD") : null
                     })}
                     on:loadMore={async (e) => {
                         if(!history[key].highlights.hasMore) return;
@@ -134,13 +137,17 @@ console.log(blankLinks)
                             locale: key,
                             onlyAvailable: true,
                             onlyHighlights: false,
-                            startingDate: moment(startDate, "YYYY-MM-DD"),
-                            endingDate: endDate ? moment(endDate, "YYYY-MM-DD") : null
+                            startingDate: moment($startDate, "YYYY-MM-DD"),
+                            endingDate: $endDate ? moment($endDate, "YYYY-MM-DD") : null
                         })}
                         on:search={(e) => {
                             const searchValue = e.detail.value;
+                            const events = e.detail.events;
 
                             if (!searchValue) return;
+
+                            const ids = events.map(x => x.id);
+                            //request to api with ids to ignore
                         }}
                         on:loadMore={async (e) => {
                             const result = await handleMoreEvents(e, apiUrl, events, key)

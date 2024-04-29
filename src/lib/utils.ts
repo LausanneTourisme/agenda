@@ -8,7 +8,8 @@ import type {
     OptionsSortEvents,
     ScheduleDate
 } from "$lib/types";
-import {findAvailablePeriod} from "$lib/date-utils";
+import {findAvailablePeriod, sortDates, sortSchedules} from "$lib/date-utils";
+import moment from "moment";
 
 /**
  * trick to bypass problem with tailwind and shadow dom
@@ -116,7 +117,7 @@ export const sortEvents = (events: Event[], options: OptionsSortEvents): Event[]
         ...options
     }
 
-    return [...events].filter((e: Event, index: number) => {
+    const availableEvents= [...events].filter((e: Event, index: number) => {
         const event = {...e};
 
         if (options.locale && !event.languages.includes(options.locale)) {
@@ -157,13 +158,25 @@ export const sortEvents = (events: Event[], options: OptionsSortEvents): Event[]
             }
 
             //prevent references
-            schedules.dates = availableDates
+            schedules.dates = availableDates.sort(x => moment(x.periods[0].start, 'YYYY-MM-DD').valueOf())
             event.schedules = schedules;
 
             return true;
         }
 
         return true;
+    })
+
+    return availableEvents.sort((a, b) => {
+        const d1 = sortDates(a.schedules.dates);
+        const d2 = sortDates(b.schedules.dates);
+
+        const p1 = moment(d1[0].periods[0].start, 'YYYY-MM-DD').valueOf();
+        const p2 = moment(d2[0].periods[0].start, 'YYYY-MM-DD').valueOf();
+
+        if(p1 < p2) return -1;
+        if(p1 > p2) return 1;
+        return 0;
     })
 }
 

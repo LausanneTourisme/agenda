@@ -7,7 +7,6 @@
     }>();
     export let once = false;
     export let enable: boolean = false;
-    export let event: Event;
 
     let element: HTMLElement;
 
