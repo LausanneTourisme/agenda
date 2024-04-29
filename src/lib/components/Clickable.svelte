@@ -2,15 +2,19 @@
     import {blankable, type NullableString} from "$lib/utils";
     import {fade} from "svelte/transition";
     import {onMount} from "svelte";
+    import {blankableLinks} from "$lib/store";
 
     export let href: string;
     export let overflow: boolean = false;
     export let preload: true | "" | "hover" | "tap" | "off" | null | undefined = "tap";
 
-    let target: NullableString = blankable(href)
+    let blankableLinks_value: boolean = true;
+    blankableLinks.subscribe<boolean>((value: boolean) => {
+        blankableLinks_value = value;
+    });
+    let target: NullableString = blankableLinks_value ? blankable(href) : null;
 
     let ready: boolean = false;
-
     onMount(() => {
         ready = true;
     })

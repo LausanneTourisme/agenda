@@ -12,6 +12,7 @@ if (ltAgenda) {
         props: {
             apiUrl: import.meta.env.VITE_API_URL,
             baseUrl: import.meta.env.VITE_LT_URL,
+            blankLinks: true,
         }
     })
 } else {

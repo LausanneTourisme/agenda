@@ -13,6 +13,7 @@
     import {createEventDispatcher, onMount} from "svelte";
     import moment from "moment";
     import {applyStyling, handleMoreEvents, sortEvents, updateEvents} from "$lib/utils";
+    import {blankableLinks} from "$lib/store";
 
     register("fr", () => import("$lib/i18n/fr.json"));
     register("en", () => import("$lib/i18n/en.json"));
@@ -23,9 +24,9 @@
         initialLocale: getLocaleFromNavigator()?.slice(0, 2) ?? "en"
     });
 
-
-    export let disableHighlights: boolean | null | undefined = $$props["disable-highlights"] ?? false;
-    export let disableAgenda: boolean | null | undefined = $$props["disable-agenda"] ?? false;
+    export let blankLinks: boolean = $$props["blank-links"] ?? false;
+    export let disableHighlights: boolean = $$props["disable-highlights"] ?? false;
+    export let disableAgenda: boolean = $$props["disable-agenda"] ?? false;
 
     export let highlightTitle: string | null | undefined = $$props["highlight-title"];
     export let agendaTitle: string | null | undefined = $$props["agenda-title"];
@@ -33,7 +34,7 @@
     export let baseUrl: string = $$props["base-url"];
 
     //default we display all events starting today to indefinitely
-    export let startDate: RawDate | null | undefined = $$props["start-date"] ?? moment().format("YYYY-MM-DD");
+    export let startDate: RawDate = $$props["start-date"] ?? moment().format("YYYY-MM-DD");
 
     const dispatch = createEventDispatcher();
 
@@ -59,6 +60,8 @@
 
     onMount(async () => {
         console.log("Mounting App");
+console.log(blankLinks)
+        blankableLinks.set(blankLinks)
 
         if (!disableHighlights) {
             const result = await updateEvents(apiUrl, events, key, "highlights");
