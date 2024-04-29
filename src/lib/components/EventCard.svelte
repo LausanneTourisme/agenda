@@ -112,6 +112,7 @@
                 </div>
                 <!--LOCATION-->
                 <div class="location text-sm sm:text-md flex w-full mt-2 sm:mt-4">
+                    {#if (geolocation?.venue ?? geolocation?.address) !== undefined}
                     <div class="mr-2">
                         <MapPin class="text-honey-500" size="24px"/>
                     </div>
@@ -119,6 +120,7 @@
                        title="{geolocation?.venue ?? geolocation?.address}">
                         {geolocation?.venue ?? geolocation?.address}
                     </p>
+                    {/if}
                 </div>
             </Clickable>
         </div>
