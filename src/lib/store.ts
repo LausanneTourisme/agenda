@@ -1,7 +1,8 @@
 import {type Writable, writable} from "svelte/store";
-import moment from "moment/moment";
+import {now} from "$lib/date-utils";
+import type {RawDate} from "$lib/types";
 
 export const blankableLinks: Writable<boolean> = writable<boolean>(true);
 
-export const startDate: Writable<string> = writable<string>(moment().format("YYYY-MM-DD"));
-export const endDate: Writable<string | undefined | null> = writable<string | undefined | null>(null);
+export const startDate: Writable<string | RawDate> = writable<string | RawDate>(now);
+export const endDate: Writable<string | undefined | null | RawDate> = writable<string | undefined | null | RawDate>(null);

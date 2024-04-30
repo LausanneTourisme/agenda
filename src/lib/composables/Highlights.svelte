@@ -29,17 +29,25 @@
         </Heading>
     </div>
 
-    <Swiper
-            class="highlights pb-4 px-2 sm:px-16 select-none"
-            maxContent="{events.length}"
-            on:dragging={(e) => isDragging = e.detail.isDragging}
-    >
-        {#each events as event (event.id)}
-            <IntersectionObserver enable="{event.id===lastEvent?.id}" on:intersecting={(e) => {dispatch("loadMore", { event: e })}}>
-                <HighlightCard preventClick="{isDragging}" {event} draggable="{false}"/>
-            </IntersectionObserver>
-        {/each}
-    </Swiper>
+    {#if events.length!==0}
+        <Swiper
+                class="highlights pb-4 px-2 sm:px-16 select-none"
+                maxContent="{events.length}"
+                on:dragging={(e) => isDragging = e.detail.isDragging}
+        >
+            {#each events as event (event.id)}
+                <IntersectionObserver enable="{event.id===lastEvent?.id}" on:intersecting={(e) => {dispatch("loadMore", { event: e })}}>
+                    <HighlightCard preventClick="{isDragging}" {event} draggable="{false}"/>
+                </IntersectionObserver>
+            {/each}
+        </Swiper>
+    {:else}
+        <div class="highlights pb-4 px-2 sm:px-16 select-none">
+            <p class="h-full rounded-none shadow-none p-4 h-[430px]">
+                Aucun événement prévu pour les dates sélectionnées. Veuillez choisir d'autres dates.
+            </p>
+        </div>
+    {/if}
 </div>
 
 <style lang="scss">

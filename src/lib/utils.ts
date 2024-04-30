@@ -146,13 +146,14 @@ export const sortEvents = (events: Event[], options: OptionsSortEvents): Event[]
             for (const date of schedules.dates) {
                 const d = {...date}
                 const period = findAvailablePeriod(d, options.startingDate, options.endingDate);
+
                 if (!period) continue;
 
                 d.periods = [{...period}];
                 availableDates.push(d);
             }
 
-            if (!availableDates) {
+            if (availableDates.length === 0) {
                 logIgnoredEvent(events[index], 'invalid dates')
                 return false
             }

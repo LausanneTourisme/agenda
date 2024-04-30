@@ -10,6 +10,9 @@
     import {Cross1} from "svelte-radix";
     import {createEventDispatcher, onMount} from "svelte";
     import Loader from "$lib/components/Loader.svelte";
+    import {endDate, startDate} from "$lib/store";
+    import {getWeekend, now} from "$lib/date-utils";
+    import moment from "moment";
 
     const dispatch = createEventDispatcher<{
         loadMore: { event: any };
@@ -22,6 +25,10 @@
     export let hasMoreEvents: boolean = true;
     export let title: string | null | undefined;
     export let events: Event[];
+
+    const thisWeekend = getWeekend(moment());
+    let todaySelected: boolean;
+    let weekendSelected: boolean;
 
     let isLoading: boolean = true;
     let eventsToDisplay: Event[] = events;
@@ -151,6 +158,7 @@
     $: selectedTagsName;
     $: eventsToDisplay;
     $: key = $locale ?? "en";
+    $: endDate, todaySelected=now === $startDate && now === $endDate, weekendSelected=thisWeekend.saturday.format('YYYY-MM-DD') === $startDate && thisWeekend.sunday.format('YYYY-MM-DD') === $endDate
 </script>
 
 <div class="agenda p-5 md:p-7 md:px-12">
@@ -160,21 +168,37 @@
         <div class="w-full xs:flex xs:justify-start search-section">
             <!--    TODAY    -->
             <button
-                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
+                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent
+                    {todaySelected ? 'border-honey-500 bg-honey-500' : ''}"
+                    on:click={(e) => {
+                        startDate.set(now);
+                        endDate.set(todaySelected ? null : now);
+                    }}
             >
                 {$_("agenda.search-section.today")}
             </button>
 
             <!--    WEEKEND   -->
             <button
-                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent break-keep whitespace-break-spaces"
+                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent break-keep whitespace-break-spaces
+                    {weekendSelected ? 'border-honey-500 bg-honey-500' : ''}"
+                    on:click={(e)=>{
+                        if(weekendSelected){
+                            startDate.set(now);
+                            endDate.set(null);
+                            return;
+                        }
+                        startDate.set(thisWeekend.saturday.format('YYYY-MM-DD'));
+                        endDate.set(thisWeekend.sunday.format('YYYY-MM-DD'));
+                    }}
             >
                 {$_("agenda.search-section.weekend")}
             </button>
 
             <!--    DATE    -->
             <button
-                    class="block w-full p-3 mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
+                    class="block w-full p-3 mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent
+                    {$startDate && $endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}"
             >
                 <span class="flex justify-center items-center w-max m-auto">
                     <Calendar class="w-5 h-5 -mt-1"/>

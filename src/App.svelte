@@ -7,7 +7,7 @@
 <script lang="ts">
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, locales, register} from "svelte-i18n";
-    import type {Event as ApiEvent, Histories, Locales, RawDate} from "$lib/types";
+    import type {Event, Histories, Locales, RawDate} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
     import {createEventDispatcher, onMount} from "svelte";
@@ -46,7 +46,10 @@
     let divStyleElement: HTMLElement | undefined;
 
     let key: Locales;
-    let events: ApiEvent[] = []; //fakeEvents
+    let events: Event[] = [];
+
+    let highlights: Event[];
+    let agendaEvents: Event[]
 
     const history: Histories = $locales.reduce((previous, current) => {
         previous[current] = {
@@ -60,6 +63,25 @@
         return previous;
     }, {} as Histories);
 
+
+    function sortEventsToDisplay() {
+        if (!disableHighlights)
+            highlights = sortEvents(events, {
+                locale: key,
+                onlyAvailable: true,
+                onlyHighlights: true,
+                startingDate: moment($startDate, "YYYY-MM-DD"),
+                endingDate: null,
+            });
+        if (!disableAgenda)
+            agendaEvents = sortEvents(events, {
+                locale: key,
+                onlyAvailable: true,
+                onlyHighlights: false,
+                startingDate: moment($startDate, "YYYY-MM-DD"),
+                endingDate: $endDate ? moment($endDate, "YYYY-MM-DD") : null
+            });
+    }
 
     onMount(async () => {
         console.log("Mounting App");
@@ -80,13 +102,15 @@
             history[key].events.hasMore = result.hasMore;
         }
 
+        sortEventsToDisplay()
         console.log("App mounted");
     });
 
     $: applyStyling(divStyleElement);
     $: key = ($locale ?? "en") as Locales;
-    $: events;
+    $: events, sortEventsToDisplay();
     $: history;
+    $: $endDate;
 </script>
 
 <main bind:this={divStyleElement}>
@@ -106,13 +130,7 @@
         {#if !disableHighlights}
             <Highlights
                     title={highlightTitle}
-                    events={sortEvents(events, {
-                      locale: key,
-                      onlyAvailable: true,
-                      onlyHighlights: true,
-                      startingDate: moment($startDate, "YYYY-MM-DD"),
-                      endingDate: $endDate ? moment($endDate, "YYYY-MM-DD") : null
-                    })}
+                    events={highlights}
                     on:loadMore={async (e) => {
                         if(!history[key].highlights.hasMore) return;
 
@@ -133,13 +151,7 @@
                         {baseUrl}
                         title={agendaTitle}
                         bind:hasMoreEvents="{history[key].events.hasMore}"
-                        events={sortEvents(events, {
-                            locale: key,
-                            onlyAvailable: true,
-                            onlyHighlights: false,
-                            startingDate: moment($startDate, "YYYY-MM-DD"),
-                            endingDate: $endDate ? moment($endDate, "YYYY-MM-DD") : null
-                        })}
+                        events={agendaEvents}
                         on:search={(e) => {
                             const searchValue = e.detail.value;
                             const events = e.detail.events;
