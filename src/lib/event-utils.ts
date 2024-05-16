@@ -9,9 +9,10 @@ import {
     type OptionsSortEvents,
     type ScheduleDate
 } from "$lib/types";
-import {findAvailablePeriod, sortDates} from "$lib/date-utils";
+import {dateFormat, findAvailablePeriod, now, sortDates} from "$lib/date-utils";
 import moment from "moment/moment";
 import {log, warn} from "$lib/utils";
+import Fuse from "fuse.js";
 
 export const logIgnoredEvent = (event: Event, information?: string): void | null => warn(`Event skipped${information ? `, beacause: ${information}` : null}`, event)
 
@@ -38,7 +39,7 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
         locale: null,
         onlyAvailable: true,
         onlyHighlights: false,
-        startingDate: null,
+        startingDate: moment(now, dateFormat),
         endingDate: null,
         ...options
     }
@@ -85,7 +86,7 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
             }
 
             //prevent references
-            schedules.dates = availableDates.sort(x => moment(x.periods[0].start, 'YYYY-MM-DD').valueOf())
+            schedules.dates = availableDates.sort(x => moment(x.periods[0].start, dateFormat).valueOf())
             event.schedules = schedules;
 
             return true;
@@ -98,8 +99,8 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
         const d1 = sortDates(a.schedules.dates);
         const d2 = sortDates(b.schedules.dates);
 
-        const p1 = moment(d1[0].periods[0].start, 'YYYY-MM-DD').valueOf();
-        const p2 = moment(d2[0].periods[0].start, 'YYYY-MM-DD').valueOf();
+        const p1 = moment(d1[0].periods[0].start, dateFormat).valueOf();
+        const p2 = moment(d2[0].periods[0].start, dateFormat).valueOf();
 
         if (p1 < p2) return -1;
         if (p1 > p2) return 1;
@@ -229,11 +230,11 @@ export const getFreshEvent = async (apiUrl: string | null | undefined, locale: L
             if (event.highlight && tempHighlights.length < options.load_by) {
                 tempHighlights.push(event);
                 tempAgenda.push(event);
-            //@ts-ignore
+                //@ts-ignore
             } else if (index < options.load_by && !event.highlight) {
                 tempAgenda.push(event);
                 index++;
-            //@ts-ignore
+                //@ts-ignore
             } else if (index >= options.load_by && tempHighlights.length >= options.load_by) {
                 break;
             }
