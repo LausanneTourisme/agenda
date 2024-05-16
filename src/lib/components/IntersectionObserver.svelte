@@ -43,7 +43,7 @@
         await tick();
 
         if (element) {
-            observer.observe(element);
+            observer?.observe(element);
         }
     });
 </script>
