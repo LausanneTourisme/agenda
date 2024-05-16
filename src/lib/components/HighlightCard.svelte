@@ -12,6 +12,7 @@
     import {CldImage} from "svelte-cloudinary";
     import {extractStartEndDate, isSameDays} from "$lib/date-utils";
     import type {Moment} from "moment";
+    import {log} from "$lib/utils";
 
     let key: string;
 
@@ -27,7 +28,7 @@
 
     const mouseDown = (e: Event) => {
         // e.clientX
-        console.log(e)
+        log('mouse down', {mouse_event: e})
     }
 
     $: preventClick;
