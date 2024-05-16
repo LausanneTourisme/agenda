@@ -2,6 +2,15 @@ import type {Moment} from "moment";
 
 export type Locales = "fr" | "en" | "de" | "it" | "es"
 
+export enum EventType {
+    agenda = "events",
+    highlights = "highlights"
+}
+export enum Environment {
+    dev = "development",
+    prod = "production"
+}
+
 export type Schedules = {
     dates: ScheduleDate[],
     exceptions: {
@@ -150,13 +159,46 @@ export type DispatchApiEvents = CustomEvent<{
 }>;
 
 
-export type Histories = {
-    [key in Locales]: History; //equivalent to write every locale: History
-};
-
 export type History = {
-    highlights: { hasMore: boolean };
-    events: { hasMore: boolean };
+    load_by: number, //how many events do you want load on every "load more"
+    events: Event[],
+    loaded_events: { // list of ids
+        fr: number[],
+        de: number[],
+        en: number[],
+        it: number[],
+        es: number[],
+    },
+    total_events: {
+        fr: Event[],
+        de: Event[],
+        en: Event[],
+        it: Event[],
+        es: Event[],
+    },
+    count: {
+        fr: {
+            highlights: number,
+            events: number,
+        },
+        de: {
+            highlights: number,
+            events: number,
+        },
+        en: {
+            highlights: number,
+            events: number,
+        },
+        it: {
+            highlights: number,
+            events: number,
+        },
+        es: {
+            highlights: number,
+            events: number,
+        },
+    },
+    has_more: boolean,
 };
 
 export type GqlOptions = {
@@ -164,7 +206,8 @@ export type GqlOptions = {
     ignoreIds: number[]
     locale?: string
     value?: number
-    page?: number
+    page?: number,
+    limit?: number | null,
 }
 
 export type GqlResponse = {

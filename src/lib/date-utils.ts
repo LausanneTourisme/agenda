@@ -24,9 +24,7 @@ export const extractStartEndDate = (event: Event): { start: Moment, end: Moment 
 
 export const findAvailablePeriod = (schedule: ScheduleDate, start: Moment | null | undefined, end: Moment | null | undefined): Period | null => {
     const today: Moment = start ?? moment();
-
     for (const period of sortPeriods(schedule.periods)) {
-
         const pStart: Moment = moment(period.start, 'YYYY-MM-DD').startOf('day');
         const pEnd: Moment = moment(period.end, 'YYYY-MM-DD').endOf('day');
 
