@@ -6,6 +6,7 @@
     import Swiper from "$lib/components/Swiper.svelte";
     import IntersectionObserver from "$lib/components/IntersectionObserver.svelte";
     import {createEventDispatcher} from "svelte";
+    import {log} from "$lib/utils";
 
     const dispatch = createEventDispatcher<{
         loadMore: { event: any };
@@ -18,8 +19,12 @@
 
     let lastEvent: Event | null = null
 
-    $: events, lastEvent = events[events.length - 1] ?? null;
+
+    $: events, lastEvent = events.slice(-1)[0]
+    $: lastEvent
     $: isDragging;
+
+    //TODO add loader + state loading
 </script>
 
 <div class="w-full bg-honey-500">
@@ -28,15 +33,17 @@
             {title ?? $_('hightlights.title', {default: 'Home'})}
         </Heading>
     </div>
-
-    {#if events.length!==0}
+    {#if events.length !== 0}
         <Swiper
                 class="highlights pb-4 px-2 sm:px-16 select-none"
                 maxContent="{events.length}"
                 on:dragging={(e) => isDragging = e.detail.isDragging}
         >
             {#each events as event (event.id)}
-                <IntersectionObserver enable="{event.id===lastEvent?.id}" on:intersecting={(e) => {dispatch("loadMore", { event: e })}}>
+                <IntersectionObserver enable="{event.id===lastEvent?.id}" once={true} on:intersecting={(e) => {
+                    dispatch("loadMore", { event: e });
+                    log('load more highlights!', {event, lastEvent: lastEvent?.name})
+                }}>
                     <HighlightCard preventClick="{isDragging}" {event} draggable="{false}"/>
                 </IntersectionObserver>
             {/each}
