@@ -11,9 +11,11 @@
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
     import {createEventDispatcher, onMount} from "svelte";
-    import {applyStyling, log} from "$lib/utils";
-    import {blankableLinks, endDate, startDate} from "$lib/store";
-    import {getFreshEvent} from "$lib/event-utils";
+    import {applyStyling, log, warn} from "$lib/utils";
+    import {blankableLinks} from "$lib/store";
+    import {getFreshEvent, searchEvents, sort} from "$lib/event-utils";
+    import moment from "moment";
+    import {dateFormat, now} from "$lib/date-utils";
 
     register("fr", () => import("$lib/i18n/fr.json"));
     register("en", () => import("$lib/i18n/en.json"));
@@ -31,6 +33,8 @@
     export let highlightTitle: string | null | undefined = $$props["highlight-title"];
     export let agendaTitle: string | null | undefined = $$props["agenda-title"];
     export let apiUrl: string | null | undefined = $$props["api-url"];
+    export let startDate: string | null | undefined = $$props["start-date"] ?? now;
+    export let endDate: string | null | undefined = $$props["end-date"];
     export let baseUrl: string = $$props["base-url"];
     export let lang: string = $$props["lang"] ?? $locale ?? 'en';
     export let loadBy: number = $$props["load-by"] ?? 10;
@@ -47,17 +51,51 @@
     let highlights: Event[] = []; // highlights to display
     let agendaEvents: Event[] = []; // events to display in agenda section
     let hasMoreEvents: boolean = true;
+    let disableHighlightsLoadMore = false;
 
-    //default we display all events starting today to indefinitely
-    if ($$props["start-date"]) {
-        startDate.set($$props["start-date"]);
-    }
-    if ($$props["end-date"]) {
-        endDate.set($$props["end-date"]);
+    function setDataAndDisableSpecialEvents(events: Event[]){
+        agendaEvents = [...events];
+        highlights = [...events.filter(e => e.highlight)];
+        disableHighlightsLoadMore = true;
+        hasMoreEvents = false;
     }
 
+    async function onDateChanges(events: Event[], locale: Locales, query: string|undefined|null, dates: [string, string|undefined|null]) {
+        const tempEvents: Event[] = query ? searchEvents(query, locale, events) : events;
+        startDate = dates[0];
+        endDate = dates[1];
+
+        const result: Event[] = sort(tempEvents, {
+            locale: locale,
+            startingDate: moment(startDate, dateFormat),
+            endingDate: endDate ? moment(endDate, dateFormat) : null
+        });
+
+        setDataAndDisableSpecialEvents(result);
+    }
+
+    async function onSearch(query: string|undefined|null, locale: Locales) {
+        if(!query){
+            console.log("no query")
+          return await resetEvents();
+        }
+
+        const result = sort(searchEvents(query, locale, usableEvents), {
+            locale,
+            startingDate: moment(startDate, dateFormat),
+            endingDate: endDate ? moment(endDate, dateFormat) : null
+        });
+
+        setDataAndDisableSpecialEvents(result);
+    }
 
     async function handleMoreHighlights() {
+        if(disableHighlightsLoadMore) {
+            warn('Handle more highlights skipped!');
+            disableHighlightsLoadMore = false;
+            return;
+        }
+
         let index = 0;
         let tmpEvents: Event[] = [];
 
@@ -69,10 +107,10 @@
                 index++;
             }
         }
-        log("Handle more highlights!", {usableEvents, newEvents: tmpEvents})
 
         agendaEvents = [...agendaEvents, ...tmpEvents];
         highlights = [...highlights, ...tmpEvents];
+        log("Handle more highlights!", {usableEvents, newEvents: tmpEvents, agendaEvents, highlights})
     }
 
     async function handleMoreAgenda() {
@@ -90,23 +128,26 @@
             tmpEvents.push(event);
             index++;
         }
-        log("Handle more events for the agenda!", {usableEvents, newEvents: tmpEvents})
         agendaEvents = [...agendaEvents, ...tmpEvents];
         highlights = [...highlights, ...tmpHighlight];
 
         hasMoreEvents = agendaEvents.length < usableEvents.length
+
+        log("Handle more events for the agenda!", {usableEvents, newEvents: tmpEvents, agendaEvents, highlights, hasMoreEvents})
     }
 
     async function resetEvents() {
         log('App: reset Events')
         const result = await getFreshEvent(apiUrl, key, events, {load_by: loadBy})
         log('App: reset Events getted', {result})
+
         agendaEvents = result.agenda;
         highlights = result.highlights;
         usableEvents = result.usableEvents
         usableHighlights = result.usableEvents.filter(e => e.highlight);
         events = result.events;
         hasMoreEvents = true;
+        disableHighlightsLoadMore = false;
     }
 
     onMount(async () => {
@@ -123,7 +164,6 @@
     $: applyStyling(divStyleElement);
     $: agendaEvents;
     $: highlights;
-    $: $endDate;
 </script>
 
 <main bind:this={divStyleElement}>
@@ -152,12 +192,13 @@
                 <Agenda
                         {baseUrl}
                         title={agendaTitle}
-                        hasMoreEvents={hasMoreEvents}
+                        bind:hasMoreEvents={hasMoreEvents}
+                        bind:startDate={startDate}
+                        bind:endDate={endDate}
                         events={agendaEvents}
-                        on:search={(e) => {
-                                //TODO use utils.fuzzy
-                            }}
+                        on:search={async (e) => await onSearch(e.detail.query, key)}
                         on:loadMore={handleMoreAgenda}
+                        on:updateDates={async (e)=>{ await onDateChanges(usableEvents, key, e.detail.query, e.detail.dates)}}
                 />
             </div>
         {/if}

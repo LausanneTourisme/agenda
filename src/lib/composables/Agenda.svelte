@@ -1,5 +1,4 @@
 <script lang="ts">
-    import Fuse from 'fuse.js'
     import Heading from "$lib/components/Heading.svelte";
     import {Calendar, ChevronDown, Search} from "lucide-svelte";
     import {_, locale} from "svelte-i18n";
@@ -8,18 +7,22 @@
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import Drawer from "svelte-drawer-component";
     import {Cross1} from "svelte-radix";
-    import {createEventDispatcher, onMount} from "svelte";
+    import {createEventDispatcher} from "svelte";
     import Loader from "$lib/components/Loader.svelte";
-    import {endDate, startDate} from "$lib/store";
-    import {getWeekend, now} from "$lib/date-utils";
+    import {dateFormat, getWeekend, now} from "$lib/date-utils";
     import moment from "moment";
+    import {debounce} from "$lib/utils";
 
     const dispatch = createEventDispatcher<{
         loadMore: { event: any };
-        search: { value: string, events: Event[] };
+        updateDates: { query: string | undefined, dates: [string, string | undefined | null] };
+        search: { query: string | undefined, events: Event[] };
     }>();
 
     let key: string;
+
+    export let startDate: string;
+    export let endDate: string | undefined | null;
 
     export let baseUrl: string;
     export let hasMoreEvents: boolean = true;
@@ -32,7 +35,8 @@
 
     let isLoading: boolean = true;
     let eventsToDisplay: Event[] = events;
-    let selectedDates: string[];
+    let searchValue: string | undefined | null;
+    let oldSearchValue: string | undefined | null;
 
     let selectedTags: Tag[] = [];
     let selectedTagsName: string[] = [];
@@ -70,77 +74,24 @@
         }), 400)(); //reduce lag when user select multiple tags
     }
 
-    let oldSearchValue: string | undefined | null;
-    let searchValue: string | undefined | null;
-
-    const searchEvents = () => {
-        selectedTags = [];
-
-        if (!searchValue) {
-            eventsToDisplay = events;
-            return;
-        }
-        oldSearchValue = searchValue;
-        searchValue = searchValue.toLowerCase();
-
-        const fuse = new Fuse(events, {
-            includeScore: true,
-            includeMatches: true,
-            findAllMatches: true,
-            threshold: 0.3,
-            location: 0,
-            distance: 100,
-            keys: [
-                {
-                    name: `name.${key}`,
-                    weight: 1,
-                },
-                {
-                    name: `seo.name.${key}`,
-                    weight: 0.9,
-                },
-                {
-                    name: `categories.public_name.${key}`,
-                    weight: 0.3,
-                },
-                {
-                    name: `tags.public_name.${key}`,
-                    weight: 0.1,
-                },
-            ]
-        })
-
-        eventsToDisplay = fuse.search(searchValue).map(e => e.item);
-    };
-
-    const debounce = (callback: Function, wait: number) => {
-        let timeoutId: NodeJS.Timeout | number | undefined;
-
-        return (...args: any[]): void => {
-            isLoading = true;
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(async () => {
-                callback(...args);
-                isLoading = false;
-            }, wait);
-        };
-    }
 
     const onTagSelected = (tag: Tag | null | undefined = null) => {
         sortEventsByTags(tag)
         searchValue = "";
     }
 
-    const onInput = debounce(() => {
-        if (oldSearchValue !== searchValue) {
-            if (searchValue) searchEvents();
-            else eventsToDisplay = events;
-
-            dispatch("search", {value: searchValue, events: eventsToDisplay});
+    const onInput = () => {
+        if (searchValue !== oldSearchValue) {
+            isLoading = true; //will be false on props 'events' update
+            debounce(() => {
+                if (searchValue !== oldSearchValue) {
+                    selectedTags = [];
+                    dispatch("search", {query: searchValue?.toLowerCase(), events: eventsToDisplay});
+                    oldSearchValue = searchValue
+                }
+            }, 400)();
         }
-    }, 400);
-
-    onMount(() => isLoading = false);
+    }
 
     $: events, eventsToDisplay = events, isLoading = false;
     $: hasMoreEvents;
@@ -158,7 +109,7 @@
     $: selectedTagsName;
     $: eventsToDisplay;
     $: key = $locale ?? "en";
-    $: $endDate, todaySelected=now === $startDate && now === $endDate, weekendSelected=thisWeekend.saturday.format('YYYY-MM-DD') === $startDate && thisWeekend.sunday.format('YYYY-MM-DD') === $endDate
+    $: endDate, todaySelected = now === startDate && now === endDate, weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate
 </script>
 
 <div class="agenda p-5 md:p-7 md:px-12">
@@ -168,11 +119,18 @@
         <div class="w-full xs:flex xs:justify-start search-section">
             <!--    TODAY    -->
             <button
-                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent
+                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
                     {todaySelected ? 'border-honey-500 bg-honey-500' : ''}"
                     on:click={(e) => {
-                        startDate.set(now);
-                        endDate.set(todaySelected ? null : now);
+                        if(!todaySelected){
+                            startDate = now;
+                            endDate = todaySelected ? null : now;
+                        } else {
+                            startDate = now;
+                            endDate = null;
+                        }
+
+                        dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
                     }}
             >
                 {$_("agenda.search-section.today")}
@@ -180,16 +138,18 @@
 
             <!--    WEEKEND   -->
             <button
-                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent break-keep whitespace-break-spaces
+                    class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent break-keep whitespace-break-spaces
                     {weekendSelected ? 'border-honey-500 bg-honey-500' : ''}"
                     on:click={(e)=>{
                         if(weekendSelected){
-                            startDate.set(now);
-                            endDate.set(null);
-                            return;
+                            startDate = now;
+                            endDate = null;
+                        } else {
+                            startDate = thisWeekend.saturday.format(dateFormat);
+                            endDate = thisWeekend.sunday.format(dateFormat);
                         }
-                        startDate.set(thisWeekend.saturday.format('YYYY-MM-DD'));
-                        endDate.set(thisWeekend.sunday.format('YYYY-MM-DD'));
+
+                        dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
                     }}
             >
                 {$_("agenda.search-section.weekend")}
@@ -197,8 +157,8 @@
 
             <!--    DATE    -->
             <button
-                    class="block w-full p-3 mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent
-                    {$startDate && $endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}"
+                    class="block w-full p-3 mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
+                    {startDate && endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}"
             >
                 <span class="flex justify-center items-center w-max m-auto">
                     <Calendar class="w-5 h-5 -mt-1"/>
