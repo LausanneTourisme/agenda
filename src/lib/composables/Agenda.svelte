@@ -12,6 +12,7 @@
     import {dateFormat, getWeekend, now} from "$lib/date-utils";
     import moment from "moment";
     import {debounce} from "$lib/utils";
+    import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
 
     const dispatch = createEventDispatcher<{
         loadMore: { event: any };
@@ -28,6 +29,8 @@
     export let hasMoreEvents: boolean = true;
     export let title: string | null | undefined;
     export let events: Event[];
+
+    export let loading: boolean = false;
 
     const thisWeekend = getWeekend(moment());
     let todaySelected: boolean;
@@ -104,6 +107,7 @@
                     .findIndex((s) => a.name === s.name) === i,
         );
     $: isLoading;
+    $: loading;
     $: tags;
     $: selectedTags;
     $: selectedTagsName;
@@ -192,14 +196,22 @@
                     {#if (selectedTagsName.length)}({selectedTagsName.length}){/if}
                 </button>
 
-                <TagsSwiper
-                        class="hidden sm:flex"
-                        {tags}
-                        {selectedTags}
-                        displayBtnAll={true}
-                        on:tagSelect={(event) => onTagSelected(event.detail.tag)}
-                        tagClass="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent px-5"
-                />
+                {#if loading}
+                    <div class="hidden sm:flex text-nowrap pb-2 h-[45px] w-full">
+                        {#each {length: 20} as _}
+                            <div class="mr-2 sm:text-md px-3 sm:py-1 sm:px-2 rounded-full w-[200px] bg-gray-300 pointer-events-none"></div>
+                        {/each}
+                    </div>
+                {:else}
+                    <TagsSwiper
+                            class="hidden sm:flex"
+                            {tags}
+                            {selectedTags}
+                            displayBtnAll={true}
+                            on:tagSelect={(event) => onTagSelected(event.detail.tag)}
+                            tagClass="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent px-5"
+                    />
+                {/if}
             {/key}
 
             <Drawer
@@ -257,7 +269,6 @@
             </Drawer>
         </div>
 
-        <!-- TODO bind to var an search in loaded events -->
         <div class="by-name w-full sm:hidden">
             <input
                     class="bg-stone-100 w-full focus:outline-none p-4 font-light border-0 focus:ring-0"
@@ -284,15 +295,21 @@
         {/if}
     </div>
     <div class="grid xl:grid-cols-2 3xl:grid-cols-3 gap-4">
-        {#each eventsToDisplay as event, index}
-            <EventCard {event} {baseUrl}/>
-        {/each}
+        {#if loading}
+            {#each {length: 20} as _}
+                <EventCardPlaceholder/>
+            {/each}
+        {:else}
+            {#each eventsToDisplay as event}
+                <EventCard {event} {baseUrl}/>
+            {/each}
+        {/if}
     </div>
     <div class="flex flex-col items-center mt-5">
         {#if isLoading}
             <Loader class="ml-3" size="{30}"/>
         {/if}
-        {#if !isLoading && hasMoreEvents}
+        {#if !isLoading && hasMoreEvents && !loading}
             <button
                     on:click={(e) => {
                         isLoading = true;
@@ -305,7 +322,7 @@
                 {$_("agenda.search-section.load-more")}
             </button>
         {/if}
-        {#if !isLoading && !hasMoreEvents}
+        {#if (!isLoading && !hasMoreEvents) || loading }
             <p class="w-full align-middle text-center">
                 {$_("agenda.search-section.load-complete")}
             </p>

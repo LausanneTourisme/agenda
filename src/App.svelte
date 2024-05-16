@@ -54,12 +54,14 @@
     let agendaEvents: Event[] = []; // events to display in agenda section
     let hasMoreEvents: boolean = true;
     let disableHighlightsLoadMore = false;
+    let loadingData = true;
 
     function setDataAndDisableSpecialEvents(events: Event[]){
         agendaEvents = [...events];
         highlights = [...events.filter(e => e.highlight)];
         disableHighlightsLoadMore = true;
         hasMoreEvents = false;
+        loadingData = false;
     }
 
     async function onDateChanges(events: Event[], locale: Locales, query: string|undefined|null, dates: [string, string|undefined|null]) {
@@ -142,6 +144,7 @@
     }
 
     async function resetEvents() {
+        loadingData = true;
         log('App: reset Events')
         const result = await getFreshEvent(apiUrl, key, events, {load_by: loadBy})
         log('App: reset Events getted', {result})
@@ -160,6 +163,7 @@
         highlights = result.highlights;
         hasMoreEvents = true;
         disableHighlightsLoadMore = false;
+        loadingData=false;
     }
 
     onMount(async () => {
@@ -199,6 +203,7 @@
             <Highlights
                     title={highlightTitle}
                     events={highlights}
+                    bind:loading={loadingData}
                     on:loadMore={handleMoreHighlights}
             />
         {/if}
@@ -210,6 +215,7 @@
                         bind:hasMoreEvents={hasMoreEvents}
                         bind:startDate={startDate}
                         bind:endDate={endDate}
+                        bind:loading={loadingData}
                         events={agendaEvents}
                         on:search={async (e) => await onSearch(e.detail.query, key)}
                         on:loadMore={handleMoreAgenda}

@@ -20,7 +20,6 @@
     export let draggable: boolean = false;
     export let event: Event;
 
-
     const media: Media | undefined = event.medias.find(x => x.is_cover);
 
 
@@ -81,19 +80,19 @@
 
                     <p class="flex w-full text-sm">
                         {#if isSameDays(event)}
-                        <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {date.start.locale($_('date.locale')).format('DD.MM.YY')}
-                        </span>
+                            <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                                {date.start.locale($_('date.locale')).format('DD.MM.YY')}
+                            </span>
                         {:else}
-                        <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {date.start.locale($_('date.locale')).format('DD.MM.YY')}
-                        </span>
+                            <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                                {date.start.locale($_('date.locale')).format('DD.MM.YY')}
+                            </span>
 
                             <span class="px-1" title="{$_('date.separator')}"> - </span>
 
                             <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {date.end.locale($_('date.locale')).format('DD.MM.YY')}
-                        </span>
+                                {date.end.locale($_('date.locale')).format('DD.MM.YY')}
+                            </span>
                         {/if}
                     </p>
                 </div>
