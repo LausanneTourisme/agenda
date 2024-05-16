@@ -37,7 +37,7 @@
     let selectedTags: Tag[] = [];
     let selectedTagsName: string[] = [];
 
-    let tags: Tag[];
+    let tags: Tag[] = [];
     let openTagsDrawer = false;
 
     if (selectedTags?.length > 0) {
@@ -158,7 +158,7 @@
     $: selectedTagsName;
     $: eventsToDisplay;
     $: key = $locale ?? "en";
-    $: endDate, todaySelected=now === $startDate && now === $endDate, weekendSelected=thisWeekend.saturday.format('YYYY-MM-DD') === $startDate && thisWeekend.sunday.format('YYYY-MM-DD') === $endDate
+    $: $endDate, todaySelected=now === $startDate && now === $endDate, weekendSelected=thisWeekend.saturday.format('YYYY-MM-DD') === $startDate && thisWeekend.sunday.format('YYYY-MM-DD') === $endDate
 </script>
 
 <div class="agenda p-5 md:p-7 md:px-12">
