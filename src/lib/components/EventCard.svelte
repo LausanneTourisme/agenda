@@ -37,8 +37,8 @@
                 {#if media}
                     <CldImage
                             src="{media.cloudinary_id}"
-                            alt="{media.copyright}"
-                            title="{media.copyright}"
+                            alt="{!media.copyright || media.copyright?.trim() === '©' ? $_('copyright') : media.copyright}"
+                            title="{!media.copyright || media.copyright?.trim() === '©' ? $_('copyright') : media.copyright}"
                             height="{500}"
                             width="{500}"
                             sizes="100vw"

@@ -121,7 +121,7 @@
             <button
                     class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
                     {todaySelected ? 'border-honey-500 bg-honey-500' : ''}"
-                    on:click={(e) => {
+                    on:click={(_) => {
                         if(!todaySelected){
                             startDate = now;
                             endDate = todaySelected ? null : now;
@@ -140,7 +140,7 @@
             <button
                     class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent break-keep whitespace-break-spaces
                     {weekendSelected ? 'border-honey-500 bg-honey-500' : ''}"
-                    on:click={(e)=>{
+                    on:click={(_)=>{
                         if(weekendSelected){
                             startDate = now;
                             endDate = null;
@@ -311,6 +311,12 @@
             </p>
             <button
                     class="block w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
+                    on:click={() => {
+                        document.querySelector(".agenda")?.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'start',
+                        });
+                    }}
             >
                 {$_("agenda.search-section.again")}
             </button>

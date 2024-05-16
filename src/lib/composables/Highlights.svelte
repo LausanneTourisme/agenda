@@ -50,7 +50,7 @@
         </Swiper>
     {:else}
         <div class="highlights pb-4 px-2 sm:px-16 select-none">
-            <p class="h-full rounded-none shadow-none p-4 h-[430px]">
+            <p class="rounded-none shadow-none p-4 h-[320px] sm:h-[440px]">
                 Aucun événement prévu pour les dates sélectionnées. Veuillez choisir d'autres dates.
             </p>
         </div>

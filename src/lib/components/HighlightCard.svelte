@@ -45,7 +45,7 @@
     >
         <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event?.seo?.hreflang[key]}"
                    on:mousedown={(e) => mouseDown(e)}>
-            <div class="card-body flex flex-col h-full">
+            <div class="card-body w-min flex flex-col h-full">
                 <!--        TODO add placeholder -->
                 <div class="aspect-square w-44 sm:w-72">
                     {#if media}

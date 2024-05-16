@@ -33,11 +33,13 @@
     export let highlightTitle: string | null | undefined = $$props["highlight-title"];
     export let agendaTitle: string | null | undefined = $$props["agenda-title"];
     export let apiUrl: string | null | undefined = $$props["api-url"];
-    export let startDate: string | null | undefined = $$props["start-date"] ?? now;
+    export let startDate: string = $$props["start-date"] ?? now;
     export let endDate: string | null | undefined = $$props["end-date"];
     export let baseUrl: string = $$props["base-url"];
     export let lang: string = $$props["lang"] ?? $locale ?? 'en';
     export let loadBy: number = $$props["load-by"] ?? 10;
+
+    let searchValue : string|undefined|null;
 
     const dispatch = createEventDispatcher();
 
@@ -61,7 +63,9 @@
     }
 
     async function onDateChanges(events: Event[], locale: Locales, query: string|undefined|null, dates: [string, string|undefined|null]) {
-        const tempEvents: Event[] = query ? searchEvents(query, locale, events) : events;
+        searchValue = query;
+
+        const tempEvents: Event[] = searchValue ? searchEvents(searchValue, locale, events) : events;
         startDate = dates[0];
         endDate = dates[1];
 
@@ -75,12 +79,13 @@
     }
 
     async function onSearch(query: string|undefined|null, locale: Locales) {
-        if(!query){
+        searchValue = query;
+        if(!searchValue){
             console.log("no query")
           return await resetEvents();
         }
 
-        const result = sort(searchEvents(query, locale, usableEvents), {
+        const result = sort(searchEvents(searchValue, locale, usableEvents), {
             locale,
             startingDate: moment(startDate, dateFormat),
             endingDate: endDate ? moment(endDate, dateFormat) : null
@@ -141,11 +146,18 @@
         const result = await getFreshEvent(apiUrl, key, events, {load_by: loadBy})
         log('App: reset Events getted', {result})
 
-        agendaEvents = result.agenda;
-        highlights = result.highlights;
+        events = result.events;
         usableEvents = result.usableEvents
         usableHighlights = result.usableEvents.filter(e => e.highlight);
-        events = result.events;
+
+        if(searchValue){
+            log(`App: you searched previously '${searchValue}'... let keep your search`)
+            await onDateChanges(usableEvents, key, searchValue, [startDate, endDate]);
+            return;
+        }
+
+        agendaEvents = result.agenda;
+        highlights = result.highlights;
         hasMoreEvents = true;
         disableHighlightsLoadMore = false;
     }
@@ -160,7 +172,10 @@
 
 
     $: lang;
-    $: key = ($locale ?? 'en') as Locales, (async () => await resetEvents())();
+    $: key = ($locale ?? 'en') as Locales, (async () => {
+        events = [];
+        await resetEvents();
+    })();
     $: applyStyling(divStyleElement);
     $: agendaEvents;
     $: highlights;
