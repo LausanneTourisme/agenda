@@ -257,3 +257,39 @@ async function getAllEvents(apiUrl: string): Promise<Event[]> {
 
     return items;
 }
+
+
+export const searchEvents = (query: string | undefined | null, locale: Locales = "en", events: Event[] = []) => {
+    if (!query || events.length === 0) {
+        return [...events];
+    }
+
+    const fuse = new Fuse(events, {
+        includeScore: true,
+        includeMatches: true,
+        findAllMatches: true,
+        threshold: 0.3,
+        location: 0,
+        distance: 100,
+        keys: [
+            {
+                name: `name.${locale}`,
+                weight: 1,
+            },
+            {
+                name: `seo.name.${locale}`,
+                weight: 0.9,
+            },
+            {
+                name: `categories.public_name.${locale}`,
+                weight: 0.3,
+            },
+            {
+                name: `tags.public_name.${locale}`,
+                weight: 0.1,
+            },
+        ]
+    })
+
+    return [...fuse.search(query.toLowerCase()).map(e => e.item)];
+};
