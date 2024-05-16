@@ -79,24 +79,24 @@
 
                     <p class="flex w-full leading-snug tracking-tight truncate mt-1">
                         {#if isSameDays(event)}
-                        <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {date.start.locale($_('date.locale')).format('DD.MM.YY')}
-                        </span>
+                            <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                                {date.start.locale($_('date.locale')).format('DD.MM.YY')}
+                            </span>
                         {:else}
                             <span class="hidden sm:inline-block pr-1"
                                   title="{$_('date.start')}">{$_('date.start')}</span>
 
                             <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {date.start.locale($_('date.locale')).format('DD.MM.YY')}
-                        </span>
+                                {date.start.locale($_('date.locale')).format('DD.MM.YY')}
+                            </span>
 
                             <span class="px-1 sm:hidden" title="{$_('date.separator')}"> - </span>
                             <span class="px-1 hidden sm:inline-block"
                                   title="{$_('date.separator')}"> {$_('date.separator')} </span>
 
                             <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                            {date.end.locale($_('date.locale')).format('DD.MM.YY')}
-                        </span>
+                                {date.end.locale($_('date.locale')).format('DD.MM.YY')}
+                            </span>
                         {/if}
                     </p>
                 </div>
@@ -113,13 +113,13 @@
                 <!--LOCATION-->
                 <div class="location text-sm sm:text-md flex w-full mt-2 sm:mt-4">
                     {#if (geolocation?.venue ?? geolocation?.address) !== undefined}
-                    <div class="mr-2">
-                        <MapPin class="text-honey-500" size="24px"/>
-                    </div>
-                    <p class="leading-snug tracking-tight truncate mt-1"
-                       title="{geolocation?.venue ?? geolocation?.address}">
-                        {geolocation?.venue ?? geolocation?.address}
-                    </p>
+                        <div class="mr-2">
+                            <MapPin class="text-honey-500" size="24px"/>
+                        </div>
+                        <p class="leading-snug tracking-tight truncate mt-1"
+                           title="{geolocation?.venue ?? geolocation?.address}">
+                            {geolocation?.venue ?? geolocation?.address}
+                        </p>
                     {/if}
                 </div>
             </Clickable>
