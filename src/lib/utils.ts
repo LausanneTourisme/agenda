@@ -32,3 +32,14 @@ export const warn = (information: string, content: any = undefined): void | null
 export const randomNumber = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1) + min);
 
 export const blankable = (href: NullableString): NullableString => (href && href.includes('http')) ? "_blank" : null;
+
+export const debounce = (callback: Function, wait: number) => {
+    let timeoutId: NodeJS.Timeout | number | undefined;
+
+    return (...args: any[]): void => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(async () => {
+            callback(...args);
+        }, wait);
+    };
+}
