@@ -7,13 +7,13 @@
 <script lang="ts">
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, locales, register} from "svelte-i18n";
-    import type {Event, Histories, Locales, RawDate} from "$lib/types";
+    import {type Event, type Locales} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
     import {createEventDispatcher, onMount} from "svelte";
-    import moment from "moment";
-    import {applyStyling, handleMoreEvents, sortEvents, updateEvents} from "$lib/utils";
+    import {applyStyling, log} from "$lib/utils";
     import {blankableLinks, endDate, startDate} from "$lib/store";
+    import {getFreshEvent} from "$lib/event-utils";
 
     register("fr", () => import("$lib/i18n/fr.json"));
     register("en", () => import("$lib/i18n/en.json"));
@@ -32,84 +32,97 @@
     export let agendaTitle: string | null | undefined = $$props["agenda-title"];
     export let apiUrl: string | null | undefined = $$props["api-url"];
     export let baseUrl: string = $$props["base-url"];
-
-    //default we display all events starting today to indefinitely
-    if($$props["start-date"]){
-        startDate.set($$props["start-date"]);
-    }
-    if($$props["end-date"]){
-        endDate.set($$props["end-date"]);
-    }
+    export let lang: string = $$props["lang"] ?? $locale ?? 'en';
+    export let loadBy: number = $$props["load-by"] ?? 10;
 
     const dispatch = createEventDispatcher();
 
     let divStyleElement: HTMLElement | undefined;
 
     let key: Locales;
-    let events: Event[] = [];
 
-    let highlights: Event[];
-    let agendaEvents: Event[]
+    let events: Event[] = [];// all events in db
+    let usableEvents: Event[] = []; // events available with the current locale
+    let usableHighlights: Event[] = []; // events available with the current locale
+    let highlights: Event[] = []; // highlights to display
+    let agendaEvents: Event[] = []; // events to display in agenda section
+    let hasMoreEvents: boolean = true;
 
-    const history: Histories = $locales.reduce((previous, current) => {
-        previous[current] = {
-            highlights: {
-                hasMore: true,
-            },
-            events: {
-                hasMore: true,
+    //default we display all events starting today to indefinitely
+    if ($$props["start-date"]) {
+        startDate.set($$props["start-date"]);
+    }
+    if ($$props["end-date"]) {
+        endDate.set($$props["end-date"]);
+    }
+
+
+    async function handleMoreHighlights() {
+        let index = 0;
+        let tmpEvents: Event[] = [];
+
+        for (const event of usableHighlights) {
+            if (index >= loadBy) break;
+
+            if (event.highlight && !highlights.find(e => e.id === event.id)) {
+                tmpEvents.push(event)
+                index++;
             }
-        };
-        return previous;
-    }, {} as Histories);
+        }
+        log("Handle more highlights!", {usableEvents, newEvents: tmpEvents})
 
+        agendaEvents = [...agendaEvents, ...tmpEvents];
+        highlights = [...highlights, ...tmpEvents];
+    }
 
-    function sortEventsToDisplay() {
-        if (!disableHighlights)
-            highlights = sortEvents(events, {
-                locale: key,
-                onlyAvailable: true,
-                onlyHighlights: true,
-                startingDate: moment($startDate, "YYYY-MM-DD"),
-                endingDate: null,
-            });
-        if (!disableAgenda)
-            agendaEvents = sortEvents(events, {
-                locale: key,
-                onlyAvailable: true,
-                onlyHighlights: false,
-                startingDate: moment($startDate, "YYYY-MM-DD"),
-                endingDate: $endDate ? moment($endDate, "YYYY-MM-DD") : null
-            });
+    async function handleMoreAgenda() {
+        let index = 0;
+        let tmpHighlight: Event[] = [];
+        let tmpEvents: Event[] = [];
+        for (const event of usableEvents) {
+            if (index >= 10) {
+                break;
+            }
+
+            if (event.highlight) {
+                tmpEvents.push(event);
+            }
+            tmpEvents.push(event);
+            index++;
+        }
+        log("Handle more events for the agenda!", {usableEvents, newEvents: tmpEvents})
+        agendaEvents = [...agendaEvents, ...tmpEvents];
+        highlights = [...highlights, ...tmpHighlight];
+
+        hasMoreEvents = agendaEvents.length < usableEvents.length
+    }
+
+    async function resetEvents() {
+        log('App: reset Events')
+        const result = await getFreshEvent(apiUrl, key, events, {load_by: loadBy})
+        log('App: reset Events getted', {result})
+        agendaEvents = result.agenda;
+        highlights = result.highlights;
+        usableEvents = result.usableEvents
+        usableHighlights = result.usableEvents.filter(e => e.highlight);
+        events = result.events;
+        hasMoreEvents = true;
     }
 
     onMount(async () => {
-        console.log("Mounting App");
-
+        log("App: Mounting App", {agendaEvents});
+        key = lang as Locales;
         blankableLinks.set(blankLinks)
 
-        if (!disableHighlights) {
-            const result = await updateEvents(apiUrl, events, key, "highlights");
-            events = result.events;
-
-            history[key].highlights.hasMore = result.hasMore;
-        }
-
-        if (!disableAgenda) {
-            const result = await updateEvents(apiUrl, events, key);
-            events = result.events;
-
-            history[key].events.hasMore = result.hasMore;
-        }
-
-        sortEventsToDisplay()
-        console.log("App mounted");
+        log("App: App mounted", {agendaEvents});
     });
 
+
+    $: lang;
+    $: key = ($locale ?? 'en') as Locales, (async () => await resetEvents())();
     $: applyStyling(divStyleElement);
-    $: key = ($locale ?? "en") as Locales;
-    $: events, sortEventsToDisplay();
-    $: history;
+    $: agendaEvents;
+    $: highlights;
     $: $endDate;
 </script>
 
@@ -131,18 +144,7 @@
             <Highlights
                     title={highlightTitle}
                     events={highlights}
-                    on:loadMore={async (e) => {
-                        if(!history[key].highlights.hasMore) return;
-
-                        const result = await handleMoreEvents(e, apiUrl, events, key, 'highlights')
-
-                        dispatch("loadMore", {
-                            options: `getHighlights`,
-                        });
-                        events = result.events;
-
-                        history[key].highlights.hasMore = result.hasMore;
-                    }}
+                    on:loadMore={handleMoreHighlights}
             />
         {/if}
         {#if !disableAgenda}
@@ -150,28 +152,12 @@
                 <Agenda
                         {baseUrl}
                         title={agendaTitle}
-                        bind:hasMoreEvents="{history[key].events.hasMore}"
+                        hasMoreEvents={hasMoreEvents}
                         events={agendaEvents}
                         on:search={(e) => {
-                            const searchValue = e.detail.value;
-                            const events = e.detail.events;
-
-                            if (!searchValue) return;
-
-                            const ids = events.map(x => x.id);
-                            //request to api with ids to ignore
-                        }}
-                        on:loadMore={async (e) => {
-                            const result = await handleMoreEvents(e, apiUrl, events, key)
-
-                            dispatch("loadMore", {
-                                options: `getEvents`,
-                            });
-
-                            events = result.events;
-
-                            history[key].events.hasMore = result.hasMore;
-                        }}
+                                //TODO use utils.fuzzy
+                            }}
+                        on:loadMore={handleMoreAgenda}
                 />
             </div>
         {/if}
