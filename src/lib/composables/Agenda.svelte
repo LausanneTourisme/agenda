@@ -290,7 +290,7 @@
                 values: {quantity: eventsToDisplay.length},
             })}
         </p>
-        {#if isLoading}
+        {#if isLoading || loading}
             <Loader class="ml-3" size="{30}"/>
         {/if}
     </div>
