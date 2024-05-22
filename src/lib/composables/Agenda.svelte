@@ -14,6 +14,19 @@
     import {debounce, defaultLocale, log} from "$lib/utils";
     import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
 
+    /*****************************************************************************
+     /* CALENDAR TEST SECTION
+     /*****************************************************************************/
+    import AirDatepicker from 'air-datepicker';
+    import 'air-datepicker/air-datepicker.css';
+    import localeEn from 'air-datepicker/locale/en';
+    import localeFr from 'air-datepicker/locale/fr';
+    import localeDe from 'air-datepicker/locale/de';
+
+    /*****************************************************************************
+     /* CALENDAR TEST SECTION
+     /*****************************************************************************/
+
     const dispatch = createEventDispatcher<{
         loadMore: { event: any };
         updateDates: { query: string | undefined, dates: [string, string | undefined | null] };
@@ -50,6 +63,56 @@
     if (selectedTags?.length > 0) {
         tags = tags.filter((tag: Tag) => selectedTags.includes(tag));
     }
+
+    /*****************************************************************************
+     /* Début CALENDAR TEST SECTION
+     /*****************************************************************************/
+
+    const smallScreen: number = 640;
+    let isMobile: boolean = window.innerWidth < smallScreen;
+
+    const calendarLocales = (locale: Locales) => {
+        switch (locale) {
+            case "fr":
+                return localeFr;
+            case "de":
+                return localeDe;
+            case "en":
+            default:
+                return localeEn;
+        }
+    }
+
+    let calendar: AirDatepicker | AirDatepicker<HTMLInputElement> | AirDatepicker<HTMLElement> | null = null;
+    let dpDates: string = ""
+    let dpField: HTMLInputElement;
+
+    const buildCalendar = () => {
+        calendar = new AirDatepicker('#dp', {
+            locale: calendarLocales(key as Locales ?? defaultLocale),
+            range: true,
+            multipleDatesSeparator: `,`,
+            onSelect: ({date}) => {
+                if(date instanceof Array && date.length === 2){
+                    startDate = moment(date[0]).format(dateFormat);
+                    endDate = moment(date[1]).format(dateFormat);
+
+                    dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] });
+                }
+            },
+            toggleSelected: ({datepicker}) => {
+                return datepicker.selectedDates.length === 2;
+            },
+            autoClose: true,
+            isMobile,
+            startDate,
+        });
+    }
+    onMount(buildCalendar)
+    /*****************************************************************************
+     /* FIN CALENDAR TEST SECTION
+     /*****************************************************************************/
+
 
     function sortEventsByTags(tag: Tag | null | undefined = null): void {
         if (!tag) {
@@ -106,6 +169,15 @@
                     .flatMap((x) => x.tags)
                     .findIndex((s) => a.name === s.name) === i,
         );
+    $: isMobile, (() => {
+        try{
+            calendar?.destroy()
+        }
+        catch (e){
+            console.error('trying to reset calendar too earlier')
+        }
+        buildCalendar()
+    })();
     $: isLoading;
     $: loading;
     $: tags;
@@ -115,6 +187,12 @@
     $: key = $locale ?? defaultLocale;
     $: endDate, todaySelected = now === startDate && now === endDate, weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate
 </script>
+
+<svelte:window on:resize={(e) => {
+    log('resizing !', {isMobile: window.innerWidth < smallScreen})
+    isMobile = window.innerWidth < smallScreen
+    calendar?.hide()
+}} />
 
 <div class="agenda p-5 md:p-7 md:px-12">
     <Heading class="mb-5" tag="h3">{title ?? $_("agenda.title")}</Heading>
@@ -134,6 +212,9 @@
                             endDate = null;
                         }
 
+                        calendar?.clear()
+                        selectedTags = [];
+                        selectedTagsName = [];
                         dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
                     }}
             >
@@ -153,14 +234,19 @@
                             endDate = thisWeekend.sunday.format(dateFormat);
                         }
 
+                        calendar?.clear()
+                        selectedTags = [];
+                        selectedTagsName = [];
                         dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
                     }}
             >
-                {$_("agenda.search-section.weekend")}
+                {$_("agenda.search_section.weekend")}
             </button>
 
             <!--    DATE    -->
+            <input type="text" id="dp" class="w-0 outline-0 ring-transparent outline-none" bind:value={dpDates} bind:this={dpField}/>
             <button
+                    on:click={(_) => dpField?.focus()}
                     class="block w-full p-3 mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
                     {startDate && endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}"
             >

@@ -169,7 +169,7 @@ export const fetchEvent = async (url: string | null | undefined, options: GqlOpt
 }
 
 // @ts-ignore
-export const getFreshEvent = async (apiUrl: string | null | undefined, locale: Locales, events: Event[], options: {
+export const getFreshEvents = async (apiUrl: string | null | undefined, locale: Locales, events: Event[], options: {
     disableAgenda?: boolean,
     disableHighlights?: boolean,
     load_by?: number,

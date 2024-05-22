@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>My web component test</title>
+    <style>
+        * {
+            font-family: Euclid Flex, sans-serif;
+        }
+    </style>
 </head>
 <body>
 <!--<div id="lt-agenda"></div>-->
-<swc-lt-agenda agenda-title="example of agenda" api-url="http://localhost:5000/wp-json/api/agenda" base-url="https://lausanne-tourisme.ch" blank-links="true"></swc-lt-agenda>
+<swc-lt-agenda lang="fr" agenda-title="custom agenda title" api-url="http://localhost:5000/wp-json/api/agenda" base-url="https://lausanne-tourisme.ch" blank-links="true"></swc-lt-agenda>
 <template id="swc-lt-agenda-styling">
     <style>
         @import url("/dist/tailwind.css");

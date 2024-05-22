@@ -5,8 +5,8 @@ export const dateFormat: string = "YYYY-MM-DD"
 export const now: string | RawDate = moment().format(dateFormat);
 
 export const getWeekend = (moment: Moment): { saturday: Moment, sunday: Moment } => ({
-    saturday: moment.day(6),
-    sunday: moment.day(7),
+    saturday: moment.clone().day(6),
+    sunday: moment.clone().day(7),
 });
 
 export const randomDate = (start: Moment, end: Moment): Moment => {

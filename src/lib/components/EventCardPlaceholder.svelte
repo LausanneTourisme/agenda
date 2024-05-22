@@ -10,9 +10,8 @@
         <!--TAGS-->
         <div class="text-nowrap pb-2 tags px-2 mt-1.5 sm:mt-4 sm:px-4 cursor-pointer h-[30px] w-full flex">
             {#each {length: 4} as _}
-                <div class="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 w-[200px] bg-gray-300 pointer-events-none"></div>
+                <div class="flex justify-content items-center w-[300px] text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 w-[200px] bg-gray-300 rounded-full"></div>
             {/each}
-            <div class="flex justify-content items-center text-sm sm:text-md px-3 sm:py-1 sm:px-2 w-[200px] bg-gray-300 pointer-events-none"></div>
         </div>
 
 

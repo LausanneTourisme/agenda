@@ -34,7 +34,6 @@
     export let lang: string = $$props["lang"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
     export let loadBy: number = $$props["load-by"] ?? 10;
 
-    let searchValue : string|undefined|null;
     init({
         fallbackLocale: defaultLocale,
         initialLocale: lang,
@@ -141,7 +140,13 @@
 
         hasMoreEvents = agendaEvents.length < usableEvents.length
 
-        log("Handle more events for the agenda!", {usableEvents, newEvents: tmpEvents, agendaEvents, highlights, hasMoreEvents})
+        log("Handle more events for the agenda!", {
+            usableEvents,
+            newEvents: tmpEvents,
+            agendaEvents,
+            highlights,
+            hasMoreEvents
+        })
     }
 
     async function resetEvents() {
@@ -165,7 +170,7 @@
         highlights = result.highlights;
         hasMoreEvents = true;
         disableHighlightsLoadMore = false;
-        loadingData=false;
+        loadingData = false;
     }
 
     onMount(async () => {
