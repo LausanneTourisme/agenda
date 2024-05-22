@@ -7,7 +7,8 @@
     "start": "Von"
   },
   "highlights": {
-    "title": "Unsere Empfehlungen"
+    "title": "Unsere Empfehlungen",
+    "nothing": "Für die gewählten Daten sind keine Veranstaltungen geplant. Bitte wählen Sie andere Daten."
   },
   "agenda": {
     "title": "Vollständige Tagesordnung",

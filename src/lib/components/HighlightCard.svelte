@@ -55,16 +55,17 @@
                                 height={500}
                                 width={500}
                                 sizes="100vw"
-                                class="object-cover bg-honey-800"
+                                class="object-cover bg-honey-800 break-words text-wrap"
                                 draggable="false"
                         />
                     {:else}
+                        <!--TODO how ?-->
                         <img src="./TODO_placeholder.png"
                              alt="invalide"
                              title="invalided"
                              height=500
                              width=500
-                             class="object-cover bg-honey-800"
+                             class="object-cover bg-honey-800 break-words text-wrap"
                         />
                     {/if}
                 </div>
