@@ -6,30 +6,36 @@
     "from": "From",
     "start": "From"
   },
-  "hightlights": {
+  "highlights": {
     "title": "Our recommendations"
   },
   "agenda": {
     "title": "Full agenda",
-    "search-section": {
+    "search_section": {
       "today": "Today",
       "weekend": "This weekend",
       "date": "Date",
-      "by-name-placeholder": "Search an event...",
-      "load-more": "Load more events",
-      "load-complete": "It's the end, do you want start a new search?",
+      "by_name_placeholder": "Search an event...",
+      "load_more": "Load more events",
+      "load_complete": "It's the end, do you want start a new search?",
       "again": "Refine my search"
     },
-    "event-found": "{quantity} event correspond to these criteria",
-    "events-found": "{quantity} events correspond to these criteria",
-    "by-tags": "By category",
+    "event_found": "{quantity} event correspond to these criteria",
+    "events_found": "{quantity} events correspond to these criteria",
+    "by_tags": "By category",
     "tags": {
       "title": "Categories",
-      "display-all": "Display all"
+      "display_all": "Display all"
     },
-    "tags-drawer": {
+    "tags_drawer": {
       "singular": "Show {quantity} result",
       "plural": "Show {quantity} results"
     }
+  },
+  "datepicker": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "this_week": "This week",
+    "this_weekend": "This week-end"
   }
 }

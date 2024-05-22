@@ -11,20 +11,15 @@
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
     import {createEventDispatcher, onMount} from "svelte";
-    import {applyStyling, log, warn} from "$lib/utils";
+    import {applyStyling, defaultLocale, log, warn} from "$lib/utils";
     import {blankableLinks} from "$lib/store";
-    import {getFreshEvent, searchEvents, sort} from "$lib/event-utils";
+    import {getFreshEvents, searchEvents, sort} from "$lib/event-utils";
     import moment from "moment";
     import {dateFormat, now} from "$lib/date-utils";
 
     register("fr", () => import("$lib/i18n/fr.json"));
     register("en", () => import("$lib/i18n/en.json"));
     register("de", () => import("$lib/i18n/de.json"));
-
-    init({
-        fallbackLocale: "en",
-        initialLocale: getLocaleFromNavigator()?.slice(0, 2) ?? "en"
-    });
 
     export let blankLinks: boolean = $$props["blank-links"] ?? false;
     export let disableHighlights: boolean = $$props["disable-highlights"] ?? false;
@@ -36,10 +31,16 @@
     export let startDate: string = $$props["start-date"] ?? now;
     export let endDate: string | null | undefined = $$props["end-date"];
     export let baseUrl: string = $$props["base-url"];
-    export let lang: string = $$props["lang"] ?? $locale ?? 'en';
+    export let lang: string = $$props["lang"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
     export let loadBy: number = $$props["load-by"] ?? 10;
 
     let searchValue : string|undefined|null;
+    init({
+        fallbackLocale: defaultLocale,
+        initialLocale: lang,
+    });
+
+    let searchValue: string | undefined | null;
 
     const dispatch = createEventDispatcher();
 
@@ -56,7 +57,7 @@
     let disableHighlightsLoadMore = false;
     let loadingData = true;
 
-    function setDataAndDisableSpecialEvents(events: Event[]){
+    function setDataAndDisableSpecialEvents(events: Event[]) {
         agendaEvents = [...events];
         highlights = [...events.filter(e => e.highlight)];
         disableHighlightsLoadMore = true;
@@ -64,7 +65,7 @@
         loadingData = false;
     }
 
-    async function onDateChanges(events: Event[], locale: Locales, query: string|undefined|null, dates: [string, string|undefined|null]) {
+    async function onDateChanges(events: Event[], locale: Locales, query: string | undefined | null, dates: [string, string | undefined | null]) {
         searchValue = query;
 
         const tempEvents: Event[] = searchValue ? searchEvents(searchValue, locale, events) : events;
@@ -80,11 +81,11 @@
         setDataAndDisableSpecialEvents(result);
     }
 
-    async function onSearch(query: string|undefined|null, locale: Locales) {
+    async function onSearch(query: string | undefined | null, locale: Locales) {
         searchValue = query;
-        if(!searchValue){
-            console.log("no query")
-          return await resetEvents();
+        if (!searchValue) {
+            log("no query")
+            return await resetEvents();
         }
 
         const result = sort(searchEvents(searchValue, locale, usableEvents), {
@@ -97,7 +98,7 @@
     }
 
     async function handleMoreHighlights() {
-        if(disableHighlightsLoadMore) {
+        if (disableHighlightsLoadMore) {
             warn('Handle more highlights skipped!');
             disableHighlightsLoadMore = false;
             return;
@@ -146,14 +147,15 @@
     async function resetEvents() {
         loadingData = true;
         log('App: reset Events')
-        const result = await getFreshEvent(apiUrl, key, events, {load_by: loadBy})
+        //TODO call getAllEvents later and not in getFreshEvents to prevent 2sec of waiting
+        const result = await getFreshEvents(apiUrl, key, events, {load_by: loadBy})
         log('App: reset Events getted', {result})
 
         events = result.events;
         usableEvents = result.usableEvents
         usableHighlights = result.usableEvents.filter(e => e.highlight);
 
-        if(searchValue){
+        if (searchValue) {
             log(`App: you searched previously '${searchValue}'... let keep your search`)
             await onDateChanges(usableEvents, key, searchValue, [startDate, endDate]);
             return;
@@ -169,15 +171,19 @@
     onMount(async () => {
         log("App: Mounting App", {agendaEvents});
         key = lang as Locales;
+        locale.set(lang);
+        log('locale', {locale: $locale, key, lang});
         blankableLinks.set(blankLinks)
 
         log("App: App mounted", {agendaEvents});
     });
 
 
+    $: $locale, (() => log('locale', {locale: $locale, key, lang}))();
     $: lang;
-    $: key = ($locale ?? 'en') as Locales, (async () => {
+    $: key = ( $locale ?? lang) as Locales, (async () => {
         events = [];
+        locale.set(key);
         await resetEvents();
     })();
     $: applyStyling(divStyleElement);
@@ -189,16 +195,18 @@
     {#if $isLoading}
         <Loader/>
     {:else}
-        <div class="lang-changer w-full flex justify-center fixed">
-            <select
-                    bind:value={$locale}
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/12 p-2.5"
-            >
-                {#each $locales as locale}
-                    <option value={locale}>{locale}</option>
-                {/each}
-            </select>
-        </div>
+
+
+<!--                <div class="lang-changer w-full flex justify-center fixed">-->
+<!--                    <select-->
+<!--                            bind:value={$locale}-->
+<!--                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/12 p-2.5"-->
+<!--                    >-->
+<!--                        {#each $locales as locale}-->
+<!--                            <option value={locale}>{locale}</option>-->
+<!--                        {/each}-->
+<!--                    </select>-->
+<!--                </div>-->
         {#if !disableHighlights}
             <Highlights
                     title={highlightTitle}

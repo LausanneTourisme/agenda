@@ -3,6 +3,7 @@
     import {_, locale} from "svelte-i18n";
     import {createEventDispatcher} from 'svelte';
     import Swiper from "$lib/components/Swiper.svelte";
+    import {defaultLocale} from "$lib/utils";
 
     const dispatch = createEventDispatcher<{ tagSelect: { tag: Tag | null | undefined } }>();
 
@@ -33,14 +34,14 @@
     }
 
     $: selectedTags;
-    $: key = ($locale ?? "en");
+    $: key = ($locale ?? defaultLocale);
 </script>
 
 <Swiper class="text-nowrap pb-2 {$$props.class ?? ''}" maxContent="{tags.length + (displayBtnAll ? 1:0)}">
     {#if displayBtnAll}
         <button on:click={() => dispatch('tagSelect', {tag: null})}
                 class="{selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
-                title="{$_('agenda.tags.display-all')}">{$_('agenda.tags.display-all')}
+                title="{$_('agenda.tags.display_all')}">{$_('agenda.tags.display_all')}
         </button>
     {/if}
     {#each tags as tag, i}

@@ -19,7 +19,6 @@
 
     export let loading: boolean = false;
 
-    const placeholders = Array.from({length: 20}, () => HighlightCardPlaceholder)
     let isDragging: boolean = false;
 
     let lastEvent: Event | null = null
@@ -36,7 +35,7 @@
 <div class="w-full bg-honey-500">
     <div class="flex pt-7 md:px-7">
         <Heading tag="h3" class="pl-5 md:pl-12 whitespace-nowrap" {title}>
-            {title ?? $_('hightlights.title', {default: 'Home'})}
+            {title ?? $_('highlights.title', {default: 'Home'})}
         </Heading>
         {#if loading}
             <Loader class="ml-3" size="{30}"/>

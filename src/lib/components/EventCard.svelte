@@ -10,6 +10,7 @@
     import Clickable from "$lib/components/Clickable.svelte";
     import {extractStartEndDate, isSameDays} from "$lib/date-utils";
     import type {Moment} from "moment";
+    import {defaultLocale} from "$lib/utils";
 
     let key: string;
 
@@ -24,7 +25,7 @@
     const media = event.medias.find(x => x.is_cover)
 
     $: date = extractStartEndDate(event);
-    $: key = ($locale ?? "en");
+    $: key = ($locale ?? defaultLocale);
 </script>
 
 {#key event.id}

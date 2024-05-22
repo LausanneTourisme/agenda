@@ -12,7 +12,7 @@
     import {CldImage} from "svelte-cloudinary";
     import {extractStartEndDate, isSameDays} from "$lib/date-utils";
     import type {Moment} from "moment";
-    import {log} from "$lib/utils";
+    import {defaultLocale, log} from "$lib/utils";
 
     let key: string;
 
@@ -33,7 +33,7 @@
     $: preventClick;
     $: locale;
     $: date = extractStartEndDate(event);
-    $: key = ($locale ?? "en");
+    $: key = ($locale ?? defaultLocale);
 </script>
 
 {#key event.id}

@@ -3,15 +3,15 @@
     import {Calendar, ChevronDown, Search} from "lucide-svelte";
     import {_, locale} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
-    import type {Event, Tag,} from "$lib/types";
+    import type {Event, Locales, Tag,} from "$lib/types";
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import Drawer from "svelte-drawer-component";
     import {Cross1} from "svelte-radix";
-    import {createEventDispatcher} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import Loader from "$lib/components/Loader.svelte";
     import {dateFormat, getWeekend, now} from "$lib/date-utils";
     import moment from "moment";
-    import {debounce} from "$lib/utils";
+    import {debounce, defaultLocale, log} from "$lib/utils";
     import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
 
     const dispatch = createEventDispatcher<{
@@ -20,7 +20,7 @@
         search: { query: string | undefined, events: Event[] };
     }>();
 
-    let key: string;
+    let key: string | Locales;
 
     export let startDate: string;
     export let endDate: string | undefined | null;
@@ -77,7 +77,6 @@
         }), 400)(); //reduce lag when user select multiple tags
     }
 
-
     const onTagSelected = (tag: Tag | null | undefined = null) => {
         sortEventsByTags(tag)
         searchValue = "";
@@ -89,6 +88,7 @@
             debounce(() => {
                 if (searchValue !== oldSearchValue) {
                     selectedTags = [];
+                    selectedTagsName = [];
                     dispatch("search", {query: searchValue?.toLowerCase(), events: eventsToDisplay});
                     oldSearchValue = searchValue
                 }
@@ -112,7 +112,7 @@
     $: selectedTags;
     $: selectedTagsName;
     $: eventsToDisplay;
-    $: key = $locale ?? "en";
+    $: key = $locale ?? defaultLocale;
     $: endDate, todaySelected = now === startDate && now === endDate, weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate
 </script>
 
@@ -137,7 +137,7 @@
                         dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
                     }}
             >
-                {$_("agenda.search-section.today")}
+                {$_("agenda.search_section.today")}
             </button>
 
             <!--    WEEKEND   -->
@@ -167,17 +167,15 @@
                 <span class="flex justify-center items-center w-max m-auto">
                     <Calendar class="w-5 h-5 -mt-1"/>
                     &nbsp;
-                    {$_("agenda.search-section.date")}
+                    {$_("agenda.search_section.date")}
                 </span>
             </button>
 
-            <div
-                    class="by-name hidden sm:flex sm:items-center border-b border-honey-500"
-            >
+            <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500">
                 <input
                         class="h-full w-full outline-0 ring-transparent outline-none"
                         name="search-event"
-                        placeholder={$_("agenda.search-section.by-name-placeholder")}
+                        placeholder={$_("agenda.search_section.by_name_placeholder")}
                         type="search"
                         bind:value={searchValue}
                         on:keyup={() => onInput()}
@@ -192,7 +190,7 @@
                         on:click={() => (openTagsDrawer = true)}
                         class="sm:hidden block w-full p-3 mb-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
                 >
-                    {$_("agenda.by-tags")}
+                    {$_("agenda.by_tags")}
                     {#if (selectedTagsName.length)}({selectedTagsName.length}){/if}
                 </button>
 
@@ -237,8 +235,8 @@
                             ? 'border-honey-500 bg-honey-500'
                             : ''} px-5"
                             on:click={() => onTagSelected()}
-                            title={$_("agenda.tags.display-all")}
-                    >{$_("agenda.tags.display-all")}</button
+                            title={$_("agenda.tags.display_all")}
+                    >{$_("agenda.tags.display_all")}</button
                     >
 
                     {#each tags as tag}
@@ -261,7 +259,7 @@
                             class="border border-honey-500 bg-honey-500 py-2 px-4 float-right"
                             on:click={() => (openTagsDrawer = false)}
                     >{$_(
-                        `agenda.tags-drawer.${eventsToDisplay.length === 1 ? "singular" : "plural"}`,
+                        `agenda.tags_drawer.${eventsToDisplay.length === 1 ? "singular" : "plural"}`,
                         {values: {quantity: eventsToDisplay.length}},
                     )}</button
                     >
@@ -273,7 +271,7 @@
             <input
                     class="bg-stone-100 w-full focus:outline-none p-4 font-light border-0 focus:ring-0"
                     name="search-event"
-                    placeholder={$_("agenda.search-section.by-name-placeholder")}
+                    placeholder={$_("agenda.search_section.by_name_placeholder")}
                     type="search"
                     bind:value={searchValue}
                     on:keyup={() => onInput()}
@@ -286,7 +284,7 @@
         <p
                 class="text-xl sm:text-2xl font-semibold leading-tight tracking-tighter my-5"
         >
-            {$_(`agenda.event${eventsToDisplay.length === 1 ? "" : "s"}-found`, {
+            {$_(`agenda.event${eventsToDisplay.length === 1 ? "" : "s"}_found`, {
                 values: {quantity: eventsToDisplay.length},
             })}
         </p>
@@ -319,12 +317,12 @@
             >
                 <ChevronDown/>
                 &nbsp;
-                {$_("agenda.search-section.load-more")}
+                {$_("agenda.search_section.load_more")}
             </button>
         {/if}
         {#if (!isLoading && !hasMoreEvents) || loading }
             <p class="w-full align-middle text-center">
-                {$_("agenda.search-section.load-complete")}
+                {$_("agenda.search_section.load_complete")}
             </p>
             <button
                     class="block w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
@@ -335,7 +333,7 @@
                         });
                     }}
             >
-                {$_("agenda.search-section.again")}
+                {$_("agenda.search_section.again")}
             </button>
         {/if}
     </div>

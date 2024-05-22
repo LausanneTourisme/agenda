@@ -10,6 +10,7 @@ if (ltAgenda) {
     app = new App({
         target: ltAgenda,
         props: {
+            // lang: 'fr',
             apiUrl: import.meta.env.VITE_API_URL,
             baseUrl: import.meta.env.VITE_LT_URL,
             blankLinks: true,

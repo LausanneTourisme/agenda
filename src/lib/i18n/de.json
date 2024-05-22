@@ -6,30 +6,36 @@
     "from": "Von",
     "start": "Von"
   },
-  "hightlights": {
+  "highlights": {
     "title": "Unsere Empfehlungen"
   },
   "agenda": {
     "title": "Vollständige Tagesordnung",
-    "search-section": {
+    "search_section": {
       "today": "Heute",
       "weekend": "Dieses Wochenende",
       "date": "Date",
-      "by-name-placeholder": "Ein Ereignis suchen...",
-      "load-more": "Mehr Ereignisse laden",
-      "load-complete": "Das ist das Ende, wollen Sie eine neue Suche starten?",
+      "by_name_placeholder": "Ein Ereignis suchen...",
+      "load_more": "Mehr Ereignisse laden",
+      "load_complete": "Das ist das Ende, wollen Sie eine neue Suche starten?",
       "again": "Meine Suche verfeinern"
     },
-    "event-found": "{quantity} Ereignisse entsprechen diesen Kriterien",
-    "events-found": "{quantity} Ereignisse entsprechen diesen Kriterien",
-    "by-tags": "Nach Kategorie",
+    "event_found": "{quantity} Ereignisse entsprechen diesen Kriterien",
+    "events_found": "{quantity} Ereignisse entsprechen diesen Kriterien",
+    "by_tags": "Nach Kategorie",
     "tags": {
       "title": "Kategorien",
-      "display-all": "Alle anzeigen"
+      "display_all": "Alle anzeigen"
     },
-    "tags-drawer": {
+    "tags_drawer": {
       "singular": "Ergebnis {quantity} anzeigen",
       "plural": "Zeige {quantity} Ergebnisse"
     }
+  },
+  "datepicker": {
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "this_week": "Diese Woche",
+    "this_weekend": "Dieses Wochenende"
   }
 }
