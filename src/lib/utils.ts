@@ -1,4 +1,6 @@
-import {Environment, type History, type NullableString} from "$lib/types";
+import {Environment, type Locales, type NullableString} from "$lib/types";
+
+export const defaultLocale: Locales = 'en';
 
 /**
  * trick to bypass problem with tailwind and shadow dom
