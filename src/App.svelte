@@ -13,7 +13,7 @@
     import {createEventDispatcher, onMount} from "svelte";
     import {applyStyling, defaultLocale, log, warn} from "$lib/utils";
     import {blankableLinks} from "$lib/store";
-    import {getFreshEvents, searchEvents, sort} from "$lib/event-utils";
+    import {getAllEvents, getFreshEvents, searchEvents, sort} from "$lib/event-utils";
     import moment from "moment";
     import {dateFormat, now} from "$lib/date-utils";
 
@@ -68,6 +68,9 @@
         searchValue = query;
 
         const tempEvents: Event[] = searchValue ? searchEvents(searchValue, locale, events) : events;
+
+        disableHighlightsLoadMore = !!dates[1];
+
         startDate = dates[0];
         endDate = dates[1];
 
@@ -99,7 +102,7 @@
     async function handleMoreHighlights() {
         if (disableHighlightsLoadMore) {
             warn('Handle more highlights skipped!');
-            disableHighlightsLoadMore = false;
+            // disableHighlightsLoadMore = false;
             return;
         }
 
@@ -158,6 +161,17 @@
 
         events = result.events;
         usableEvents = result.usableEvents
+
+        if (events.length === 0) {
+            setTimeout(async () => {
+                if (apiUrl) {
+                    events = sort(await getAllEvents(apiUrl));
+                    usableEvents = usableEvents.filter(event => event.languages.includes(key));
+                    disableHighlightsLoadMore = false;
+                }
+            }, 500)
+        }
+
         usableHighlights = result.usableEvents.filter(e => e.highlight);
 
         if (searchValue) {
@@ -169,7 +183,7 @@
         agendaEvents = result.agenda;
         highlights = result.highlights;
         hasMoreEvents = true;
-        disableHighlightsLoadMore = false;
+        disableHighlightsLoadMore = true;
         loadingData = false;
     }
 
@@ -186,7 +200,7 @@
 
     $: $locale, (() => log('locale', {locale: $locale, key, lang}))();
     $: lang;
-    $: key = ( $locale ?? lang) as Locales, (async () => {
+    $: key = ($locale ?? lang) as Locales, (async () => {
         events = [];
         locale.set(key);
         await resetEvents();
@@ -202,16 +216,16 @@
     {:else}
 
 
-<!--                <div class="lang-changer w-full flex justify-center fixed">-->
-<!--                    <select-->
-<!--                            bind:value={$locale}-->
-<!--                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/12 p-2.5"-->
-<!--                    >-->
-<!--                        {#each $locales as locale}-->
-<!--                            <option value={locale}>{locale}</option>-->
-<!--                        {/each}-->
-<!--                    </select>-->
-<!--                </div>-->
+        <!--                <div class="lang-changer w-full flex justify-center fixed">-->
+        <!--                    <select-->
+        <!--                            bind:value={$locale}-->
+        <!--                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-2/12 p-2.5"-->
+        <!--                    >-->
+        <!--                        {#each $locales as locale}-->
+        <!--                            <option value={locale}>{locale}</option>-->
+        <!--                        {/each}-->
+        <!--                    </select>-->
+        <!--                </div>-->
         {#if !disableHighlights}
             <Highlights
                     title={highlightTitle}

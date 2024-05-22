@@ -191,7 +191,12 @@
 <svelte:window on:resize={(e) => {
     log('resizing !', {isMobile: window.innerWidth < smallScreen})
     isMobile = window.innerWidth < smallScreen
-    calendar?.hide()
+    try{
+        calendar?.hide()
+    }
+    catch (e){
+        console.error(`calendar element is not yet created`)
+    }
 }} />
 
 <div class="agenda p-5 md:p-7 md:px-12">

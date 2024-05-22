@@ -212,9 +212,9 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
             agenda = [...result.events, ...highlights];
         }
 
-        newEvents = sort(await getAllEvents(apiUrl));
+        newEvents = [] /*sort(await getAllEvents(apiUrl));*/
 
-        usableEvents = newEvents.filter(event => event.languages.includes(locale));
+        usableEvents = sort([...highlights, ...agenda]) /*newEvents.filter(event => event.languages.includes(locale));*/
 
         log('getFreshEvent: events completely sorted', {newEvents, usableEvents})
     } else {
@@ -248,7 +248,7 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
 }
 
 
-async function getAllEvents(apiUrl: string): Promise<Event[]> {
+export async function getAllEvents(apiUrl: string): Promise<Event[]> {
     log('getAllEvents: getting all events')
     const items = await fetchAll(apiUrl);
     log('getAllEvents: dump completed', {events: items})
