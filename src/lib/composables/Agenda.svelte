@@ -18,6 +18,7 @@
      /* START CALENDAR SECTION
      /*****************************************************************************/
     import AirDatepicker from "air-datepicker";
+    import 'air-datepicker/air-datepicker.css';
     import localeEn from 'air-datepicker/locale/en';
     import localeFr from 'air-datepicker/locale/fr';
     import localeDe from 'air-datepicker/locale/de';
@@ -188,6 +189,7 @@
 </script>
 
 <svelte:window on:resize={(e) => {
+    log('resizing !', {isMobile: window.innerWidth < smallScreen, window_width: document.body.offsetWidth})
     isMobile = document.body.offsetWidth < smallScreen
     try{
         calendar?.hide()
@@ -263,7 +265,7 @@
                 </button>
             </div>
 
-            <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500">
+            <div class="by-name !hidden sm:flex sm:items-center border-b border-honey-500">
                 <input
                         class="h-full w-full outline-0 ring-transparent outline-none"
                         name="search-event"
@@ -287,14 +289,14 @@
                 </button>
 
                 {#if loading}
-                    <div class="hidden sm:flex text-nowrap pb-2 h-[45px] w-full">
+                    <div class="!hidden sm:flex text-nowrap pb-2 h-[45px] w-full">
                         {#each {length: 20} as _}
                             <div class="mr-2 sm:text-md px-3 sm:py-1 sm:px-2 rounded-full w-[200px] bg-gray-300 pointer-events-none"></div>
                         {/each}
                     </div>
                 {:else}
                     <TagsSwiper
-                            class="hidden sm:flex"
+                            class="!hidden sm:flex"
                             {tags}
                             {selectedTags}
                             displayBtnAll={true}
