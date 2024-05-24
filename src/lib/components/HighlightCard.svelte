@@ -55,17 +55,16 @@
                                 height={500}
                                 width={500}
                                 sizes="100vw"
-                                class="object-cover bg-honey-800 break-words text-wrap"
+                                class="object-cover bg-honey-800 break-all text-wrap"
                                 draggable="false"
                         />
                     {:else}
-                        <!--TODO how ?-->
-                        <img src="./TODO_placeholder.png"
-                             alt="invalide"
-                             title="invalided"
+                        <img src="https://static.lausanne-tourisme.ch/image/upload/v1588747700/fgbcshmie94gzvhjxqoc.jpg"
+                             alt="{$_('copyright')}"
+                             title="{$_('copyright')}"
                              height=500
                              width=500
-                             class="object-cover bg-honey-800 break-words text-wrap"
+                             class="object-cover bg-honey-800 break-all text-wrap"
                         />
                     {/if}
                 </div>

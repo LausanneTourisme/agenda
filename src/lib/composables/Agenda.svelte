@@ -15,16 +15,15 @@
     import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
 
     /*****************************************************************************
-     /* CALENDAR TEST SECTION
+     /* START CALENDAR SECTION
      /*****************************************************************************/
-    import AirDatepicker from 'air-datepicker';
-    import 'air-datepicker/air-datepicker.css';
+    import AirDatepicker from "air-datepicker";
     import localeEn from 'air-datepicker/locale/en';
     import localeFr from 'air-datepicker/locale/fr';
     import localeDe from 'air-datepicker/locale/de';
 
     /*****************************************************************************
-     /* CALENDAR TEST SECTION
+     /* END CALENDAR SECTION
      /*****************************************************************************/
 
     const dispatch = createEventDispatcher<{
@@ -65,7 +64,7 @@
     }
 
     /*****************************************************************************
-     /* Début CALENDAR TEST SECTION
+     /* START CALENDAR SECTION
      /*****************************************************************************/
 
     const smallScreen: number = 640;
@@ -93,11 +92,11 @@
             range: true,
             multipleDatesSeparator: `,`,
             onSelect: ({date}) => {
-                if(date instanceof Array && date.length === 2){
+                if (date instanceof Array && date.length === 2) {
                     startDate = moment(date[0]).format(dateFormat);
                     endDate = moment(date[1]).format(dateFormat);
 
-                    dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] });
+                    dispatch("updateDates", {query: searchValue?.toLowerCase(), dates: [startDate, endDate]});
                 }
             },
             toggleSelected: ({datepicker}) => {
@@ -109,8 +108,9 @@
         });
     }
     onMount(buildCalendar)
+
     /*****************************************************************************
-     /* FIN CALENDAR TEST SECTION
+     /* END CALENDAR SECTION
      /*****************************************************************************/
 
 
@@ -170,10 +170,9 @@
                     .findIndex((s) => a.name === s.name) === i,
         );
     $: isMobile, (() => {
-        try{
+        try {
             calendar?.destroy()
-        }
-        catch (e){
+        } catch (e) {
             console.error('trying to reset calendar too earlier')
         }
         buildCalendar()
@@ -189,15 +188,14 @@
 </script>
 
 <svelte:window on:resize={(e) => {
-    log('resizing !', {isMobile: window.innerWidth < smallScreen})
-    isMobile = window.innerWidth < smallScreen
+    isMobile = document.body.offsetWidth < smallScreen
     try{
         calendar?.hide()
     }
     catch (e){
         console.error(`calendar element is not yet created`)
     }
-}} />
+}}/>
 
 <div class="agenda p-5 md:p-7 md:px-12">
     <Heading class="mb-5" tag="h3">{title ?? $_("agenda.title")}</Heading>
@@ -249,18 +247,21 @@
             </button>
 
             <!--    DATE    -->
-            <input type="text" id="dp" class="w-0 outline-0 ring-transparent outline-none" bind:value={dpDates} bind:this={dpField}/>
-            <button
-                    on:click={(_) => dpField?.focus()}
-                    class="block w-full p-3 mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
+            <div class="flex relative w-full mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent ">
+                <input type="text" id="dp" class="absolute bottom-0 left-0 w-0 outline-0 ring-transparent outline-none" bind:value={dpDates}
+                       bind:this={dpField}/>
+                <button
+                        on:click={(_) => dpField?.focus()}
+                        class="block w-full  p-3 ring-transparent
                     {startDate && endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}"
-            >
+                >
                 <span class="flex justify-center items-center w-max m-auto">
                     <Calendar class="w-5 h-5 -mt-1"/>
                     &nbsp;
                     {$_("agenda.search_section.date")}
                 </span>
-            </button>
+                </button>
+            </div>
 
             <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500">
                 <input

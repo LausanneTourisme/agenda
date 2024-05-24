@@ -43,15 +43,15 @@
                             height="{500}"
                             width="{500}"
                             sizes="100vw"
-                            class="object-cover bg-gray-300"
+                            class="object-cover bg-gray-300 break-all text-wrap"
                     />
                 {:else}
-                    <img src="./TODO_placeholder.png"
-                         alt="invalide"
-                         title="invalided"
-                         height="500"
-                         width="500"
-                         class="object-cover"
+                    <img src="https://static.lausanne-tourisme.ch/image/upload/v1588747700/fgbcshmie94gzvhjxqoc.jpg"
+                         alt="{$_('copyright')}"
+                         title="{$_('copyright')}"
+                         height=500
+                         width=500
+                         class="object-cover bg-gray-300 break-all text-wrap"
                     />
                 {/if}
             </Clickable>
