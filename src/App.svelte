@@ -55,6 +55,7 @@
     let hasMoreEvents: boolean = true;
     let disableHighlightsLoadMore = false;
     let loadingData = true;
+    let loadingNextData = true;
 
     function setDataAndDisableSpecialEvents(events: Event[]) {
         agendaEvents = [...events];
@@ -128,12 +129,14 @@
         let tmpHighlight: Event[] = [];
         let tmpEvents: Event[] = [];
         for (const event of usableEvents) {
+            if(agendaEvents.find(e => e.id === event.id)) continue;
+
             if (index >= 10) {
                 break;
             }
 
             if (event.highlight) {
-                tmpEvents.push(event);
+                tmpHighlight.push(event);
             }
             tmpEvents.push(event);
             index++;
@@ -164,10 +167,14 @@
 
         if (events.length === 0) {
             setTimeout(async () => {
+                console.log({e:[...events], u:[...usableEvents]})
                 if (apiUrl) {
+                    loadingNextData = true
                     events = sort(await getAllEvents(apiUrl));
-                    usableEvents = usableEvents.filter(event => event.languages.includes(key));
+                    usableEvents = events.filter(event => event.languages.includes(key));
                     disableHighlightsLoadMore = false;
+                    loadingNextData = false
+                    console.log({events, usableEvents})
                 }
             }, 500)
         }
@@ -207,6 +214,7 @@
     })();
     $: applyStyling(divStyleElement);
     $: agendaEvents;
+    $: events;
     $: highlights;
 </script>
 
@@ -231,7 +239,8 @@
                         bind:startDate={startDate}
                         bind:endDate={endDate}
                         bind:loading={loadingData}
-                        events={agendaEvents}
+                        bind:LoadingAllContent={loadingNextData}
+                        bind:events={agendaEvents}
                         on:search={async (e) => await onSearch(e.detail.query, key)}
                         on:loadMore={handleMoreAgenda}
                         on:updateDates={async (e)=>{ await onDateChanges(usableEvents, key, e.detail.query, e.detail.dates)}}

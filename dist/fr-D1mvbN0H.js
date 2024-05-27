@@ -4,7 +4,8 @@ const e = "© Tous droits réservés", t = {
   from: "Dès",
   start: "Du"
 }, r = {
-  title: "Nos recommendations"
+  title: "Nos recommendations",
+  nothing: "Aucun événement prévu pour les dates sélectionnées. Veuillez choisir d'autres dates."
 }, a = {
   title: "Agenda complet",
   search_section: {
@@ -26,24 +27,25 @@ const e = "© Tous droits réservés", t = {
   tags_drawer: {
     singular: "Voir le {quantity} résultat",
     plural: "Voir les {quantity} résultats"
-  }
-}, s = {
+  },
+  getting_data: "En cours de récupération d'événements, veuillez patienter..."
+}, n = {
   today: "Aujourd'hui",
   tomorrow: "Demain",
   this_week: "Cette semaine",
   this_weekend: "Ce week-end"
-}, o = {
+}, s = {
   copyright: e,
   date: t,
   highlights: r,
   agenda: a,
-  datepicker: s
+  datepicker: n
 };
 export {
   a as agenda,
   e as copyright,
   t as date,
-  s as datepicker,
-  o as default,
+  n as datepicker,
+  s as default,
   r as highlights
 };

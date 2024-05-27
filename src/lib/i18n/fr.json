@@ -31,7 +31,8 @@
     "tags_drawer": {
       "singular": "Voir le {quantity} résultat",
       "plural": "Voir les {quantity} résultats"
-    }
+    },
+    "getting_data": "En cours de récupération d'événements, veuillez patienter..."
   },
   "datepicker": {
     "today": "Aujourd'hui",

@@ -4,7 +4,8 @@ const e = "© Alle Rechte vorbehalten", n = {
   from: "Von",
   start: "Von"
 }, t = {
-  title: "Unsere Empfehlungen"
+  title: "Unsere Empfehlungen",
+  nothing: "Für die gewählten Daten sind keine Veranstaltungen geplant. Bitte wählen Sie andere Daten."
 }, i = {
   title: "Vollständige Tagesordnung",
   search_section: {
@@ -26,7 +27,8 @@ const e = "© Alle Rechte vorbehalten", n = {
   tags_drawer: {
     singular: "Ergebnis {quantity} anzeigen",
     plural: "Zeige {quantity} Ergebnisse"
-  }
+  },
+  getting_data: "Die Ereignisse werden gerade wiederhergestellt, bitte warten Sie..."
 }, a = {
   today: "Heute",
   tomorrow: "Morgen",

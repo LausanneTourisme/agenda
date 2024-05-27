@@ -4,7 +4,8 @@ const e = "© All rights reserved", t = {
   from: "From",
   start: "From"
 }, a = {
-  title: "Our recommendations"
+  title: "Our recommendations",
+  nothing: "No events scheduled for the selected dates. Please select other dates."
 }, o = {
   title: "Full agenda",
   search_section: {
@@ -26,24 +27,25 @@ const e = "© All rights reserved", t = {
   tags_drawer: {
     singular: "Show {quantity} result",
     plural: "Show {quantity} results"
-  }
-}, r = {
+  },
+  getting_data: "In the process of recovering events, please wait..."
+}, s = {
   today: "Today",
   tomorrow: "Tomorrow",
   this_week: "This week",
   this_weekend: "This week-end"
-}, s = {
+}, r = {
   copyright: e,
   date: t,
   highlights: a,
   agenda: o,
-  datepicker: r
+  datepicker: s
 };
 export {
   o as agenda,
   e as copyright,
   t as date,
-  r as datepicker,
-  s as default,
+  s as datepicker,
+  r as default,
   a as highlights
 };

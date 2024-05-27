@@ -44,6 +44,7 @@
     export let events: Event[];
 
     export let loading: boolean = false;
+    export let LoadingAllContent: boolean = true;
 
     const thisWeekend = getWeekend(moment());
     let todaySelected: boolean;
@@ -178,7 +179,9 @@
         }
         buildCalendar()
     })();
+    $: events;
     $: isLoading;
+    $: LoadingAllContent;
     $: loading;
     $: tags;
     $: selectedTags;
@@ -265,7 +268,7 @@
                 </button>
             </div>
 
-            <div class="by-name !hidden sm:flex sm:items-center border-b border-honey-500">
+            <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500">
                 <input
                         class="h-full w-full outline-0 ring-transparent outline-none"
                         name="search-event"
@@ -392,16 +395,20 @@
                 <EventCardPlaceholder/>
             {/each}
         {:else}
-            {#each eventsToDisplay as event}
+            {#each eventsToDisplay as event (event.id)}
                 <EventCard {event} {baseUrl}/>
             {/each}
         {/if}
     </div>
     <div class="flex flex-col items-center mt-5">
-        {#if isLoading}
-            <Loader class="ml-3" size="{30}"/>
+        {#if isLoading || LoadingAllContent}
+            <p>
+                <Loader class="ml-3" size="{30}"/>
+
+                {$_("agenda.getting_data")}
+            </p>
         {/if}
-        {#if !isLoading && hasMoreEvents && !loading}
+        {#if !isLoading && hasMoreEvents && !loading && !LoadingAllContent}
             <button
                     on:click={(e) => {
                         isLoading = true;
@@ -414,7 +421,7 @@
                 {$_("agenda.search_section.load_more")}
             </button>
         {/if}
-        {#if (!isLoading && !hasMoreEvents) || loading }
+        {#if ((!isLoading && !hasMoreEvents) || loading) && !LoadingAllContent }
             <p class="w-full align-middle text-center">
                 {$_("agenda.search_section.load_complete")}
             </p>

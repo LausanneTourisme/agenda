@@ -1,6 +1,6 @@
 import {Environment, type Locales, type NullableString} from "$lib/types";
 
-export const defaultLocale: Locales = 'en';
+export const defaultLocale: Locales = import.meta.env.VITE_LOCALE ?? 'en';
 
 /**
  * trick to bypass problem with tailwind and shadow dom

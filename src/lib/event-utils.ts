@@ -281,6 +281,14 @@ export const searchEvents = (query: string | undefined | null, locale: Locales =
                 weight: 0.9,
             },
             {
+                name: `geolocations.address`,
+                weight: 0.4,
+            },
+            {
+                name: `geolocations.venue`,
+                weight: 0.4,
+            },
+            {
                 name: `categories.public_name.${locale}`,
                 weight: 0.3,
             },

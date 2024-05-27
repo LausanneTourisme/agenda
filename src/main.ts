@@ -1,3 +1,5 @@
+import {defaultLocale} from "$lib/utils";
+
 export * from './App.svelte'
 import './app.scss'
 import App from './App.svelte'
@@ -10,7 +12,7 @@ if (ltAgenda) {
     app = new App({
         target: ltAgenda,
         props: {
-            lang: ltAgenda.dataset.lang ?? 'fr',
+            lang: ltAgenda.dataset.lang ?? defaultLocale,
             apiUrl: ltAgenda.dataset.apiUrl ?? import.meta.env.VITE_API_URL,
             baseUrl: ltAgenda.dataset.baseUrl ?? import.meta.env.VITE_LT_URL,
             blankLinks: (ltAgenda.dataset.blank ? ltAgenda.dataset.blank === "true" : undefined)  ?? true,

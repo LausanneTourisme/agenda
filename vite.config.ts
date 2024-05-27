@@ -8,7 +8,7 @@ export default defineConfig({
         compilerOptions: {
             customElement: true
         },
-        emitCss: false,
+        emitCss: true,
     })],
     resolve: {
         alias: {
