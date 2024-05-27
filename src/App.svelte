@@ -167,14 +167,13 @@
 
         if (events.length === 0) {
             setTimeout(async () => {
-                console.log({e:[...events], u:[...usableEvents]})
                 if (apiUrl) {
                     loadingNextData = true
+                    disableHighlightsLoadMore=true
                     events = sort(await getAllEvents(apiUrl));
                     usableEvents = events.filter(event => event.languages.includes(key));
                     disableHighlightsLoadMore = false;
                     loadingNextData = false
-                    console.log({events, usableEvents})
                 }
             }, 500)
         }
