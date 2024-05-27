@@ -14,8 +14,9 @@
     "title": "Agenda complet",
     "search_section": {
       "today": "Aujourd'hui",
-      "weekend": "Ce week-end",
-      "date": "Date",
+      "this_weekend": "Ce week-end",
+      "weekend": "Week-end",
+      "dates": "Dates",
       "by_name_placeholder": "Rechercher un évènement...",
       "load_more": "Charger plus de résultats",
       "load_complete": "C'est fini, souhaitez-vous effectuer une nouvelle recherche ?",

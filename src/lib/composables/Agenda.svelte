@@ -104,6 +104,31 @@
             toggleSelected: ({datepicker}) => {
                 return datepicker.selectedDates.length === 2;
             },
+            buttons: [
+                {
+                    content: $_('agenda.search_section.today'),
+                    className: 'custom-button-classname',
+                    onClick: (dp) => {
+                        startDate = now;
+                        endDate = now;
+                        const dates = [new Date(startDate), new Date(endDate)]
+                        dp.selectDate(dates);
+                        dp.setViewDate(dates[0]);
+                    }
+                },
+                {
+                    content: $_('agenda.search_section.weekend'),
+                    className: 'custom-button-classname',
+                    onClick: (dp) => {
+                        startDate = thisWeekend.saturday.format(dateFormat);
+                        endDate = thisWeekend.sunday.format(dateFormat);
+                        const dates = [new Date(startDate), new Date(endDate)]
+                        dp.selectDate(dates);
+                        dp.setViewDate(dates[0]);
+                    }
+                },
+                'clear',
+            ],
             autoClose: true,
             isMobile,
             startDate,
@@ -248,11 +273,12 @@
                         dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
                     }}
             >
-                {$_("agenda.search_section.weekend")}
+                {$_("agenda.search_section.this_weekend")}
             </button>
 
             <!--    DATE    -->
-            <div class="flex relative w-full mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent ">
+            <div class="flex relative w-full mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
+                {!todaySelected && !weekendSelected && startDate && endDate ? 'border-honey-500 bg-honey-500' : ''}">
                 <input type="text" id="dp" class="absolute bottom-0 left-0 w-0 outline-0 ring-transparent outline-none" bind:value={dpDates}
                        bind:this={dpField}/>
                 <button
@@ -263,7 +289,7 @@
                 <span class="flex justify-center items-center w-max m-auto">
                     <Calendar class="w-5 h-5 -mt-1"/>
                     &nbsp;
-                    {$_("agenda.search_section.date")}
+                    {$_("agenda.search_section.dates")}
                 </span>
                 </button>
             </div>

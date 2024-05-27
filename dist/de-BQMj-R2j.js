@@ -10,8 +10,9 @@ const e = "© Alle Rechte vorbehalten", n = {
   title: "Vollständige Tagesordnung",
   search_section: {
     today: "Heute",
-    weekend: "Dieses Wochenende",
-    date: "Date",
+    this_weekend: "Dieses Wochenende",
+    weekend: "Wochenende",
+    dates: "Daten",
     by_name_placeholder: "Ein Ereignis suchen...",
     load_more: "Mehr Ereignisse laden",
     load_complete: "Das ist das Ende, wollen Sie eine neue Suche starten?",
