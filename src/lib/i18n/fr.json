@@ -20,7 +20,8 @@
       "by_name_placeholder": "Rechercher un évènement...",
       "load_more": "Charger plus de résultats",
       "load_complete": "C'est fini, souhaitez-vous effectuer une nouvelle recherche ?",
-      "again": "Affiner ma recherche"
+      "again": "Affiner ma recherche",
+      "clear": "Effacer"
     },
     "event_found": "{quantity} événement correspond à ces critères",
     "events_found": "{quantity} événements correspondent à ces critères",
