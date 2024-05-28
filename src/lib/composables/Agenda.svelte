@@ -122,6 +122,7 @@
 
                         dp.selectDate(dates);
                         dp.setViewDate(dates[0]);
+                        dispatch("updateDates", {query: searchValue?.toLowerCase(), dates: [startDate, endDate]});
                     }
                 },
                 {
@@ -134,6 +135,7 @@
 
                         dp.selectDate(dates);
                         dp.setViewDate(dates[0]);
+                        dispatch("updateDates", {query: searchValue?.toLowerCase(), dates: [startDate, endDate]});
                     }
                 },
                 {
@@ -144,6 +146,7 @@
                         endDate = null;
 
                         dp.clear()
+                        dp.hide()
                         dp.setViewDate(new Date());
 
                         dispatch("updateDates", {query: searchValue?.toLowerCase(), dates: [startDate, endDate]})
@@ -437,7 +440,7 @@
                 <EventCardPlaceholder/>
             {/each}
         {:else}
-            {#each eventsToDisplay as event (event.id)}
+            {#each eventsToDisplay as event}
                 <EventCard {event} {baseUrl}/>
             {/each}
         {/if}

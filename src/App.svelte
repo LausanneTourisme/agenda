@@ -66,6 +66,11 @@
     }
 
     async function onDateChanges(events: Event[], locale: Locales, query: string | undefined | null, dates: [string, string | undefined | null]) {
+        if(!dates[1]){
+            await resetEvents();
+            return searchValue ? searchEvents(searchValue, locale, agendaEvents): agendaEvents
+        }
+
         searchValue = query;
 
         const tempEvents: Event[] = searchValue ? searchEvents(searchValue, locale, events) : events;
