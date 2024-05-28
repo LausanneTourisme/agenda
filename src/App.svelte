@@ -6,7 +6,7 @@
 
 <script lang="ts">
     import Highlights from "$lib/composables/Highlights.svelte";
-    import {getLocaleFromNavigator, init, isLoading, locale, locales, register} from "svelte-i18n";
+    import {getLocaleFromNavigator, init, isLoading, locale, register} from "svelte-i18n";
     import {type Event, type Locales} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
@@ -66,9 +66,9 @@
     }
 
     async function onDateChanges(events: Event[], locale: Locales, query: string | undefined | null, dates: [string, string | undefined | null]) {
-        if(!dates[1]){
+        if (!dates[1]) {
             await resetEvents();
-            return searchValue ? searchEvents(searchValue, locale, agendaEvents): agendaEvents
+            return searchValue ? searchEvents(searchValue, locale, agendaEvents) : agendaEvents
         }
 
         searchValue = query;
@@ -134,7 +134,7 @@
         let tmpHighlight: Event[] = [];
         let tmpEvents: Event[] = [];
         for (const event of usableEvents) {
-            if(agendaEvents.find(e => e.id === event.id)) continue;
+            if (agendaEvents.find(e => e.id === event.id)) continue;
 
             if (index >= 10) {
                 break;
@@ -174,7 +174,7 @@
             setTimeout(async () => {
                 if (apiUrl) {
                     loadingNextData = true
-                    disableHighlightsLoadMore=true
+                    disableHighlightsLoadMore = true
                     events = sort(await getAllEvents(apiUrl));
                     usableEvents = events.filter(event => event.languages.includes(key));
                     disableHighlightsLoadMore = false;

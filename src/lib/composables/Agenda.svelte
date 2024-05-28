@@ -234,7 +234,7 @@
     $: endDate, todaySelected = now === startDate && now === endDate, weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate
 </script>
 
-<svelte:window on:resize={(e) => {
+<svelte:window on:resize={() => {
     log('resizing !', {isMobile: window.innerWidth < smallScreen, window_width: document.body.offsetWidth})
     isMobile = document.body.offsetWidth < smallScreen
     try{
