@@ -7,7 +7,7 @@
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import Drawer from "svelte-drawer-component";
     import {Cross1} from "svelte-radix";
-    import {createEventDispatcher, onMount} from "svelte";
+    import {afterUpdate, createEventDispatcher, onMount} from "svelte";
     import Loader from "$lib/components/Loader.svelte";
     import {dateFormat, getWeekend, now} from "$lib/date-utils";
     import moment from "moment";
@@ -89,9 +89,16 @@
     let dpField: HTMLInputElement;
 
     const buildCalendar = () => {
+        try {
+            calendar?.destroy()
+        } catch (e) {
+            console.error('Trying to reset calendar too earlier')
+        }
+
         calendar = new AirDatepicker('#dp', {
             locale: calendarLocales(key as Locales ?? defaultLocale),
             range: true,
+            selectedDates: startDate && endDate ? [startDate, endDate] : undefined,
             multipleDatesSeparator: `,`,
             onSelect: ({date}) => {
                 if (date instanceof Array && date.length === 2) {
@@ -112,6 +119,7 @@
                         startDate = now;
                         endDate = now;
                         const dates = [new Date(startDate), new Date(endDate)]
+
                         dp.selectDate(dates);
                         dp.setViewDate(dates[0]);
                     }
@@ -123,18 +131,32 @@
                         startDate = thisWeekend.saturday.format(dateFormat);
                         endDate = thisWeekend.sunday.format(dateFormat);
                         const dates = [new Date(startDate), new Date(endDate)]
+
                         dp.selectDate(dates);
                         dp.setViewDate(dates[0]);
                     }
                 },
-                'clear',
+                {
+                    content: $_('agenda.search_section.clear'),
+                    className: 'custom-button-classname',
+                    onClick: (dp) => {
+                        startDate = now;
+                        endDate = null;
+
+                        dp.clear()
+                        dp.setViewDate(new Date());
+
+                        dispatch("updateDates", {query: searchValue?.toLowerCase(), dates: [startDate, endDate]})
+                    }
+                },
             ],
             autoClose: true,
-            isMobile,
-            startDate,
+            isMobile: document.body.offsetWidth < smallScreen,
+            // startDate,
         });
     }
     onMount(buildCalendar)
+    afterUpdate(buildCalendar)
 
     /*****************************************************************************
      /* END CALENDAR SECTION
@@ -196,15 +218,8 @@
                     .flatMap((x) => x.tags)
                     .findIndex((s) => a.name === s.name) === i,
         );
-    $: isMobile, (() => {
-        try {
-            calendar?.destroy()
-        } catch (e) {
-            console.error('trying to reset calendar too earlier')
-        }
-        buildCalendar()
-    })();
     $: events;
+    $: isMobile;
     $: isLoading;
     $: LoadingAllContent;
     $: loading;
@@ -279,7 +294,8 @@
             <!--    DATE    -->
             <div class="flex relative w-full mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
                 {!todaySelected && !weekendSelected && startDate && endDate ? 'border-honey-500 bg-honey-500' : ''}">
-                <input type="text" id="dp" class="absolute bottom-0 left-0 w-0 outline-0 ring-transparent outline-none" bind:value={dpDates}
+                <input type="text" id="dp" class="absolute bottom-0 left-0 w-0 outline-0 ring-transparent outline-none"
+                       bind:value={dpDates}
                        bind:this={dpField}/>
                 <button
                         on:click={(_) => dpField?.focus()}
