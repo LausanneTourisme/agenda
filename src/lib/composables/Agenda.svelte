@@ -493,3 +493,17 @@
     </div>
 </div>
 
+<style lang="scss">
+  .drawer-categories::after {
+    content: "";
+    position: sticky;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 90%);
+    width: 100%;
+    height: 4em;
+  }
+</style>
+
