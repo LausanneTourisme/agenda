@@ -104,6 +104,8 @@
                 if (date instanceof Array && date.length === 2) {
                     startDate = moment(date[0]).format(dateFormat);
                     endDate = moment(date[1]).format(dateFormat);
+                    selectedTags = [];
+                    selectedTagsName = [];
 
                     dispatch("updateDates", {query: searchValue?.toLowerCase(), dates: [startDate, endDate]});
                 }
@@ -119,6 +121,8 @@
                         startDate = now;
                         endDate = now;
                         const dates = [new Date(startDate), new Date(endDate)]
+                        selectedTags = [];
+                        selectedTagsName = [];
 
                         dp.selectDate(dates);
                         dp.setViewDate(dates[0]);
@@ -132,6 +136,8 @@
                         startDate = thisWeekend.saturday.format(dateFormat);
                         endDate = thisWeekend.sunday.format(dateFormat);
                         const dates = [new Date(startDate), new Date(endDate)]
+                        selectedTags = [];
+                        selectedTagsName = [];
 
                         dp.selectDate(dates);
                         dp.setViewDate(dates[0]);
@@ -144,6 +150,8 @@
                     onClick: (dp) => {
                         startDate = now;
                         endDate = null;
+                        selectedTags = [];
+                        selectedTagsName = [];
 
                         dp.clear()
                         dp.hide()
@@ -370,7 +378,7 @@
 
                     <span class="mt-3"><Cross1/></span>
                 </button>
-                <div class="mt-2 h-72 overflow-y-scroll flex flex-wrap">
+                <div class="drawer-categories absolute mt-2 h-72 overflow-y-scroll flex flex-wrap">
                     <button
                             class="inline-flex justify-center items-center h-min py-2 m-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 gap-6 ring-2 ring-transparent {selectedTags.length ===
                         0
@@ -396,7 +404,7 @@
                         >
                     {/each}
                 </div>
-                <div class="w-full p-2">
+                <div class="w-full p-2 absolute bottom-0 right-0">
                     <button
                             class="border border-honey-500 bg-honey-500 py-2 px-4 float-right"
                             on:click={() => (openTagsDrawer = false)}
