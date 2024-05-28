@@ -1,6 +1,6 @@
 # Lausanne tourisme Agenda
-This project is an usable has a Svelte component or Web Component ! 
-For the Web Component, you have an example with `webComponent.html` file.  
+This project is either usable as a Svelte component or Web Component.
+For the latter, please look into the `webComponent.html` file for an example implementation.  
 
 ## Recommended IDE Setup
 
@@ -14,8 +14,8 @@ or
 - NVM
 - NodeJs v21
 
-### Beginning
-To start your development run 
+### Installation and setup
+To install the project, simply run:
 ```bash
 npm i
 ```
@@ -23,7 +23,7 @@ npm i
 After installing all dependencies, copy `.env.example` into a new file `.env.local` and fill all variables.
 
 ### Development
-To start you can use 
+Simply run: 
 ```bash
 vite
 ``` 
@@ -31,18 +31,21 @@ or
 ```bash
 npm run dev
 ```
-it will run nvm use to set the right version before to run your application.
+It will automatically run `nvm use` to set the node version required for this project before starting the development server.
 
-### Production
-Open your `.env.local` change `VITE_ENV`'s value, 'development' values is only for the dev mode!
-Changes other required values to match to your production ecosystem.
+### Deploying to production
+Modify `.env.local` by changing `VITE_ENV`'s value, to `production`
+Changes other values as required from the production environment.
 
-Run
+> `development` is only used for ... development 🙃
+
+Then, run:
 ```bash
 npm run build
 ```
 
-### Example of utilisation
-Look `index.html` when you use Svelte and `webComponent.html` when you use the web component solution.
+### Example of usage
+If using the Svelte implementation, look inside `index.html`.
+For the web component implementation, look inside `webComponent.html`.
 
 
