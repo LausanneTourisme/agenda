@@ -11,7 +11,7 @@ const sl = "fr", L8 = (t) => {
     return;
   const i = document.importNode(e.content, !0);
   (s = t == null ? void 0 : t.parentNode) == null || s.appendChild(i);
-}, N1 = (t, e = void 0) => yr.dev === "development" ? console.log({ information: t, ...e }) : null, q5 = (t, e = void 0) => yr.dev === "development" ? console.warn({ information: t, ...e }) : null, k8 = (t) => t && t.includes("http") ? "_blank" : null, rn = (t, e) => {
+}, N1 = (t, e = void 0) => yr.dev === "developments" ? console.log({ information: t, ...e }) : null, q5 = (t, e = void 0) => yr.dev === "developments" ? console.warn({ information: t, ...e }) : null, k8 = (t) => t && t.includes("http") ? "_blank" : null, rn = (t, e) => {
   let i;
   return (...s) => {
     clearTimeout(i), i = setTimeout(async () => {
@@ -12101,7 +12101,7 @@ function w3({ type: t = "widget", onLoad: e, onError: i }) {
   const s = document.createElement("script");
   t === "widget" ? s.src = "https://widget.cloudinary.com/v2.0/global/all.js" : s.src = "https://unpkg.com/cloudinary-video-player@1.9.4/dist/cld-video-player.min.js", document.body.appendChild(s), s.addEventListener("load", e), s.addEventListener("error", i);
 }
-var Fn = { VITE_PUBLIC_CLOUDINARY_CLOUD_NAME: "lt-assets", VITE_API_URL: "http://localhost:5000/wp-json/api/agenda", VITE_LT_URL: "https://www.lausanne-tourisme.ch", VITE_LOCALE: "fr", VITE_ENV: "development", BASE_URL: "/", MODE: "production", DEV: !1, PROD: !0, SSR: !1 };
+var Fn = { VITE_PUBLIC_CLOUDINARY_CLOUD_NAME: "lt-assets", VITE_API_URL: "http://localhost:5000/wp-json/api/agenda", VITE_LT_URL: "https://www.lausanne-tourisme.ch", VITE_LOCALE: "fr", VITE_ENV: "developments", BASE_URL: "/", MODE: "production", DEV: !1, PROD: !0, SSR: !1 };
 const Sg = (t) => ({
   widget: t[0] & /*widget*/
   2,
