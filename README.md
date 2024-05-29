@@ -20,7 +20,7 @@ To install the project, simply run:
 npm i
 ```
 
-After installing all dependencies, copy `.env.example` into a new file `.env.local` and fill all variables.
+After  npm is done installing all dependencies, copy `.env.example` into a new file `.env.local` and fill all variables.
 
 ### Development
 Simply run: 
