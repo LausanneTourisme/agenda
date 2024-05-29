@@ -1,15 +1,15 @@
 <script lang="ts">
-    import {_, locale} from "svelte-i18n";
-    import {Calendar, Clock, MapPin} from "lucide-svelte";
     import type {Event, Geolocation} from "$lib/types";
+    import type {Moment} from "moment";
     import 'moment/locale/fr-ch';
     import 'moment/locale/en-gb';
     import 'moment/locale/de';
+    import {_, locale} from "svelte-i18n";
+    import {Calendar, Clock, MapPin} from "lucide-svelte";
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import {CldImage} from "svelte-cloudinary";
     import Clickable from "$lib/components/Clickable.svelte";
     import {extractStartEndDate, isSameDays} from "$lib/date-utils";
-    import type {Moment} from "moment";
     import {defaultLocale} from "$lib/utils";
 
     let key: string;
@@ -18,7 +18,6 @@
     export let baseUrl: string;
 
     let date: { start: Moment, end: Moment };
-
 
     const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address);
 
@@ -127,6 +126,3 @@
         </div>
     </div>
 {/key}
-
-<style lang="scss">
-</style>

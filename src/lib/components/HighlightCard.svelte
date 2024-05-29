@@ -1,17 +1,16 @@
 <script lang="ts">
+    import type {Event, Media} from "$lib/types";
+    import type {Moment} from "moment";
+    import 'moment/locale/fr-ch';
+    import 'moment/locale/en-gb';
+    import 'moment/locale/de';
     import {_, locale} from 'svelte-i18n';
-
     import {fade} from "svelte/transition";
     import Clickable from "$lib/components/Clickable.svelte";
     import Heading from "$lib/components//Heading.svelte";
     import {Calendar} from "lucide-svelte";
-    import type {Event, Media} from "$lib/types";
-    import 'moment/locale/fr-ch';
-    import 'moment/locale/en-gb';
-    import 'moment/locale/de';
     import {CldImage} from "svelte-cloudinary";
     import {extractStartEndDate, isSameDays} from "$lib/date-utils";
-    import type {Moment} from "moment";
     import {defaultLocale, log} from "$lib/utils";
 
     let key: string;
@@ -21,7 +20,6 @@
     export let event: Event;
 
     const media: Media | undefined = event.medias.find(x => x.is_cover);
-
 
     let date: { start: Moment, end: Moment };
 

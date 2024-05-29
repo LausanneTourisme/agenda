@@ -6,7 +6,7 @@ import {
     type GqlOptions,
     type GqlResponse,
     type Locales,
-    type OptionsSortEvents,
+    type OptionsSortEvents, type Query,
     type ScheduleDate
 } from "$lib/types";
 import {dateFormat, findAvailablePeriod, now, sortDates} from "$lib/date-utils";
@@ -34,6 +34,7 @@ export const update = async (url: string | undefined | null, locale: Locales, ty
         events: elements,
     }
 }
+
 export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] => {
     options = {
         locale: null,
@@ -67,7 +68,7 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
 
         if (options.onlyAvailable) {
             const availableDates: ScheduleDate[] = []
-            //I love shadow reference ❤️
+            // I love shadow reference ❤️
             const schedules = {...event.schedules}
 
             for (const date of schedules.dates) {
@@ -122,6 +123,7 @@ export const unique = (arr1: Event[], arr2: Event[]): Event[] => {
 
     return [...arr1, ...result];
 }
+
 export const fetchAll = async (url: string | null | undefined): Promise<Event[] | null> => {
     if (!url) {
         console.error('no api url defined')
@@ -146,6 +148,7 @@ export const fetchAll = async (url: string | null | undefined): Promise<Event[] 
 
     return gqlResponse?.result?.data?.items.data ?? [];
 }
+
 export const fetchEvent = async (url: string | null | undefined, options: GqlOptions): Promise<GqlItems | null> => {
     if (!url) {
         console.error('no api url defined')
@@ -172,7 +175,7 @@ export const fetchEvent = async (url: string | null | undefined, options: GqlOpt
 export const getFreshEvents = async (apiUrl: string | null | undefined, locale: Locales, events: Event[], options: {
     disableAgenda?: boolean,
     disableHighlights?: boolean,
-    load_by?: number,
+    events_per_chunk?: number,
 } = {}): Promise<{
     agenda: Event[],
     highlights: Event[],
@@ -184,7 +187,7 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
         return {agenda: [], highlights: [], events: [], usableEvents: []};
     }
 
-    options = {disableAgenda: false, disableHighlights: false, load_by: 10, ...options}
+    options = {disableAgenda: false, disableHighlights: false, events_per_chunk: 10, ...options}
 
     const emptyEvents = events.length === 0;
     let highlights: Event[] = [];
@@ -198,7 +201,7 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
         if (!options.disableHighlights) {
             const type: EventType = EventType.highlights;
 
-            const result: EventsResult = await update(apiUrl, locale, type, [], 10);
+            const result: EventsResult = await update(apiUrl, locale, type, [], options.events_per_chunk);
             log('getFreshEvent: getting highlights', {highlights: result.events})
 
             highlights = [...result.events];
@@ -206,20 +209,20 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
         if (!options.disableAgenda) {
             const type: EventType = EventType.agenda;
 
-            const result: EventsResult = await update(apiUrl, locale, type, highlights, 10);
+            const result: EventsResult = await update(apiUrl, locale, type, highlights, options.events_per_chunk);
             log('getFreshEvent: getting agenda events', {agenda: result.events})
 
             agenda = [...result.events, ...highlights];
         }
 
-        newEvents = [] /*sort(await getAllEvents(apiUrl));*/
+        newEvents = [];
 
-        usableEvents = sort([...highlights, ...agenda]) /*newEvents.filter(event => event.languages.includes(locale));*/
+        usableEvents = sort([...highlights, ...agenda]);
 
         log('getFreshEvent: events completely sorted', {newEvents, usableEvents})
     } else {
-
         log('getFreshEvent: events already exists let we use it')
+
         usableEvents = events.filter(event => event.languages.includes(locale));
         const tempHighlights: Event[] = [];
         const tempAgenda: Event[] = [];
@@ -227,15 +230,15 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
 
         for (const event of usableEvents) {
             // @ts-ignore typescript can't see default value defined bellow
-            if (event.highlight && tempHighlights.length < options.load_by) {
+            if (event.highlight && tempHighlights.length < options.events_per_chunk) {
                 tempHighlights.push(event);
                 tempAgenda.push(event);
                 //@ts-ignore
-            } else if (index < options.load_by && !event.highlight) {
+            } else if (index < options.events_per_chunk && !event.highlight) {
                 tempAgenda.push(event);
                 index++;
                 //@ts-ignore
-            } else if (index >= options.load_by && tempHighlights.length >= options.load_by) {
+            } else if (index >= options.events_per_chunk && tempHighlights.length >= options.events_per_chunk) {
                 break;
             }
         }
@@ -244,9 +247,8 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
         newEvents = [...events];
     }
 
-    return {agenda, highlights, events: newEvents, usableEvents}
+    return {agenda, highlights, events: newEvents, usableEvents};
 }
-
 
 export async function getAllEvents(apiUrl: string): Promise<Event[]> {
     log('getAllEvents: getting all events')
@@ -258,8 +260,7 @@ export async function getAllEvents(apiUrl: string): Promise<Event[]> {
     return items;
 }
 
-
-export const searchEvents = (query: string | undefined | null, locale: Locales = "en", events: Event[] = []) => {
+export const searchEvents = (query: Query, locale: Locales = "en", events: Event[] = []) => {
     if (!query || events.length === 0) {
         return [...events];
     }

@@ -1,5 +1,4 @@
 <script lang="ts">
-
     import {createEventDispatcher} from "svelte";
 
     export let maxContent: number;
@@ -29,8 +28,8 @@
         dispatch("dragging", {isDragging})
         mouseDown = false
     }
-    const move = (event: Event) => {
 
+    const move = (event: Event) => {
         const distX = Math.abs(event.clientX - startX);
         const distY = Math.abs(event.clientY - startY);
 

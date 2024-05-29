@@ -1,7 +1,7 @@
 <script lang="ts">
     export let tag: string = "h2";
 
-    //this solution allows tailwind to see all classes for when compiling to obtain a css file
+    // In order for Tailwind to compile classes correctly, the classes are statically written here.
 </script>
 
 {#if tag === 'h1'}

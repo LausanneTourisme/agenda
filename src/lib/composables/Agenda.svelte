@@ -1,9 +1,9 @@
 <script lang="ts">
+    import type {Event, Locales, Query, Tag,} from "$lib/types";
     import Heading from "$lib/components/Heading.svelte";
     import {Calendar, ChevronDown, Search} from "lucide-svelte";
     import {_, locale} from "svelte-i18n";
     import EventCard from "$lib/components/EventCard.svelte";
-    import type {Event, Locales, Tag,} from "$lib/types";
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import Drawer from "svelte-drawer-component";
     import {Cross1} from "svelte-radix";
@@ -29,8 +29,8 @@
 
     const dispatch = createEventDispatcher<{
         loadMore: { event: any };
-        updateDates: { query: string | undefined, dates: [string, string | undefined | null] };
-        search: { query: string | undefined, events: Event[] };
+        updateDates: { query: Query, dates: [string, string | undefined | null] };
+        search: { query: Query, events: Event[] };
     }>();
 
     let key: string | Locales;
@@ -173,7 +173,6 @@
      /* END CALENDAR SECTION
      /*****************************************************************************/
 
-
     function sortEventsByTags(tag: Tag | null | undefined = null): void {
         if (!tag) {
             selectedTags = [];
@@ -229,7 +228,6 @@
                     .flatMap((x) => x.tags)
                     .findIndex((s) => a.name === s.name) === i,
         );
-    $: events;
     $: isMobile;
     $: isLoading;
     $: LoadingAllContent;
@@ -263,7 +261,7 @@
                     class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
                     {todaySelected ? 'border-honey-500 bg-honey-500' : ''}"
                     on:click={(_) => {
-                        if(!todaySelected){
+                        if (!todaySelected){
                             startDate = now;
                             endDate = todaySelected ? null : now;
                         } else {
@@ -284,8 +282,8 @@
             <button
                     class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent break-keep whitespace-break-spaces
                     {weekendSelected ? 'border-honey-500 bg-honey-500' : ''}"
-                    on:click={(_)=>{
-                        if(weekendSelected){
+                    on:click={(_) => {
+                        if (weekendSelected){
                             startDate = now;
                             endDate = null;
                         } else {
@@ -310,7 +308,7 @@
                        bind:this={dpField}/>
                 <button
                         on:click={(_) => dpField?.focus()}
-                        class="block w-full  p-3 ring-transparent
+                        class="block w-full p-3 ring-transparent
                     {startDate && endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}"
                 >
                 <span class="flex justify-center items-center w-max m-auto">

@@ -1,8 +1,8 @@
 <script lang="ts">
+    import type {Event} from "$lib/types";
     import {_} from 'svelte-i18n'
     import HighlightCard from "$lib/components/HighlightCard.svelte";
     import Heading from "$lib/components/Heading.svelte";
-    import type {Event} from "$lib/types";
     import Swiper from "$lib/components/Swiper.svelte";
     import IntersectionObserver from "$lib/components/IntersectionObserver.svelte";
     import {createEventDispatcher} from "svelte";
@@ -23,7 +23,6 @@
 
     let lastEvent: Event | null = null
 
-
     $: events, lastEvent = events.slice(-1)[0]
     $: lastEvent
     $: loading;
@@ -42,7 +41,6 @@
         {/if}
     </div>
     {#if loading}
-
         <Swiper
                 class="highlights pb-4 px-2 sm:px-16 select-none"
                 maxContent="{events.length}"
@@ -77,6 +75,3 @@
         {/if}
     {/if}
 </div>
-
-<style lang="scss">
-</style>

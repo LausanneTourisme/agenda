@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Tag,TwoLetters} from "$lib/types";
+    import type {Tag} from "$lib/types";
     import {_, locale} from "svelte-i18n";
     import {createEventDispatcher} from 'svelte';
     import Swiper from "$lib/components/Swiper.svelte";

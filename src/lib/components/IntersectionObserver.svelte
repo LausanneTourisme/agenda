@@ -1,6 +1,5 @@
 <script lang="ts">
     import {afterUpdate, createEventDispatcher, onMount, tick} from 'svelte';
-    import type {Event} from '$lib/types'
 
     const dispatch = createEventDispatcher<{
         intersecting: { event: any };
@@ -14,11 +13,11 @@
      * Whether the element is intersecting.
      */
     export let intersecting = false;
-    let triggered : boolean = false
+    let triggered: boolean = false
     let observer: IntersectionObserver;
 
     onMount(() => {
-        if(!enable) return;
+        if (!enable) return;
 
         observer = new IntersectionObserver((entries, _) => {
             intersecting = entries[0].isIntersecting;
@@ -38,7 +37,7 @@
     });
 
     afterUpdate(async () => {
-        if(!enable) return;
+        if (!enable) return;
 
         await tick();
 
@@ -47,6 +46,7 @@
         }
     });
 </script>
+
 <div bind:this={element}>
-    <slot {intersecting} />
+    <slot {intersecting}/>
 </div>

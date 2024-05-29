@@ -7,7 +7,7 @@
 <script lang="ts">
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, register} from "svelte-i18n";
-    import {type Event, type Locales} from "$lib/types";
+    import {type Event, type Locales, type Query} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
     import {createEventDispatcher, onMount} from "svelte";
@@ -32,7 +32,7 @@
     export let endDate: string | null | undefined = $$props["end-date"];
     export let baseUrl: string = $$props["base-url"];
     export let lang: string = $$props["lang"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
-    export let loadBy: number = $$props["load-by"] ?? 10;
+    export let eventsPerChunk: number = $$props["events-per-chunk"] ?? 20;
 
     init({
         fallbackLocale: defaultLocale,
@@ -48,8 +48,8 @@
     let key: Locales;
 
     let events: Event[] = [];// all events in db
-    let usableEvents: Event[] = []; // events available with the current locale
-    let usableHighlights: Event[] = []; // events available with the current locale
+    let usableEvents: Event[] = []; // available events for the current locale
+    let usableHighlights: Event[] = []; // available highlighted events for the current locale
     let highlights: Event[] = []; // highlights to display
     let agendaEvents: Event[] = []; // events to display in agenda section
     let hasMoreEvents: boolean = true;
@@ -65,7 +65,7 @@
         loadingData = false;
     }
 
-    async function onDateChanges(events: Event[], locale: Locales, query: string | undefined | null, dates: [string, string | undefined | null]) {
+    async function onDateChanges(events: Event[], locale: Locales, query: Query, dates: [string, string | undefined | null]) {
         if (!dates[1]) {
             await resetEvents();
             return searchValue ? searchEvents(searchValue, locale, agendaEvents) : agendaEvents
@@ -89,7 +89,7 @@
         setDataAndDisableSpecialEvents(result);
     }
 
-    async function onSearch(query: string | undefined | null, locale: Locales) {
+    async function onSearch(query: Query, locale: Locales) {
         searchValue = query;
         if (!searchValue) {
             log("no query")
@@ -116,7 +116,7 @@
         let tmpEvents: Event[] = [];
 
         for (const event of usableHighlights) {
-            if (index >= loadBy) break;
+            if (index >= eventsPerChunk) break;
 
             if (event.highlight && !highlights.find(e => e.id === event.id)) {
                 tmpEvents.push(event)
@@ -133,10 +133,11 @@
         let index = 0;
         let tmpHighlight: Event[] = [];
         let tmpEvents: Event[] = [];
+
         for (const event of usableEvents) {
             if (agendaEvents.find(e => e.id === event.id)) continue;
 
-            if (index >= 10) {
+            if (index >= eventsPerChunk) {
                 break;
             }
 
@@ -163,8 +164,8 @@
     async function resetEvents() {
         loadingData = true;
         log('App: reset Events')
-        //TODO call getAllEvents later and not in getFreshEvents to prevent 2sec of waiting
-        const result = await getFreshEvents(apiUrl, key, events, {load_by: loadBy})
+
+        const result = await getFreshEvents(apiUrl, key, events, {events_per_chunk: eventsPerChunk})
         log('App: reset Events getted', {result})
 
         events = result.events;
@@ -186,7 +187,7 @@
         usableHighlights = result.usableEvents.filter(e => e.highlight);
 
         if (searchValue) {
-            log(`App: you searched previously '${searchValue}'... let keep your search`)
+            log(`App: previous search: '${searchValue}'. Keeping it for now`)
             await onDateChanges(usableEvents, key, searchValue, [startDate, endDate]);
             return;
         }

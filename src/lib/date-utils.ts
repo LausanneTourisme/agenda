@@ -1,5 +1,5 @@
-import moment, {type Moment} from "moment";
 import type {Event, Period, RawDate, ScheduleDate, Schedules} from "./types";
+import moment, {type Moment} from "moment";
 
 export const dateFormat: string = "YYYY-MM-DD"
 export const now: string | RawDate = moment().format(dateFormat);
@@ -21,7 +21,6 @@ export const extractStartEndDate = (event: Event): { start: Moment, end: Moment 
     start: moment(event.schedules.dates[0].periods[0].start, dateFormat),
     end: moment(event.schedules.dates[0].periods[event.schedules.dates[0].periods.length - 1].end, dateFormat)
 });
-
 
 export const findAvailablePeriod = (schedule: ScheduleDate, start: Moment | null | undefined, end: Moment | null | undefined): Period | null => {
     const today: Moment = start ?? moment();
