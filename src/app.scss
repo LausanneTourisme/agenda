@@ -1,11 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "assets/fonts/euclid-flex";
 
-@font-face {
-  font-family: 'Euclid Flex', sans-serif;
-  src: local('Euclid Flex'), url(./assets/fonts/EuclidCircularA-Medium.otf) format("truetype");
-}
 
 @layer base {
   :root {
