@@ -16,7 +16,8 @@ const e = "© Alle Rechte vorbehalten", n = {
     by_name_placeholder: "Ein Ereignis suchen...",
     load_more: "Mehr Ereignisse laden",
     load_complete: "Das ist das Ende, wollen Sie eine neue Suche starten?",
-    again: "Meine Suche verfeinern"
+    again: "Meine Suche verfeinern",
+    clear: "Löschen"
   },
   event_found: "{quantity} Ereignisse entsprechen diesen Kriterien",
   events_found: "{quantity} Ereignisse entsprechen diesen Kriterien",

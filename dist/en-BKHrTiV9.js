@@ -16,7 +16,8 @@ const e = "© All rights reserved", t = {
     by_name_placeholder: "Search an event...",
     load_more: "Load more events",
     load_complete: "It's the end, do you want start a new search?",
-    again: "Refine my search"
+    again: "Refine my search",
+    clear: "Clear"
   },
   event_found: "{quantity} event correspond to these criteria",
   events_found: "{quantity} events correspond to these criteria",
@@ -35,7 +36,7 @@ const e = "© All rights reserved", t = {
   tomorrow: "Tomorrow",
   this_week: "This week",
   this_weekend: "This week-end"
-}, n = {
+}, r = {
   copyright: e,
   date: t,
   highlights: a,
@@ -47,6 +48,6 @@ export {
   e as copyright,
   t as date,
   s as datepicker,
-  n as default,
+  r as default,
   a as highlights
 };

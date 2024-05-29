@@ -570,12 +570,20 @@ video {
   position: relative;
 }
 
+.sticky {
+  position: sticky;
+}
+
 .bottom-0 {
   bottom: 0px;
 }
 
 .left-0 {
   left: 0px;
+}
+
+.right-0 {
+  right: 0px;
 }
 
 .float-right {
@@ -733,8 +741,8 @@ video {
   height: 30px;
 }
 
-.h-\[320px\] {
-  height: 320px;
+.h-\[400px\] {
+  height: 400px;
 }
 
 .h-\[45px\] {
@@ -1240,8 +1248,8 @@ video {
     height: 16rem;
   }
 
-  .sm\:h-\[440px\] {
-    height: 440px;
+  .sm\:h-\[515px\] {
+    height: 515px;
   }
 
   .sm\:max-h-14 {
