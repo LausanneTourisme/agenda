@@ -2,14 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My web component test</title>
+    <title>Web component implementation example</title>
 </head>
 <body>
 <!--<div id="lt-agenda"></div>-->
+<!-- FIXME: air-datepicker doesn't work inside shadow dom, we need to create a full custom component to manipulate calendar -->
+<!--  We can implement a svelte component directly in the dom, just look `index.html` -->
 <swc-lt-agenda lang="fr"
                agenda-title="custom agenda title"
                api-url="http://localhost:5000/wp-json/api/agenda"
                base-url="https://lausanne-tourisme.ch"
+               events-per-chunk="20"
                blank-links="true">
 </swc-lt-agenda>
 <template id="swc-lt-agenda-styling">
