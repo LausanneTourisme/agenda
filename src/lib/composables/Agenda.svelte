@@ -11,6 +11,7 @@
     import Loader from "$lib/components/Loader.svelte";
     import {dateFormat, getWeekend, now} from "$lib/date-utils";
     import moment from "moment";
+
     import {debounce, defaultLocale, log} from "$lib/utils";
     import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
 
@@ -115,7 +116,7 @@
             },
             buttons: [
                 {
-                    content: $_('agenda.search_section.today'),
+                    content: $_('datepicker.today'),
                     className: 'custom-button-classname',
                     onClick: (dp) => {
                         startDate = now;
@@ -130,7 +131,7 @@
                     }
                 },
                 {
-                    content: $_('agenda.search_section.weekend'),
+                    content: $_('datepicker.weekend'),
                     className: 'custom-button-classname',
                     onClick: (dp) => {
                         startDate = thisWeekend.saturday.format(dateFormat);
@@ -145,7 +146,7 @@
                     }
                 },
                 {
-                    content: $_('agenda.search_section.clear'),
+                    content: $_('datepicker.clear'),
                     className: 'custom-button-classname',
                     onClick: (dp) => {
                         startDate = now;

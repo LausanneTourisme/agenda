@@ -1,9 +1,9 @@
 <script lang="ts">
     import type {Event, Media} from "$lib/types";
-    import type {Moment} from "moment";
-    import 'moment/locale/fr-ch';
-    import 'moment/locale/en-gb';
-    import 'moment/locale/de';
+    import moment, {type Moment} from "moment";
+    import 'moment/dist/locale/fr-ch';
+    import 'moment/dist/locale/en-gb';
+    import 'moment/dist/locale/de';
     import {_, locale} from 'svelte-i18n';
     import {fade} from "svelte/transition";
     import Clickable from "$lib/components/Clickable.svelte";
@@ -12,6 +12,7 @@
     import {CldImage} from "svelte-cloudinary";
     import {extractStartEndDate, isSameDays} from "$lib/date-utils";
     import {defaultLocale, log} from "$lib/utils";
+    import {onMount} from "svelte";
 
     let key: string;
 
@@ -28,8 +29,10 @@
         log('mouse down', {mouse_event: e})
     }
 
+    onMount(() => moment.locale('fr-ch'));
+
     $: preventClick;
-    $: locale;
+    $: $locale;
     $: date = extractStartEndDate(event);
     $: key = ($locale ?? defaultLocale);
 </script>
@@ -79,17 +82,17 @@
                     <p class="flex w-full text-sm">
                         {#if isSameDays(event)}
                             <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.start.locale($_('date.locale')).format('DD.MM.YY')}
+                                {date.start.format('DD.MM.YY')}
                             </span>
                         {:else}
                             <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.start.locale($_('date.locale')).format('DD.MM.YY')}
+                                {date.start.format('DD.MM.YY')}
                             </span>
 
                             <span class="px-1" title="{$_('date.separator')}"> - </span>
 
                             <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.end.locale($_('date.locale')).format('DD.MM.YY')}
+                                {date.end.format('DD.MM.YY')}
                             </span>
                         {/if}
                     </p>

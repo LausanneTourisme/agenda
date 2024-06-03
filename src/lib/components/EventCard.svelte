@@ -1,9 +1,9 @@
 <script lang="ts">
     import type {Event, Geolocation} from "$lib/types";
     import type {Moment} from "moment";
-    import 'moment/locale/fr-ch';
-    import 'moment/locale/en-gb';
-    import 'moment/locale/de';
+    import 'moment/dist/locale/fr-ch';
+    import 'moment/dist/locale/en-gb';
+    import 'moment/dist/locale/de';
     import {_, locale} from "svelte-i18n";
     import {Calendar, Clock, MapPin} from "lucide-svelte";
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";

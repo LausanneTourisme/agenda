@@ -7,39 +7,38 @@
     "start": "From"
   },
   "highlights": {
-    "title": "Our recommendations",
-    "nothing": "No events scheduled for the selected dates. Please select other dates."
+    "title": "Big events",
+    "nothing": "No events found for the selected dates. Please choose other dates."
   },
   "agenda": {
-    "title": "Full agenda",
+    "title": "Events in Lausanne",
     "search_section": {
       "today": "Today",
       "this_weekend": "This weekend",
       "weekend": "Weekend",
       "dates": "Dates",
-      "by_name_placeholder": "Search an event...",
-      "load_more": "Load more events",
-      "load_complete": "It's the end, do you want start a new search?",
-      "again": "Refine my search",
+      "by_name_placeholder": "Search events",
+      "load_more": "Show more events",
+      "load_complete": "That's it!",
+      "again": "Make a new search?",
       "clear": "Clear"
     },
-    "event_found": "{quantity} event correspond to these criteria",
-    "events_found": "{quantity} events correspond to these criteria",
-    "by_tags": "By category",
+    "event_found": "{quantity} event found",
+    "events_found": "{quantity} events found",
+    "by_tags": "Categories",
     "tags": {
       "title": "Categories",
-      "display_all": "Display all"
+      "display_all": "All"
     },
     "tags_drawer": {
       "singular": "Show {quantity} result",
       "plural": "Show {quantity} results"
     },
-    "getting_data": "In the process of recovering events, please wait..."
+    "getting_data": "Retrieving events, please wait..."
   },
   "datepicker": {
     "today": "Today",
-    "tomorrow": "Tomorrow",
-    "this_week": "This week",
-    "this_weekend": "This week-end"
+    "weekend": "Weekend",
+    "clear": "Clear"
   }
 }
