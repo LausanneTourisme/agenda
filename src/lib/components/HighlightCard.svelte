@@ -37,67 +37,65 @@
     $: key = ($locale ?? defaultLocale);
 </script>
 
-{#key event.id}
-    <div data-id="{event.id}"
-         class="card h-full rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
-         {draggable}
-         transition:fade
-    >
-        <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event?.seo?.hreflang[key]}"
-                   on:mousedown={(e) => mouseDown(e)}>
-            <div class="card-body w-min flex flex-col h-full">
-                <!--        TODO add placeholder -->
-                <div class="aspect-square w-44 sm:w-72">
-                    {#if media}
-                        <CldImage
-                                src="{media.cloudinary_id}"
-                                alt="{media.copyright}"
-                                title="{media.copyright}"
-                                height={500}
-                                width={500}
-                                sizes="100vw"
-                                class="object-cover bg-honey-800 break-all text-wrap"
-                                draggable="false"
-                        />
-                    {:else}
-                        <img src="https://static.lausanne-tourisme.ch/image/upload/v1588747700/fgbcshmie94gzvhjxqoc.jpg"
-                             alt="{$_('copyright')}"
-                             title="{$_('copyright')}"
-                             height=500
-                             width=500
-                             class="object-cover bg-honey-800 break-all text-wrap"
-                        />
-                    {/if}
+<div data-id="{event.id}"
+     class="card h-full rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
+     {draggable}
+     transition:fade
+>
+    <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event?.seo?.hreflang[key]}"
+               on:mousedown={(e) => mouseDown(e)}>
+        <div class="card-body w-min flex flex-col h-full">
+            <!--        TODO add placeholder -->
+            <div class="aspect-square w-44 sm:w-72">
+                {#if media}
+                    <CldImage
+                            src="{media.cloudinary_id}"
+                            alt="{media.copyright}"
+                            title="{media.copyright}"
+                            height={500}
+                            width={500}
+                            sizes="100vw"
+                            class="object-cover bg-honey-800 break-all text-wrap"
+                            draggable="false"
+                    />
+                {:else}
+                    <img src="https://static.lausanne-tourisme.ch/image/upload/v1588747700/fgbcshmie94gzvhjxqoc.jpg"
+                         alt="{$_('copyright')}"
+                         title="{$_('copyright')}"
+                         height=500
+                         width=500
+                         class="object-cover bg-honey-800 break-all text-wrap"
+                    />
+                {/if}
+            </div>
+            <Heading class="title line-clamp-2 h-16 max-h-16 text-clip my-2"
+                     tag="h3"
+                     title="{event.name[key]}">
+                {event.name[key]}
+            </Heading>
+            <div class="flex items-center">
+                <div class="mb-1 mr-2">
+                    <Calendar class="text-black" size="24px"/>
                 </div>
-                <Heading class="title line-clamp-2 h-16 max-h-16 text-clip my-2"
-                         tag="h3"
-                         title="{event.name[key]}">
-                    {event.name[key]}
-                </Heading>
-                <div class="flex items-center">
-                    <div class="mb-1 mr-2">
-                        <Calendar class="text-black" size="24px"/>
-                    </div>
 
-                    <p class="flex w-full text-sm">
-                        {#if isSameDays(event)}
+                <p class="flex w-full text-sm">
+                    {#if isSameDays(event)}
                             <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
                                 {date.start.format('DD.MM.YY')}
                             </span>
-                        {:else}
+                    {:else}
                             <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
                                 {date.start.format('DD.MM.YY')}
                             </span>
 
-                            <span class="px-1" title="{$_('date.separator')}"> - </span>
+                        <span class="px-1" title="{$_('date.separator')}"> - </span>
 
-                            <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
+                        <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
                                 {date.end.format('DD.MM.YY')}
                             </span>
-                        {/if}
-                    </p>
-                </div>
+                    {/if}
+                </p>
             </div>
-        </Clickable>
-    </div>
-{/key}
+        </div>
+    </Clickable>
+</div>

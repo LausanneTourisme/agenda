@@ -57,7 +57,7 @@
                     maxContent="{events.length}"
                     on:dragging={(e) => isDragging = e.detail.isDragging}
             >
-                {#each events as event}
+                {#each events as event (events.length, event.id)}
                     <IntersectionObserver enable="{event.id===lastEvent?.id}" once={true} on:intersecting={(e) => {
                         dispatch("loadMore", { event: e });
                         log('load more highlights!', {event, lastEvent: lastEvent?.name})

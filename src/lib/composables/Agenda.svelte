@@ -242,13 +242,12 @@
 </script>
 
 <svelte:window on:resize={() => {
-    log('resizing !', {isMobile: window.innerWidth < smallScreen, window_width: document.body.offsetWidth})
     isMobile = document.body.offsetWidth < smallScreen
     try{
-        calendar?.hide()
+        if(calendar?.visible) calendar?.hide()
     }
     catch (e){
-        console.error(`calendar element is not yet created`)
+        console.error(`calendar element is not yet created: ${calendar?.visible}`)
     }
 }}/>
 
@@ -447,7 +446,7 @@
                 <EventCardPlaceholder/>
             {/each}
         {:else}
-            {#each eventsToDisplay as event}
+            {#each eventsToDisplay as event (eventsToDisplay.length, event.id)}
                 <EventCard {event} {baseUrl}/>
             {/each}
         {/if}
