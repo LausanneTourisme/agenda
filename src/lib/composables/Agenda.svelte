@@ -187,7 +187,7 @@
 
         if (selectedTags.length === 0) {
             selectedTagsName = []
-            eventsToDisplay = events;
+            debounce(() => eventsToDisplay = events, 400)()
             return;
         }
 
