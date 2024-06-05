@@ -13,7 +13,7 @@ const e = "© Tous droits réservés", t = {
     this_weekend: "Ce week-end",
     weekend: "Week-end",
     dates: "Dates",
-    by_name_placeholder: "Rechercher un évènement...",
+    by_name_placeholder: "Rechercher un événement...",
     load_more: "Afficher plus d'événements",
     load_complete: "C'est tout !",
     again: "Affiner ma recherche ?",

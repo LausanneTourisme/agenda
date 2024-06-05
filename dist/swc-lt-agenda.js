@@ -129001,7 +129001,7 @@ function zx(t) {
 function Hx(t, e, i) {
   var V1;
   let s, n;
-  vt(t, nt, (ze) => i(25, s = ze)), vt(t, m2, (ze) => i(15, n = ze)), P0("fr", () => import("./fr-CFvGOWgE.js")), P0("en", () => import("./en-CPgs_kHv.js")), P0("de", () => import("./de-C1qlDVbl.js"));
+  vt(t, nt, (ze) => i(25, s = ze)), vt(t, m2, (ze) => i(15, n = ze)), P0("fr", () => import("./fr-BveGLvgg.js")), P0("en", () => import("./en-CPgs_kHv.js")), P0("de", () => import("./de-H9Q4xVaG.js"));
   let { blankLinks: l = e["blank-links"] ?? !1 } = e, { disableHighlights: o = e["disable-highlights"] ?? !1 } = e, { disableAgenda: a = e["disable-agenda"] ?? !1 } = e, { highlightTitle: h = e["highlight-title"] } = e, { agendaTitle: d = e["agenda-title"] } = e, { apiUrl: C = e["api-url"] } = e, { startDate: v = e["start-date"] ?? Ct } = e, { endDate: _ = e["end-date"] } = e, { baseUrl: M = e["base-url"] } = e, { lang: E = e.lang ?? ((V1 = Lu()) == null ? void 0 : V1.slice(0, 2)) ?? al } = e, { eventsPerChunk: V = e["events-per-chunk"] ?? 20 } = e;
   fu({
     fallbackLocale: al,

@@ -1,11 +1,11 @@
 const e = "© Alle Rechte vorbehalten", n = {
   locale: "de",
-  separator: "zu",
-  from: "Von",
-  start: "Von"
+  separator: "bis",
+  from: "Ab",
+  start: "Vom"
 }, t = {
-  title: "Große Ereignisse",
-  nothing: "Keine Veranstaltungen für die ausgewählten Daten gefunden. Bitte wählen Sie andere Termine."
+  title: "Highlights",
+  nothing: "Keine Veranstaltungen für die ausgewählten Daten gefunden. Bitte wählen Sie andere Daten."
 }, a = {
   title: "Veranstaltungen in Lausanne",
   search_section: {
@@ -13,14 +13,14 @@ const e = "© Alle Rechte vorbehalten", n = {
     this_weekend: "Dieses Wochenende",
     weekend: "Wochenende",
     dates: "Daten",
-    by_name_placeholder: "Ereignisse suchen",
+    by_name_placeholder: "Veranstaltung suchen",
     load_more: "Weitere Veranstaltungen anzeigen",
-    load_complete: "Das war's!",
-    again: "Eine neue Suche durchführen?",
+    load_complete: "Das wärs!",
+    again: "Neue Suche durchführen?",
     clear: "Löschen"
   },
-  event_found: "{quantity} Ereignis gefunden",
-  events_found: "{quantity} Ereignisse gefunden",
+  event_found: "{quantity} Ergebnis anzeigen",
+  events_found: "{quantity} Ergebnisse anzeigen",
   by_tags: "Kategorien",
   tags: {
     title: "Kategorien",
@@ -30,7 +30,7 @@ const e = "© Alle Rechte vorbehalten", n = {
     singular: "Zeige {quantity} Ergebnis",
     plural: "Zeige {quantity} Ergebnisse"
   },
-  getting_data: "Ereignisse werden abgerufen, bitte warten..."
+  getting_data: "Die Veranstaltungen werden abgerufen, bitte warten ..."
 }, i = {
   today: "Heute",
   weekend: "Wochenende",
