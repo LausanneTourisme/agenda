@@ -4,7 +4,11 @@
     "locale": "de",
     "separator": "bis",
     "from": "Ab",
-    "start": "Vom"
+    "start": "Vom",
+    "today": "Heute",
+    "more": "+ andere",
+    "other": "Verschiedene Öffnungszeiten",
+    "every_day": "Ganztägig geöffnet"
   },
   "highlights": {
     "title": "Highlights",

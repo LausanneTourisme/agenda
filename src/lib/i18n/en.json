@@ -4,7 +4,11 @@
     "locale": "en-gb",
     "separator": "to",
     "from": "From",
-    "start": "From"
+    "start": "From",
+    "today": "Today",
+    "more": "+ others",
+    "other": "Various opening hours",
+    "every_day": "Open all day"
   },
   "highlights": {
     "title": "Big events",

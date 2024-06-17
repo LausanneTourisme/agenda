@@ -3,8 +3,12 @@
   "date": {
     "locale": "fr-ch",
     "separator": "au",
-    "from": "Dès",
-    "start": "Du"
+    "from": "dès",
+    "start": "Du",
+    "today": "Aujourd'hui",
+    "more": "+ autres",
+    "other": "Horaires variés",
+    "every_day": "Ouvert toute la journée"
   },
   "highlights": {
     "title": "Les grands événements",

@@ -43,7 +43,7 @@ export type Translatable = {
     es?: string,
 }
 
-export type ShortDay = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
+export type ShortDay = "mo" | "tu" | "we" | "th" | "fr" | "sa" | "su";
 
 export type Time = {
     start: `${HH}:${mm}`,

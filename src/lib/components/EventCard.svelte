@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type {Event, Geolocation} from "$lib/types";
-    import type {Moment} from "moment";
+    import type {Event, Geolocation, ShortDay, Week} from "$lib/types";
+    import moment, {type Moment} from "moment";
     import 'moment/dist/locale/fr-ch';
     import 'moment/dist/locale/en-gb';
     import 'moment/dist/locale/de';
@@ -21,7 +21,26 @@
 
     const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address);
 
-    const media = event.medias.find(x => x.is_cover)
+    const media = event.medias.find(x => x.is_cover);
+
+    const today: ShortDay = moment().locale('en').format('dd').toLowerCase() as ShortDay;
+
+    const week: Week | undefined = event.schedules.dates[0].week.find(w => w.days.includes(today));
+
+    let hourMessage: string;
+    if (week === undefined) {
+        hourMessage = `${$_('date.other')}`;
+    } else {
+        hourMessage = (week.times === null || week.times === undefined || week.times.length === 0) ?
+            `${$_('date.every_day')}` :
+            `${$_('date.today')} ${$_('date.from')} ${week.times[0].start}`;
+
+        //multiple schedules in the week or more than today in days
+        if(event.schedules.dates[0].week.length > 1 || week.days.length > 1){
+            hourMessage += `, ${$_('date.more')}`;
+        }
+    }
+        console.log(event.schedules.dates[0])
 
     $: date = extractStartEndDate(event);
     $: key = ($locale ?? defaultLocale);
@@ -32,7 +51,6 @@
     <div class="image-wrapper aspect-square h-40 sm:h-64">
 
         <Clickable href="{baseUrl}{event.seo.hreflang[key]}">
-            <!--        TODO add placeholder -->
             {#if media}
                 <CldImage
                         src="{media.cloudinary_id}"
@@ -105,8 +123,8 @@
                     <Clock class="text-honey-500" size="24px"/>
                 </div>
                 <p class="leading-snug tracking-tight mt-1"
-                   title="{$_('date.from')} 17:00">
-                    {$_('date.from')} 17:00
+                   title="{hourMessage}">
+                    {hourMessage}
                 </p>
             </div>
             <!--LOCATION-->
