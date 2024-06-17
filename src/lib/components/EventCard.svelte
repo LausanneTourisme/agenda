@@ -48,9 +48,9 @@
 
 <div data-id="{event.id}"
      class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
-    <div class="image-wrapper aspect-square h-40 sm:h-64">
+    <div class="image-wrapper aspect-[4/5] sm:aspect-square h-40 sm:h-64">
 
-        <Clickable href="{baseUrl}{event.seo.hreflang[key]}">
+        <Clickable href="{baseUrl}{event.seo.hreflang[key]}" class="h-full w-full">
             {#if media}
                 <CldImage
                         src="{media.cloudinary_id}"
@@ -59,7 +59,7 @@
                         height="{500}"
                         width="{500}"
                         sizes="100vw"
-                        class="object-cover bg-gray-300 break-all text-wrap"
+                        class="object-cover bg-gray-300 break-all text-wrap h-full w-full"
                 />
             {:else}
                 <img src="https://static.lausanne-tourisme.ch/image/upload/v1588747700/fgbcshmie94gzvhjxqoc.jpg"
