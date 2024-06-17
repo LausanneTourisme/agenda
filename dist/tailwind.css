@@ -713,6 +713,10 @@ video {
   display: none;
 }
 
+.aspect-\[4\/5\] {
+  aspect-ratio: 4/5;
+}
+
 .aspect-square {
   aspect-ratio: 1 / 1;
 }
@@ -1246,6 +1250,10 @@ video {
 
   .sm\:hidden {
     display: none;
+  }
+
+  .sm\:aspect-square {
+    aspect-ratio: 1 / 1;
   }
 
   .sm\:h-64 {

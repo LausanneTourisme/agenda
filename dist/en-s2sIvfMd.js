@@ -2,7 +2,11 @@ const e = "© All rights reserved", t = {
   locale: "en-gb",
   separator: "to",
   from: "From",
-  start: "From"
+  start: "From",
+  today: "Today",
+  more: "+ others",
+  other: "Various opening hours",
+  every_day: "Open all day"
 }, a = {
   title: "Big events",
   nothing: "No events found for the selected dates. Please choose other dates."
@@ -31,22 +35,22 @@ const e = "© All rights reserved", t = {
     plural: "Show {quantity} results"
   },
   getting_data: "Retrieving events, please wait..."
-}, s = {
+}, o = {
   today: "Today",
   weekend: "Weekend",
   clear: "Clear"
-}, o = {
+}, s = {
   copyright: e,
   date: t,
   highlights: a,
   agenda: n,
-  datepicker: s
+  datepicker: o
 };
 export {
   n as agenda,
   e as copyright,
   t as date,
-  s as datepicker,
-  o as default,
+  o as datepicker,
+  s as default,
   a as highlights
 };

@@ -2,7 +2,11 @@ const e = "© Alle Rechte vorbehalten", n = {
   locale: "de",
   separator: "bis",
   from: "Ab",
-  start: "Vom"
+  start: "Vom",
+  today: "Heute",
+  more: "+ andere",
+  other: "Verschiedene Öffnungszeiten",
+  every_day: "Ganztägig geöffnet"
 }, t = {
   title: "Highlights",
   nothing: "Keine Veranstaltungen für die ausgewählten Daten gefunden. Bitte wählen Sie andere Daten."
