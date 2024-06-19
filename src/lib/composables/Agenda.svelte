@@ -19,7 +19,6 @@
      /* START CALENDAR SECTION
      /*****************************************************************************/
     import AirDatepicker from "air-datepicker";
-    import 'air-datepicker/air-datepicker.css';
     import localeEn from 'air-datepicker/locale/en';
     import localeFr from 'air-datepicker/locale/fr';
     import localeDe from 'air-datepicker/locale/de';
@@ -492,6 +491,7 @@
 </div>
 
 <style lang="scss">
+
   .drawer-categories::after {
     content: "";
     position: sticky;
