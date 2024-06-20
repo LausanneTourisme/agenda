@@ -4,10 +4,17 @@ const e = "© Tous droits réservés", t = {
   from: "dès",
   start: "Du",
   today: "Aujourd'hui",
-  more: "+ autres",
-  other: "Horaires variés",
-  every_day: "Ouvert toute la journée"
-}, a = {
+  more: "(voir les différents horaires)",
+  other: "Horaires variables",
+  every_days: "Ouvert tous les jours",
+  open_in: {
+    hours: "Ouvre dans {hours} heure(s)",
+    minutes: "Ouvre dans {minutes} minute(s)"
+  },
+  open_at: "Ouvre à {time}",
+  open: "Ouvert",
+  close: "Fermé"
+}, s = {
   title: "Les grands événements",
   nothing: "Aucun événement n'a été trouvé pour les dates sélectionnées. Veuillez choisir d'autres dates."
 }, r = {
@@ -35,22 +42,22 @@ const e = "© Tous droits réservés", t = {
     plural: "Voir les {quantity} résultats"
   },
   getting_data: "Récupération des événements en cours..."
-}, s = {
+}, a = {
   today: "Aujourd'hui",
   weekend: "Week-end",
   clear: "Effacer"
 }, n = {
   copyright: e,
   date: t,
-  highlights: a,
+  highlights: s,
   agenda: r,
-  datepicker: s
+  datepicker: a
 };
 export {
   r as agenda,
   e as copyright,
   t as date,
-  s as datepicker,
+  a as datepicker,
   n as default,
-  a as highlights
+  s as highlights
 };
