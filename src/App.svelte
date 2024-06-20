@@ -235,6 +235,7 @@
     {:else}
         {#if !disableHighlights}
             <Highlights
+                    {baseUrl}
                     selectedDates={{start: startDate, end: endDate}}
                     title={highlightTitle}
                     events={highlights}

@@ -15,6 +15,7 @@
     import {onMount} from "svelte";
 
     let key: string;
+    export let baseUrl: string;
     export let selectedDates: { start: string, end: string|undefined|null };
     export let preventClick: boolean = false;
     export let draggable: boolean = false;
@@ -41,7 +42,7 @@
      {draggable}
      transition:fade
 >
-    <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event?.seo?.hreflang[key]}"
+    <Clickable class="h-full flex flex-col" href="{baseUrl}{event?.seo?.hreflang[key]}"
                on:mousedown={(e) => mouseDown(e)}>
         <div class="card-body w-min flex flex-col h-full">
             <div class="aspect-square w-44 sm:w-72">

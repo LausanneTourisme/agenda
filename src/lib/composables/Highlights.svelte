@@ -14,6 +14,7 @@
         loadMore: { event: any };
     }>();
 
+    export let baseUrl: string;
     export let selectedDates: { start: string, end: string|undefined|null };
 
     export let events: Event[];
@@ -62,7 +63,7 @@
                         dispatch("loadMore", { event: e });
                         log('load more highlights!', {event, lastEvent: lastEvent?.name})
                     }}>
-                        <HighlightCard preventClick="{isDragging}" {selectedDates} {event} draggable="{false}"/>
+                        <HighlightCard preventClick="{isDragging}" {baseUrl} {selectedDates} {event} draggable="{false}"/>
                     </IntersectionObserver>
                 {/each}
             </Swiper>
