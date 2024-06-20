@@ -6,9 +6,16 @@
     "from": "From",
     "start": "From",
     "today": "Today",
-    "more": "+ others",
-    "other": "Various opening hours",
-    "every_day": "Open all day"
+    "more": "(see the different schedules)",
+    "other": "Variable schedules",
+    "every_days": "Open daily",
+    "open_in": {
+      "hours": "Opens in {hours} hour(s)",
+      "minutes": "Opens in {minutes} minute(s)"
+    },
+    "open_at": "Opens at {time}",
+    "open": "Opened",
+    "close": "Closed"
   },
   "highlights": {
     "title": "Big events",

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Event, Geolocation, ShortDay, Week} from "$lib/types";
+    import type {Event, Geolocation, Period, ScheduleDate, Schedules, ShortDay} from "$lib/types";
     import moment, {type Moment} from "moment";
     import 'moment/dist/locale/fr-ch';
     import 'moment/dist/locale/en-gb';
@@ -9,40 +9,97 @@
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import {CldImage} from "svelte-cloudinary";
     import Clickable from "$lib/components/Clickable.svelte";
-    import {extractStartEndDate, isSameDays} from "$lib/date-utils";
+    import {extractStartEndDate, findAvailablePeriod, isSameDays, now} from "$lib/date-utils";
     import {defaultLocale} from "$lib/utils";
 
     let key: string;
 
+    export let selectedDates: { start: string, end: string | null | undefined };
     export let event: Event;
     export let baseUrl: string;
 
-    let date: { start: Moment, end: Moment };
+    let date: { start: Moment, end: Moment } | undefined = extractStartEndDate(event, selectedDates);
 
-    const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address);
+    const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address) ?? (event.geolocations.length ? event.geolocations[0] : undefined); // love when addresses can be false... thanks external data
 
     const media = event.medias.find(x => x.is_cover);
 
-    const today: ShortDay = moment().locale('en').format('dd').toLowerCase() as ShortDay;
+    let hourMessage: string = getSchedulesText(event.schedules, selectedDates);
 
-    const week: Week | undefined = event.schedules.dates[0].week.find(w => w.days.includes(today));
+    function getSchedulesText(schedules: Schedules, days: {
+        start: string,
+        end: string | undefined | null
+    } | undefined): string {
+        let period: Period | null = null;
+        const schedule: ScheduleDate | undefined = schedules.dates.find((schedule) => {
+            period = findAvailablePeriod(schedule, date?.start, date?.end);
+            return period != null
+        })
 
-    let hourMessage: string;
-    if (week === undefined) {
-        hourMessage = `${$_('date.other')}`;
-    } else {
-        hourMessage = (week.times === null || week.times === undefined || week.times.length === 0) ?
-            `${$_('date.every_day')}` :
-            `${$_('date.today')} ${$_('date.from')} ${week.times[0].start}`;
+        if (!schedule || !period) return $_('date.other'); // This case shouldn't occur
 
-        //multiple schedules in the week or more than today in days
-        if(event.schedules.dates[0].week.length > 1 || week.days.length > 1){
-            hourMessage += `, ${$_('date.more')}`;
+        const startDay = moment(new Date(days?.start ?? now));
+        const shortDay = startDay.locale('en').format('dd').toLowerCase() as ShortDay;
+        const hasDay = schedule.open_days.includes(shortDay) ?? false;
+
+        if (!hasDay) return `${$_('date.close')} ${$_('date.more')}`;
+
+        if (schedule.open_days.length === 7 && schedule.week[0].days.length === 7 &&
+            (schedule.week[0].times?.length === 0 || !schedule.week[0].times))
+            return $_('date.every_days');
+
+        const week = schedule.week.find(({days}) => days.includes(shortDay))
+
+        if (!week) return `${$_('date.close')} ${$_('date.more')}`;
+
+        if (!week.times || week.times.length === 0) return `${$_('date.open')}${week.days.length > 1 || schedule.week.length > 1 ? ` ${$_('date.more')}` : ''}`
+
+        const isToday = startDay.isSame(moment(), 'day');
+
+        const times = week.times.sort((a, b) => {
+            const aStart = a.start.split(':');
+            const bStart = b.start.split(':');
+            if (aStart[0] < bStart[0]) return -1;
+            if (aStart[0] > bStart[0]) return 1;
+
+            if (aStart[1] < bStart[1]) return -1;
+            if (aStart[1] > bStart[1]) return 1;
+
+            return 0;
+        });
+
+        const startTime = moment(times[0].start, 'HH:mm');
+        const endTime = moment(times[times.length - 1].start, 'HH:mm');
+
+        const start = startDay.set({
+            hour: startTime.get('hour'),
+            minute: startTime.get('minute'),
+            second: 0,
+            millisecond: 0,
+        });
+        const end = startDay.set({
+            hour: endTime.get('hour'),
+            minute: endTime.get('minute'),
+            second: 59,
+            millisecond: 999,
+        });
+
+        if (isToday) {
+            if (moment().isBefore(start)) {
+                const duration = moment.duration(start.diff(moment()));
+                if (duration.asHours() >= 1) return `${$_('date.open_in.hours', {values: {hours: Math.floor(duration.asHours()).toString().padStart(2, '0')}})} ${$_('date.more')}`;
+                return `${$_('date.open_in.minutes', {values: {minutes: Math.floor(duration.asMinutes()).toString().padStart(2, '0')}})} ${$_('date.more')}`;
+            }
+            if (moment().isAfter(end)) {
+                return $_('date.close')
+            }
+            if (startDay.isBetween(start, end)) return $_('date.open')
         }
-    }
-        console.log(event.schedules.dates[0])
 
-    $: date = extractStartEndDate(event);
+        return `${$_('date.open_at', {values: {time: times[0].start}})} ${$_('date.more')}`;
+    }
+
+    $: selectedDates;
     $: key = ($locale ?? defaultLocale);
 </script>
 
@@ -72,7 +129,7 @@
             {/if}
         </Clickable>
     </div>
-    <div class="informations flex flex-col flex-1 overflow-hidden">
+    <div class="informations flex flex-col flex-1 overflow-hidden  h-40 sm:h-64">
         <!--TAGS-->
         <TagsSwiper class="tags mx-3 mt-1.5 sm:mt-4 sm:mx-5 cursor-pointer"
                     tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full hover:border-honey-500 has-[:checked]:border-honey-500 hover:bg-honey-500 has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent"
@@ -90,12 +147,12 @@
             </div>
             <!--DATE-->
             <div class="date text-sm sm:text-md flex items-center sm:mt-2">
-                <div class="mb-1 mr-2">
+                <div class="my-auto mb-1 mr-2">
                     <Calendar class="text-honey-500" size="24px"/>
                 </div>
 
                 <p class="flex w-full leading-snug tracking-tight truncate mt-1">
-                    {#if isSameDays(event)}
+                    {#if isSameDays(event, selectedDates)}
                             <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
                                 {date.start.locale($_('date.locale')).format('DD.MM.YY')}
                             </span>
@@ -119,7 +176,7 @@
             </div>
             <!--SCHEDULE-->
             <div class="schedule text-sm sm:text-md hidden sm:flex w-full sm:mt-4 ">
-                <div class="mr-2">
+                <div class="my-auto mr-2">
                     <Clock class="text-honey-500" size="24px"/>
                 </div>
                 <p class="leading-snug tracking-tight mt-1"
@@ -130,7 +187,7 @@
             <!--LOCATION-->
             <div class="location text-sm sm:text-md flex w-full mt-2 sm:mt-4">
                 {#if (geolocation?.venue ?? geolocation?.address) !== undefined}
-                    <div class="mr-2">
+                    <div class="my-auto mr-2">
                         <MapPin class="text-honey-500" size="24px"/>
                     </div>
                     <p class="leading-snug tracking-tight truncate mt-1"

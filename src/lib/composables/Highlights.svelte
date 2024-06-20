@@ -14,6 +14,8 @@
         loadMore: { event: any };
     }>();
 
+    export let selectedDates: { start: string, end: string|undefined|null };
+
     export let events: Event[];
     export let title: string | null | undefined;
 
@@ -27,8 +29,6 @@
     $: lastEvent
     $: loading;
     $: isDragging;
-
-    //TODO add loader + state loading
 </script>
 
 <div class="w-full bg-honey-500 h-[400px] sm:h-[515px]">
@@ -62,7 +62,7 @@
                         dispatch("loadMore", { event: e });
                         log('load more highlights!', {event, lastEvent: lastEvent?.name})
                     }}>
-                        <HighlightCard preventClick="{isDragging}" {event} draggable="{false}"/>
+                        <HighlightCard preventClick="{isDragging}" {selectedDates} {event} draggable="{false}"/>
                     </IntersectionObserver>
                 {/each}
             </Swiper>

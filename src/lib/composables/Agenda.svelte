@@ -446,7 +446,7 @@
             {/each}
         {:else}
             {#each eventsToDisplay as event (eventsToDisplay.length, event.id)}
-                <EventCard {event} {baseUrl}/>
+                <EventCard {event} {baseUrl} selectedDates={({start: startDate, end: endDate})}/>
             {/each}
         {/if}
     </div>

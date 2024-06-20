@@ -15,14 +15,14 @@
     import {onMount} from "svelte";
 
     let key: string;
-
+    export let selectedDates: { start: string, end: string|undefined|null };
     export let preventClick: boolean = false;
     export let draggable: boolean = false;
     export let event: Event;
 
     const media: Media | undefined = event.medias.find(x => x.is_cover);
 
-    let date: { start: Moment, end: Moment };
+    let date: { start: Moment, end: Moment } = extractStartEndDate(event, selectedDates);;
 
     const mouseDown = (e: Event) => {
         // e.clientX
@@ -33,7 +33,6 @@
 
     $: preventClick;
     $: $locale;
-    $: date = extractStartEndDate(event);
     $: key = ($locale ?? defaultLocale);
 </script>
 
@@ -45,7 +44,6 @@
     <Clickable class="h-full flex flex-col" href="{import.meta.env.VITE_LT_URL}{event?.seo?.hreflang[key]}"
                on:mousedown={(e) => mouseDown(e)}>
         <div class="card-body w-min flex flex-col h-full">
-            <!--        TODO add placeholder -->
             <div class="aspect-square w-44 sm:w-72">
                 {#if media}
                     <CldImage
@@ -79,7 +77,7 @@
                 </div>
 
                 <p class="flex w-full text-sm">
-                    {#if isSameDays(event)}
+                    {#if isSameDays(event, selectedDates)}
                             <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
                                 {date.start.format('DD.MM.YY')}
                             </span>
