@@ -1,5 +1,6 @@
-import type {Event, Period, RawDate, ScheduleDate, Schedules} from "./types";
+import type {Event, Period, RawDate, ScheduleDate, Schedules, SelectedDates} from "./types";
 import moment, {type Moment} from "moment";
+import {log} from "$lib/utils";
 
 export const dateFormat: string = "YYYY-MM-DD"
 export const now: string | RawDate = moment().format(dateFormat);
@@ -13,31 +14,31 @@ export const randomDate = (start: Moment, end: Moment): Moment => {
     return moment(start.valueOf() + Math.random() * (end.valueOf() - start.valueOf()))
 }
 
-// TODO Remove hardcoded first dates
-export const isSameDays = (event: Event): Boolean => event.schedules.dates[0].periods[0].start === event.schedules.dates[0].periods[event.schedules.dates[0].periods.length - 1].end
+export const isSameDays = (event: Event, selectedDates: SelectedDates): Boolean => {
+    const period: { start: Moment, end: Moment }|undefined = extractStartEndDate(event, selectedDates);
 
-// TODO Remove hardcoded first dates
-export const extractStartEndDate = (event: Event): { start: Moment, end: Moment } => ({
-    start: moment(event.schedules.dates[0].periods[0].start, dateFormat),
-    end: moment(event.schedules.dates[0].periods[event.schedules.dates[0].periods.length - 1].end, dateFormat)
-});
+    return period?.start.format(dateFormat) === period?.end.format(dateFormat)
+}
+
+export const extractStartEndDate = (event: Event, selectedDates: SelectedDates): { start: Moment, end: Moment }|undefined => {
+    let period: Period | null = null;
+    event.schedules.dates.forEach((schedule) => {
+        if( period != null ) return;
+        period = findAvailablePeriod(schedule, moment(selectedDates.start), selectedDates.end ? moment(selectedDates.end) : undefined);
+    })
+
+    return period != null ? {
+    // @ts-ignore
+        start: moment(period.start),
+    // @ts-ignore
+        end: moment(period?.end ?? moment().endOf('year'))
+    } : undefined
+};
 
 export const findAvailablePeriod = (schedule: ScheduleDate, start: Moment | null | undefined, end: Moment | null | undefined): Period | null => {
     const today: Moment = start ?? moment();
     for (const period of sortPeriods(schedule.periods)) {
-        const pStart: Moment = moment(period.start, dateFormat).startOf('day');
-        const pEnd: Moment = moment(period.end, dateFormat).endOf('day');
-
-        if (today.isSame(pStart, "dates")) {
-            return period;
-        } else if (today.isSame(pEnd, "dates")) {
-            return period;
-        } else if (today.isBetween(pStart, pEnd, "dates", "[]")) {
-            return period;
-        } else if (today.isBefore(pStart, "dates")) {
-            if (end && end.isBefore(pStart)) {
-                continue;
-            }
+        if(isBetween(period, today, end)){
             return period;
         }
     }
@@ -75,4 +76,23 @@ export const sortSchedules = (schedules: Schedules[]): Schedules[] => {
         if (d1 > d2) return 1;
         return 0;
     })
+}
+
+export const isBetween = (period: Period, start: Moment| undefined|null, end: Moment| undefined|null) : boolean => {
+    const today: Moment = start ?? moment();
+
+    const pStart: Moment = moment(period.start, dateFormat).startOf('day');
+    const pEnd: Moment = moment(period.end, dateFormat).endOf('day');
+
+    if (today.isSame(pStart, "dates")) {
+        return true;
+    } else if (today.isSame(pEnd, "dates")) {
+        return true;
+    } else if (today.isBetween(pStart, pEnd, "dates", "[]")) {
+        return true;
+    } else if (today.isBefore(pStart, "dates")) {
+        return !(end && end.isBefore(pStart));
+    }
+
+    return false;
 }
