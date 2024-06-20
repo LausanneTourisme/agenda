@@ -6,11 +6,13 @@ export enum EventType {
     agenda = "events",
     highlights = "highlights"
 }
+
 export enum Environment {
     dev = "development",
     prod = "production"
 }
 
+export type SelectedDates = { start: string, end: string | undefined | null };
 export type Schedules = {
     dates: ScheduleDate[],
     exceptions: {
@@ -160,7 +162,7 @@ type DD = `${0}${oneToNine}` | `${1 | 2}${zeroToNine}` | `3${0 | 1}`
 /**
  * Hours
  */
-type HH = `${0 | 1}${zeroToNine}` | zeroToNine | `20` | `21` |`22` |`23`;
+type HH = `${0 | 1}${zeroToNine}` | zeroToNine | `20` | `21` | `22` | `23`;
 
 /**
  * Minutes
@@ -252,5 +254,5 @@ export type GqlItems = {
 
 export type EventsResult = {
     hasMore: boolean,
-    events:Event[],
+    events: Event[],
 }
