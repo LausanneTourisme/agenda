@@ -54,8 +54,8 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
             return false;
         }
 
-        if (event.schedules.dates.length === 0) {
-            // logIgnoredEvent(events[index], 'empty dates')
+        if (!event.schedules.dates || event.schedules.dates.length === 0) {
+            logIgnoredEvent(events[index], 'empty dates')
 
             return false;
         }

@@ -2,7 +2,18 @@ const e = "© Alle Rechte vorbehalten", n = {
   locale: "de",
   separator: "bis",
   from: "Ab",
-  start: "Vom"
+  start: "Vom",
+  today: "Heute",
+  more: "(siehe die verschiedenen Zeitpläne)",
+  other: "Variable Zeitpläne",
+  every_days: "Täglich geöffnet",
+  open_in: {
+    hours: "Öffnet in {hours} Stunde(n)",
+    minutes: "Öffnet in {minutes} Minute(n)"
+  },
+  open_at: "Öffnet um {time}",
+  open: "Offen",
+  close: "Geschlossen"
 }, t = {
   title: "Highlights",
   nothing: "Keine Veranstaltungen für die ausgewählten Daten gefunden. Bitte wählen Sie andere Daten."

@@ -14,6 +14,9 @@ const config = {
             }
         },
         extend: {
+            aspectRatio: {
+                '4/5': '4 / 5',
+            },
             screens: {
                 "xs": "359px",
                 '3xl': "3000px"

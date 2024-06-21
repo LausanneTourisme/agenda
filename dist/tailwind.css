@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.4.3 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.4 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -626,6 +626,11 @@ video {
   margin-bottom: 1.25rem;
 }
 
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 .-mt-1 {
   margin-top: -0.25rem;
 }
@@ -711,6 +716,10 @@ video {
 
 .hidden {
   display: none;
+}
+
+.aspect-4\/5 {
+  aspect-ratio: 4 / 5;
 }
 
 .aspect-square {
@@ -1246,6 +1255,10 @@ video {
 
   .sm\:hidden {
     display: none;
+  }
+
+  .sm\:aspect-square {
+    aspect-ratio: 1 / 1;
   }
 
   .sm\:h-64 {

@@ -5,6 +5,12 @@
 />
 
 <script lang="ts">
+    /*
+     * TODO update schedules to use exception section,
+     * we need look exceptions in the schedules and
+     * modify value for the specific day for the v2
+     */
+
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, register} from "svelte-i18n";
     import {type Event, type Locales, type Query} from "$lib/types";
@@ -229,6 +235,8 @@
     {:else}
         {#if !disableHighlights}
             <Highlights
+                    {baseUrl}
+                    selectedDates={{start: startDate, end: endDate}}
                     title={highlightTitle}
                     events={highlights}
                     bind:loading={loadingData}

@@ -1,12 +1,23 @@
 const e = "© Tous droits réservés", t = {
   locale: "fr-ch",
   separator: "au",
-  from: "Dès",
-  start: "Du"
-}, a = {
+  from: "dès",
+  start: "Du",
+  today: "Aujourd'hui",
+  more: "(voir les différents horaires)",
+  other: "Horaires variables",
+  every_days: "Ouvert tous les jours",
+  open_in: {
+    hours: "Ouvre dans {hours} heure(s)",
+    minutes: "Ouvre dans {minutes} minute(s)"
+  },
+  open_at: "Ouvre à {time}",
+  open: "Ouvert",
+  close: "Fermé"
+}, s = {
   title: "Les grands événements",
   nothing: "Aucun événement n'a été trouvé pour les dates sélectionnées. Veuillez choisir d'autres dates."
-}, n = {
+}, r = {
   title: "Les événements à Lausanne",
   search_section: {
     today: "Aujourd'hui",
@@ -31,22 +42,22 @@ const e = "© Tous droits réservés", t = {
     plural: "Voir les {quantity} résultats"
   },
   getting_data: "Récupération des événements en cours..."
-}, s = {
+}, a = {
   today: "Aujourd'hui",
   weekend: "Week-end",
   clear: "Effacer"
-}, r = {
+}, n = {
   copyright: e,
   date: t,
-  highlights: a,
-  agenda: n,
-  datepicker: s
+  highlights: s,
+  agenda: r,
+  datepicker: a
 };
 export {
-  n as agenda,
+  r as agenda,
   e as copyright,
   t as date,
-  s as datepicker,
-  r as default,
-  a as highlights
+  a as datepicker,
+  n as default,
+  s as highlights
 };

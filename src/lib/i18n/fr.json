@@ -3,8 +3,19 @@
   "date": {
     "locale": "fr-ch",
     "separator": "au",
-    "from": "Dès",
-    "start": "Du"
+    "from": "dès",
+    "start": "Du",
+    "today": "Aujourd'hui",
+    "more": "(voir les différents horaires)",
+    "other": "Horaires variables",
+    "every_days": "Ouvert tous les jours",
+    "open_in": {
+      "hours": "Ouvre dans {hours} heure(s)",
+      "minutes": "Ouvre dans {minutes} minute(s)"
+    },
+    "open_at": "Ouvre à {time}",
+    "open": "Ouvert",
+    "close": "Fermé"
   },
   "highlights": {
     "title": "Les grands événements",

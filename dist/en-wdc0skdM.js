@@ -2,11 +2,22 @@ const e = "© All rights reserved", t = {
   locale: "en-gb",
   separator: "to",
   from: "From",
-  start: "From"
+  start: "From",
+  today: "Today",
+  more: "(see the different schedules)",
+  other: "Variable schedules",
+  every_days: "Open daily",
+  open_in: {
+    hours: "Opens in {hours} hour(s)",
+    minutes: "Opens in {minutes} minute(s)"
+  },
+  open_at: "Opens at {time}",
+  open: "Opened",
+  close: "Closed"
 }, a = {
   title: "Big events",
   nothing: "No events found for the selected dates. Please choose other dates."
-}, n = {
+}, s = {
   title: "Events in Lausanne",
   search_section: {
     today: "Today",
@@ -31,7 +42,7 @@ const e = "© All rights reserved", t = {
     plural: "Show {quantity} results"
   },
   getting_data: "Retrieving events, please wait..."
-}, s = {
+}, n = {
   today: "Today",
   weekend: "Weekend",
   clear: "Clear"
@@ -39,14 +50,14 @@ const e = "© All rights reserved", t = {
   copyright: e,
   date: t,
   highlights: a,
-  agenda: n,
-  datepicker: s
+  agenda: s,
+  datepicker: n
 };
 export {
-  n as agenda,
+  s as agenda,
   e as copyright,
   t as date,
-  s as datepicker,
+  n as datepicker,
   o as default,
   a as highlights
 };
