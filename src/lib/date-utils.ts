@@ -1,6 +1,5 @@
 import type {Event, Period, RawDate, ScheduleDate, Schedules, SelectedDates} from "./types";
 import moment, {type Moment} from "moment";
-import {log} from "$lib/utils";
 
 export const dateFormat: string = "YYYY-MM-DD"
 export const now: string | RawDate = moment().format(dateFormat);
@@ -15,22 +14,25 @@ export const randomDate = (start: Moment, end: Moment): Moment => {
 }
 
 export const isSameDays = (event: Event, selectedDates: SelectedDates): Boolean => {
-    const period: { start: Moment, end: Moment }|undefined = extractStartEndDate(event, selectedDates);
+    const period: { start: Moment, end: Moment } | undefined = extractStartEndDate(event, selectedDates);
 
     return period?.start.format(dateFormat) === period?.end.format(dateFormat)
 }
 
-export const extractStartEndDate = (event: Event, selectedDates: SelectedDates): { start: Moment, end: Moment }|undefined => {
+export const extractStartEndDate = (event: Event, selectedDates: SelectedDates): {
+    start: Moment,
+    end: Moment
+} | undefined => {
     let period: Period | null = null;
     event.schedules.dates.forEach((schedule) => {
-        if( period != null ) return;
+        if (period != null) return;
         period = findAvailablePeriod(schedule, moment(selectedDates.start), selectedDates.end ? moment(selectedDates.end) : undefined);
     })
 
     return period != null ? {
-    // @ts-ignore
+        // @ts-ignore
         start: moment(period.start),
-    // @ts-ignore
+        // @ts-ignore
         end: moment(period?.end ?? moment().endOf('year'))
     } : undefined
 };
@@ -38,7 +40,7 @@ export const extractStartEndDate = (event: Event, selectedDates: SelectedDates):
 export const findAvailablePeriod = (schedule: ScheduleDate, start: Moment | null | undefined, end: Moment | null | undefined): Period | null => {
     const today: Moment = start ?? moment();
     for (const period of sortPeriods(schedule.periods)) {
-        if(isBetween(period, today, end)){
+        if (isBetween(period, today, end)) {
             return period;
         }
     }
@@ -78,7 +80,7 @@ export const sortSchedules = (schedules: Schedules[]): Schedules[] => {
     })
 }
 
-export const isBetween = (period: Period, start: Moment| undefined|null, end: Moment| undefined|null) : boolean => {
+export const isBetween = (period: Period, start: Moment | undefined | null, end: Moment | undefined | null): boolean => {
     const today: Moment = start ?? moment();
 
     const pStart: Moment = moment(period.start, dateFormat).startOf('day');

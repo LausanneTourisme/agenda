@@ -718,8 +718,8 @@ video {
   display: none;
 }
 
-.aspect-\[4\/5\] {
-  aspect-ratio: 4/5;
+.aspect-4\/5 {
+  aspect-ratio: 4 / 5;
 }
 
 .aspect-square {

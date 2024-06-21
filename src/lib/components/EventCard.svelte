@@ -105,7 +105,7 @@
 
 <div data-id="{event.id}"
      class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
-    <div class="image-wrapper aspect-[4/5] sm:aspect-square h-40 sm:h-64">
+    <div class="image-wrapper aspect-4/5 sm:aspect-square h-40 sm:h-64">
 
         <Clickable href="{baseUrl}{event.seo.hreflang[key]}" class="h-full w-full">
             {#if media}
@@ -129,7 +129,7 @@
             {/if}
         </Clickable>
     </div>
-    <div class="informations flex flex-col flex-1 overflow-hidden  h-40 sm:h-64">
+    <div class="informations flex flex-col flex-1 overflow-hidden h-40 sm:h-64">
         <!--TAGS-->
         <TagsSwiper class="tags mx-3 mt-1.5 sm:mt-4 sm:mx-5 cursor-pointer"
                     tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full hover:border-honey-500 has-[:checked]:border-honey-500 hover:bg-honey-500 has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent"

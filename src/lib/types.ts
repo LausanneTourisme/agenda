@@ -13,6 +13,7 @@ export enum Environment {
 }
 
 export type SelectedDates = { start: string, end: string | undefined | null };
+
 export type Schedules = {
     dates: ScheduleDate[],
     exceptions: {
