@@ -174,8 +174,8 @@
         const result = await getFreshEvents(apiUrl, key, events, {events_per_chunk: eventsPerChunk})
         log('App: reset Events getted', {result})
 
-        events = result.events;
-        usableEvents = result.usableEvents
+        events = sort(result.events);
+        usableEvents = sort(result.usableEvents);
 
         if (events.length === 0) {
             setTimeout(async () => {
@@ -190,7 +190,7 @@
             }, 500)
         }
 
-        usableHighlights = result.usableEvents.filter(e => e.highlight);
+        usableHighlights = sort(result.usableEvents.filter(e => e.highlight));
 
         if (searchValue) {
             log(`App: previous search: '${searchValue}'. Keeping it for now`)
@@ -198,8 +198,8 @@
             return;
         }
 
-        agendaEvents = result.agenda;
-        highlights = result.highlights;
+        agendaEvents = sort(result.agenda);
+        highlights = sort(result.highlights);
         hasMoreEvents = true;
         disableHighlightsLoadMore = true;
         loadingData = false;
