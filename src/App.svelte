@@ -45,6 +45,8 @@
         initialLocale: lang,
     });
 
+    let appIsLoading: boolean = true
+
     let searchValue: string | undefined | null;
 
     const dispatch = createEventDispatcher();
@@ -180,14 +182,15 @@
         if (events.length === 0) {
             setTimeout(async () => {
                 if (apiUrl) {
-                    loadingNextData = true
-                    disableHighlightsLoadMore = true
+                    loadingNextData = true;
+                    disableHighlightsLoadMore = true;
                     events = sort(await getAllEvents(apiUrl));
                     usableEvents = events.filter(event => event.languages.includes(key));
                     disableHighlightsLoadMore = false;
-                    loadingNextData = false
+                    loadingNextData = false;
+                    appIsLoading = false;
                 }
-            }, 500)
+            }, 500);
         }
 
         usableHighlights = sort(result.usableEvents.filter(e => e.highlight));
@@ -248,6 +251,7 @@
                 <Agenda
                         {baseUrl}
                         title={agendaTitle}
+                        bind:disableButtons={appIsLoading}
                         bind:hasMoreEvents={hasMoreEvents}
                         bind:startDate={startDate}
                         bind:endDate={endDate}

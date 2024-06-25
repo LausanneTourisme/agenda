@@ -23,7 +23,7 @@
 
     const media: Media | undefined = event.medias.find(x => x.is_cover);
 
-    let date: { start: Moment, end: Moment } = extractStartEndDate(event, selectedDates);;
+    let date: { start: Moment, end: Moment } = extractStartEndDate(event, selectedDates);
 
     const mouseDown = (e: Event) => {
         // e.clientX
@@ -38,13 +38,13 @@
 </script>
 
 <div data-id="{event.id}"
-     class="card h-full rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
+     class="lt-agenda-highlight-card h-full rounded-none shadow-none p-4 {preventClick ? 'pointer-events-none' : '' } {$$props.class ?? ''}"
      {draggable}
      transition:fade
 >
     <Clickable class="h-full flex flex-col" href="{baseUrl}{event?.seo?.hreflang[key]}"
                on:mousedown={(e) => mouseDown(e)}>
-        <div class="card-body w-min flex flex-col h-full">
+        <div class="lt-agenda-highlight-card-body w-min flex flex-col h-full">
             <div class="aspect-square w-44 sm:w-72">
                 {#if media}
                     <CldImage
@@ -67,12 +67,12 @@
                     />
                 {/if}
             </div>
-            <Heading class="title line-clamp-2 h-16 max-h-16 text-clip my-2"
+            <Heading class="lt-agenda-title line-clamp-2 h-16 max-h-16 text-clip my-2"
                      tag="h3"
                      title="{event.name[key]}">
                 {event.name[key]}
             </Heading>
-            <div class="flex items-center">
+            <div class="lt-agenda-highlight-dates flex items-center">
                 <div class="mb-1 mr-2">
                     <Calendar class="text-black" size="24px"/>
                 </div>

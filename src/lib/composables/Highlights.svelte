@@ -34,7 +34,7 @@
 
 <div class="w-full bg-honey-500 h-[400px] sm:h-[515px]">
     <div class="flex pt-7 md:px-7">
-        <Heading tag="h3" class="pl-5 md:pl-12 whitespace-nowrap" {title}>
+        <Heading tag="h2" class="!text-2xl font-semibold pl-5 md:pl-12 whitespace-nowrap" {title}>
             {title ?? $_('highlights.title', {default: 'Home'})}
         </Heading>
         {#if loading}

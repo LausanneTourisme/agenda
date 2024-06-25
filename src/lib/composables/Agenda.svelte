@@ -12,7 +12,7 @@
     import {dateFormat, getWeekend, now} from "$lib/date-utils";
     import moment from "moment";
 
-    import {debounce, defaultLocale, log} from "$lib/utils";
+    import {debounce, defaultLocale} from "$lib/utils";
     import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
 
     /*****************************************************************************
@@ -35,6 +35,7 @@
 
     let key: string | Locales;
 
+    export let disableButtons: boolean = true;
     export let startDate: string;
     export let endDate: string | undefined | null;
 
@@ -236,6 +237,7 @@
     $: selectedTags;
     $: selectedTagsName;
     $: eventsToDisplay;
+    $: disableButtons;
     $: key = $locale ?? defaultLocale;
     $: endDate, todaySelected = now === startDate && now === endDate, weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate
 </script>
@@ -251,15 +253,19 @@
 }}/>
 
 <div class="agenda p-5 md:p-7 md:px-12">
-    <Heading class="mb-5" tag="h3">{title ?? $_("agenda.title")}</Heading>
+    <Heading tag="h2" class="mb-5 !text-2xl font-semibold">{title ?? $_("agenda.title")}</Heading>
 
     <div class="search-section">
         <div class="w-full xs:flex xs:justify-start search-section">
             <!--    TODAY    -->
             <button
                     class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
-                    {todaySelected ? 'border-honey-500 bg-honey-500' : ''}"
+                    {todaySelected ? 'border-honey-500 bg-honey-500' : ''}
+                    {disableButtons ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent' : ''}"
+                    disabled="{disableButtons}"
                     on:click={(_) => {
+                        if(disableButtons) return;
+
                         if (!todaySelected){
                             startDate = now;
                             endDate = todaySelected ? null : now;
@@ -280,8 +286,12 @@
             <!--    WEEKEND   -->
             <button
                     class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent break-keep whitespace-break-spaces
-                    {weekendSelected ? 'border-honey-500 bg-honey-500' : ''}"
+                    {weekendSelected ? 'border-honey-500 bg-honey-500' : ''}
+                    {disableButtons ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent' : ''}"
+                    disabled="{disableButtons}"
                     on:click={(_) => {
+                        if(disableButtons) return;
+
                         if (weekendSelected){
                             startDate = now;
                             endDate = null;
@@ -301,14 +311,22 @@
 
             <!--    DATE    -->
             <div class="flex relative w-full mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
-                {!todaySelected && !weekendSelected && startDate && endDate ? 'border-honey-500 bg-honey-500' : ''}">
+                {!todaySelected && !weekendSelected && startDate && endDate ? 'border-honey-500 bg-honey-500' : ''}
+                {disableButtons ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent' : ''}"
+            >
                 <input type="text" id="dp" class="absolute bottom-0 left-0 w-0 outline-0 ring-transparent outline-none"
                        bind:value={dpDates}
                        bind:this={dpField}/>
                 <button
-                        on:click={(_) => dpField?.focus()}
+                        disabled="{disableButtons}"
+                        on:click={(_) => {
+                            if(disableButtons) return;
+
+                            dpField?.focus()
+                        }}
                         class="block w-full p-3 ring-transparent
-                    {startDate && endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}"
+                    {startDate && endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}
+                    {disableButtons ? 'cursor-progress' : ''}"
                 >
                 <span class="flex justify-center items-center w-max m-auto">
                     <Calendar class="w-5 h-5 -mt-1"/>
@@ -320,8 +338,9 @@
 
             <div class="by-name hidden sm:flex sm:items-center border-b border-honey-500">
                 <input
-                        class="h-full w-full outline-0 ring-transparent outline-none"
+                        class="h-full w-full outline-0 ring-transparent outline-none {disableButtons ? 'cursor-progress' : ''}"
                         name="search-event"
+                        disabled="{disableButtons}"
                         placeholder={$_("agenda.search_section.by_name_placeholder")}
                         type="search"
                         bind:value={searchValue}

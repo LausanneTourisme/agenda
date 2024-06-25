@@ -24,7 +24,7 @@
 
 {#if ready}
     <a {href} {target}
-       class="clickable block group/clickable cursor-pointer {!overflow ? 'overflow-hidden' : ''} {$$props.class ?? ''}"
+       class="lt-agenda-clickable block group/clickable cursor-pointer {!overflow ? 'overflow-hidden' : ''} {$$props.class ?? ''}"
        on:click
        data-sveltekit-preload-data="{preload}"
        draggable="false"
