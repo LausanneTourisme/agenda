@@ -104,8 +104,8 @@
 </script>
 
 <div data-id="{event.id}"
-     class="event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
-    <div class="image-wrapper aspect-4/5 sm:aspect-square h-40 sm:h-64">
+     class="lt-agenda-event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
+    <div class="lt-agenda-image-wrapper aspect-4/5 sm:aspect-square h-40 sm:h-64">
 
         <Clickable href="{baseUrl}{event.seo.hreflang[key]}" class="h-full w-full">
             {#if media}
@@ -129,25 +129,25 @@
             {/if}
         </Clickable>
     </div>
-    <div class="informations flex flex-col flex-1 overflow-hidden h-40 sm:h-64">
+    <div class="lt-agenda-informations flex flex-col flex-1 overflow-hidden h-40 sm:h-64">
         <!--TAGS-->
-        <TagsSwiper class="tags mx-3 mt-1.5 sm:mt-4 sm:mx-5 cursor-pointer"
-                    tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full hover:border-honey-500 has-[:checked]:border-honey-500 hover:bg-honey-500 has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent"
+        <TagsSwiper class="tags mx-3 mt-3 sm:mt-4 sm:mx-5 cursor-grab active:cursor-grabbing pb-0"
+                    tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full sm:hover:border-honey-500 sm:has-[:checked]:border-honey-500 hover:bg-honey-500 sm:has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent cursor-grab active:cursor-grabbing"
                     tags="{event.tags}"/>
 
 
-        <Clickable class=" px-2 pb-2 sm:px-4 sm:pb-4 flex-grow flex flex-col"
-                   href="{import.meta.env.VITE_LT_URL}{event.seo.hreflang[key]}">
+        <Clickable class="px-2 pb-2 sm:px-4 sm:pb-4 flex-grow flex flex-col"
+                   href="{baseUrl}{event.seo.hreflang[key]}">
             <!--TITLE-->
             <div class="flex-grow flex items-center">
-                <p class="title my-1 ml-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle"
+                <h3 class="lt-agenda-title my-1 ml-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle"
                    title="{event.name[key]}">
                     {event.name[key]}
-                </p>
+                </h3>
             </div>
             <!--DATE-->
-            <div class="date text-sm sm:text-md flex items-center sm:mt-2">
-                <div class="my-auto mb-1 mr-2">
+            <div class="lt-agenda-date text-sm sm:text-md flex items-center sm:mt-2">
+                <div class="my-auto mr-2">
                     <Calendar class="text-honey-500" size="24px"/>
                 </div>
 
@@ -175,7 +175,7 @@
                 </p>
             </div>
             <!--SCHEDULE-->
-            <div class="schedule text-sm sm:text-md hidden sm:flex w-full sm:mt-4 ">
+            <div class="lt-agenda-schedule text-sm sm:text-md hidden sm:flex w-full sm:mt-4 ">
                 <div class="my-auto mr-2">
                     <Clock class="text-honey-500" size="24px"/>
                 </div>
@@ -185,7 +185,7 @@
                 </p>
             </div>
             <!--LOCATION-->
-            <div class="location text-sm sm:text-md flex w-full mt-2 sm:mt-4">
+            <div class="lt-agenda-location text-sm sm:text-md flex w-full mt-2 sm:mt-4">
                 {#if (geolocation?.venue ?? geolocation?.address) !== undefined}
                     <div class="my-auto mr-2">
                         <MapPin class="text-honey-500" size="24px"/>
