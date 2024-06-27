@@ -27,7 +27,7 @@
     register("en", () => import("$lib/i18n/en.json"));
     register("de", () => import("$lib/i18n/de.json"));
 
-    export let blankLinks: boolean = $$props["blank-links"] ?? false;
+    export let blank: boolean = $$props["blank"] ?? false;
     export let disableHighlights: boolean = $$props["disable-highlights"] ?? false;
     export let disableAgenda: boolean = $$props["disable-agenda"] ?? false;
 
@@ -37,7 +37,7 @@
     export let startDate: string = $$props["start-date"] ?? now;
     export let endDate: string | null | undefined = $$props["end-date"];
     export let baseUrl: string = $$props["base-url"];
-    export let lang: string = $$props["lang"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
+    export let lang: string = $$props["locale"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
     export let eventsPerChunk: number = $$props["events-per-chunk"] ?? 20;
 
     init({
@@ -213,7 +213,7 @@
         key = lang as Locales;
         locale.set(lang);
         log('locale', {locale: $locale, key, lang});
-        blankableLinks.set(blankLinks)
+        blankableLinks.set(blank)
 
         log("App: App mounted", {agendaEvents});
     });

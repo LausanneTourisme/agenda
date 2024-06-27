@@ -9,10 +9,10 @@ if (ltAgenda) {
     app = new App({
         target: ltAgenda,
         props: {
-            lang: ltAgenda.dataset.lang ?? defaultLocale,
+            lang: ltAgenda.dataset.locale ?? defaultLocale,
             apiUrl: ltAgenda.dataset.apiUrl ?? import.meta.env.VITE_API_URL,
             baseUrl: ltAgenda.dataset.baseUrl ?? import.meta.env.VITE_LT_URL,
-            blankLinks: (ltAgenda.dataset.blank ? ltAgenda.dataset.blank === "true" : undefined) ?? true,
+            blank: ltAgenda.dataset.blank ? ltAgenda.dataset.blank === "true" : false,
             disableAgenda: ltAgenda.dataset.disableAgenda ? ltAgenda.dataset.disableAgenda === "true" : undefined,
             disableHighlights: ltAgenda.dataset.disableHighlights ? ltAgenda.dataset.disableHighlights === "true" : undefined,
             agendaTitle: ltAgenda.dataset.agendaTitle,
