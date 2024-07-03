@@ -37,7 +37,7 @@
     export let startDate: string = $$props["start-date"] ?? now;
     export let endDate: string | null | undefined = $$props["end-date"];
     export let baseUrl: string = $$props["base-url"];
-    export let lang: string = $$props["lang"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
+    export let lang: string = $$props["lang"] ?? $$props['locale'] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
     export let eventsPerChunk: number = $$props["events-per-chunk"] ?? 20;
 
     init({
