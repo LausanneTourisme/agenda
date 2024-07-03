@@ -2,7 +2,7 @@ var _8 = Object.defineProperty;
 var L8 = (t, e, i) => e in t ? _8(t, e, { enumerable: !0, configurable: !0, writable: !0, value: i }) : t[e] = i;
 var ht = (t, e, i) => L8(t, typeof e != "symbol" ? e + "" : e, i);
 var E2 = /* @__PURE__ */ ((t) => (t.agenda = "events", t.highlights = "highlights", t))(E2 || {}), yr = /* @__PURE__ */ ((t) => (t.dev = "development", t.prod = "production", t))(yr || {});
-const fl = "en", k8 = (t) => {
+const fl = "fr", k8 = (t) => {
   var s;
   if (!t) return;
   const e = document.getElementById("swc-lt-agenda-styling");
@@ -170,7 +170,7 @@ function H(t, e, i) {
 function z(t) {
   t.parentNode && t.parentNode.removeChild(t);
 }
-function R1(t, e) {
+function F1(t, e) {
   for (let i = 0; i < t.length; i += 1)
     t[i] && t[i].d(e);
 }
@@ -7913,7 +7913,7 @@ function qd(t) {
       Le(d, _), l = !1;
     },
     d(_) {
-      _ && z(e), R1(a, _), d && d.d(_);
+      _ && z(e), F1(a, _), d && d.d(_);
     }
   };
 }
@@ -12413,7 +12413,7 @@ function cs({ type: t = "widget", onLoad: e, onError: i }) {
   const s = document.createElement("script");
   t === "widget" ? s.src = "https://widget.cloudinary.com/v2.0/global/all.js" : s.src = "https://unpkg.com/cloudinary-video-player@1.9.4/dist/cld-video-player.min.js", document.body.appendChild(s), s.addEventListener("load", e), s.addEventListener("error", i);
 }
-var Xn = { VITE_PUBLIC_CLOUDINARY_CLOUD_NAME: "lt-assets", VITE_API_URL: "https://stage.lausanne-tourisme.ch/wp-json/api/agenda", VITE_LT_URL: "https://www.lausanne-tourisme.ch", VITE_LOCALE: "en", VITE_ENV: "production", BASE_URL: "/", MODE: "production", DEV: !1, PROD: !0, SSR: !1 };
+var Xn = { VITE_PUBLIC_CLOUDINARY_CLOUD_NAME: "lt-assets", VITE_API_URL: "https://stage.lausanne-tourisme.ch/wp-json/api/agenda", VITE_LT_URL: "https://www.lausanne-tourisme.ch", VITE_LOCALE: "fr", VITE_ENV: "production", BASE_URL: "/", MODE: "production", DEV: !1, PROD: !0, SSR: !1 };
 const Tw = (t) => ({
   widget: t[0] & /*widget*/
   2,
@@ -14222,7 +14222,7 @@ class _b extends F {
   }
 }
 R(_b, { size: {}, unit: {}, pause: { type: "Boolean" }, ballTopLeft: {}, ballTopRight: {}, ballBottomLeft: {}, ballBottomRight: {}, duration: {} }, [], [], !0);
-const I1 = /[a-zA-Z]/, g9 = (t, e) => {
+const R1 = /[a-zA-Z]/, g9 = (t, e) => {
   if (t[0] === "#" && (t = t.slice(1)), t.length === 3) {
     let s = "";
     t.split("").forEach((n) => {
@@ -14341,13 +14341,13 @@ function kb(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
 function Mb(t, e, i) {
   var C;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "2.1s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(I1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(I1, "");
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "2.1s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(R1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(R1, "");
   return t.$$set = (v) => {
     "color" in v && i(0, s = v.color), "unit" in v && i(1, n = v.unit), "duration" in v && i(2, l = v.duration), "size" in v && i(3, o = v.size), "pause" in v && i(4, a = v.pause);
   }, [s, n, l, o, a, h, d];
@@ -14872,13 +14872,13 @@ function Ab(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
 function Yb(t, e, i) {
   var C;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1.2s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(I1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(I1, "");
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1.2s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(R1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(R1, "");
   return t.$$set = (v) => {
     "color" in v && i(0, s = v.color), "unit" in v && i(1, n = v.unit), "duration" in v && i(2, l = v.duration), "size" in v && i(3, o = v.size), "pause" in v && i(4, a = v.pause);
   }, [s, n, l, o, a, h, d];
@@ -15051,7 +15051,7 @@ function Fb(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
@@ -15221,13 +15221,13 @@ function Gb(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
 function qb(t, e, i) {
   var C;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(I1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(I1, "");
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(R1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(R1, "");
   return t.$$set = (v) => {
     "color" in v && i(0, s = v.color), "unit" in v && i(1, n = v.unit), "duration" in v && i(2, l = v.duration), "size" in v && i(3, o = v.size), "pause" in v && i(4, a = v.pause);
   }, [s, n, l, o, a, h, d];
@@ -15387,7 +15387,7 @@ function Qb(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
@@ -15563,13 +15563,13 @@ function e_(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
 function t_(t, e, i) {
   var C;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "0.6s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(I1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(I1, "");
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "0.6s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(R1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(R1, "");
   return t.$$set = (v) => {
     "color" in v && i(0, s = v.color), "unit" in v && i(1, n = v.unit), "duration" in v && i(2, l = v.duration), "size" in v && i(3, o = v.size), "pause" in v && i(4, a = v.pause);
   }, [s, n, l, o, a, h, d];
@@ -16000,13 +16000,13 @@ function f_(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
 function d_(t, e, i) {
   var C;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1.5s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(I1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(I1, "");
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1.5s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(R1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(R1, "");
   return t.$$set = (v) => {
     "color" in v && i(0, s = v.color), "unit" in v && i(1, n = v.unit), "duration" in v && i(2, l = v.duration), "size" in v && i(3, o = v.size), "pause" in v && i(4, a = v.pause);
   }, [s, n, l, o, a, h, d];
@@ -16217,13 +16217,13 @@ function m_(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
 function v_(t, e, i) {
   var C;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "2.5s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(I1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(I1, "");
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "2.5s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(R1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(R1, "");
   return t.$$set = (v) => {
     "color" in v && i(0, s = v.color), "unit" in v && i(1, n = v.unit), "duration" in v && i(2, l = v.duration), "size" in v && i(3, o = v.size), "pause" in v && i(4, a = v.pause);
   }, [s, n, l, o, a, h, d];
@@ -16398,13 +16398,13 @@ function __(t) {
     i: T,
     o: T,
     d(l) {
-      l && z(e), R1(n, l);
+      l && z(e), F1(n, l);
     }
   };
 }
 function L_(t, e, i) {
   var C;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "2s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(I1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(I1, "");
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "2s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(R1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(R1, "");
   return t.$$set = (v) => {
     "color" in v && i(0, s = v.color), "unit" in v && i(1, n = v.unit), "duration" in v && i(2, l = v.duration), "size" in v && i(3, o = v.size), "pause" in v && i(4, a = v.pause);
   }, [s, n, l, o, a, h, d];
@@ -17388,13 +17388,13 @@ function q_(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
 function J_(t, e, i) {
   var C;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1.25s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(I1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(I1, "");
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1.25s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((C = l.match(R1)) == null ? void 0 : C[0]) ?? "s", d = l.replace(R1, "");
   return t.$$set = (v) => {
     "color" in v && i(0, s = v.color), "unit" in v && i(1, n = v.unit), "duration" in v && i(2, l = v.duration), "size" in v && i(3, o = v.size), "pause" in v && i(4, a = v.pause);
   }, [s, n, l, o, a, h, d];
@@ -17571,13 +17571,13 @@ function K_(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
 function x_(t, e, i) {
   var v;
-  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((v = l.match(I1)) == null ? void 0 : v[0]) ?? "s", d = l.replace(I1, ""), C;
+  let { color: s = "#FF3E00" } = e, { unit: n = "px" } = e, { duration: l = "1s" } = e, { size: o = "60" } = e, { pause: a = !1 } = e, h = ((v = l.match(R1)) == null ? void 0 : v[0]) ?? "s", d = l.replace(R1, ""), C;
   return t.$$set = (_) => {
     "color" in _ && i(0, s = _.color), "unit" in _ && i(1, n = _.unit), "duration" in _ && i(2, l = _.duration), "size" in _ && i(3, o = _.size), "pause" in _ && i(4, a = _.pause);
   }, t.$$.update = () => {
@@ -18307,7 +18307,7 @@ function wL(t) {
       i = !1;
     },
     d(l) {
-      l && z(e), R1(n, l);
+      l && z(e), F1(n, l);
     }
   };
 }
@@ -18587,7 +18587,7 @@ function LL(t) {
       }
     },
     d(o) {
-      o && (z(e), z(i)), s && s.d(o), R1(l, o);
+      o && (z(e), z(i)), s && s.d(o), F1(l, o);
     }
   };
 }
@@ -19064,7 +19064,7 @@ function DL(t) {
   }), o = new C9({
     props: {
       class: "tags mx-3 mt-3 sm:mt-4 sm:mx-5 cursor-grab active:cursor-grabbing pb-0",
-      tagClass: "flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full sm:hover:border-honey-500 sm:has-[:checked]:border-honey-500 hover:bg-honey-500 sm:has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent cursor-grab active:cursor-grabbing",
+      tagClass: "flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full sm:has-[:checked]:border-honey-500 sm:has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent cursor-grab active:cursor-grabbing",
       tags: (
         /*event*/
         t[1].tags
@@ -122964,7 +122964,7 @@ function hK(t) {
     i: T,
     o: T,
     d(v) {
-      v && z(e), R1(C, v);
+      v && z(e), F1(C, v);
     }
   };
 }
@@ -124312,7 +124312,7 @@ function MK(t) {
     i: T,
     o: T,
     d(n) {
-      n && z(e), R1(s, n);
+      n && z(e), F1(s, n);
     }
   };
 }
@@ -124564,7 +124564,7 @@ function HK(t) {
       Le(i.$$.fragment, X), Le(l.$$.fragment, X), B = !1;
     },
     d(X) {
-      X && (z(e), z(o), z(a), z(M), z(y)), Ue(i), Ue(l), R1(K, X), r = !1, G(Q);
+      X && (z(e), z(o), z(a), z(M), z(y)), Ue(i), Ue(l), F1(K, X), r = !1, G(Q);
     }
   };
 }
@@ -124669,7 +124669,7 @@ function VK(t) {
       i = !1;
     },
     d(l) {
-      l && z(e), R1(n, l);
+      l && z(e), F1(n, l);
     }
   };
 }
@@ -129382,22 +129382,22 @@ class As extends F {
   }
 }
 customElements.define("swc-lt-agenda", R(As, { blankLinks: {}, disableHighlights: {}, disableAgenda: {}, highlightTitle: {}, agendaTitle: {}, apiUrl: {}, startDate: {}, endDate: {}, baseUrl: {}, lang: {}, eventsPerChunk: {} }, [], [], !0));
-const F1 = document.getElementById("lt-agenda");
+const I1 = document.getElementById("lt-agenda");
 let Ys = null;
-F1 ? Ys = new As({
-  target: F1,
+I1 ? Ys = new As({
+  target: I1,
   props: {
-    lang: F1.dataset.lang ?? fl,
-    apiUrl: F1.dataset.apiUrl ?? "https://stage.lausanne-tourisme.ch/wp-json/api/agenda",
-    baseUrl: F1.dataset.baseUrl ?? "https://www.lausanne-tourisme.ch",
-    blankLinks: (F1.dataset.blank ? F1.dataset.blank === "true" : void 0) ?? !0,
-    disableAgenda: F1.dataset.disableAgenda ? F1.dataset.disableAgenda === "true" : void 0,
-    disableHighlights: F1.dataset.disableHighlights ? F1.dataset.disableHighlights === "true" : void 0,
-    agendaTitle: F1.dataset.agendaTitle,
-    highlightTitle: F1.dataset.highlightTitle,
-    startDate: F1.dataset.startDate,
-    endDate: F1.dataset.endDate,
-    loadBy: parseInt(F1.dataset.eventsPerChunk ?? "") ? parseInt(F1.dataset.eventsPerChunk ?? "") : void 0
+    lang: I1.dataset.lang ?? I1.dataset.locale ?? fl,
+    apiUrl: I1.dataset.apiUrl ?? "https://stage.lausanne-tourisme.ch/wp-json/api/agenda",
+    baseUrl: I1.dataset.baseUrl ?? "https://www.lausanne-tourisme.ch",
+    blankLinks: (I1.dataset.blank ? I1.dataset.blank === "true" : void 0) ?? !0,
+    disableAgenda: I1.dataset.disableAgenda ? I1.dataset.disableAgenda === "true" : void 0,
+    disableHighlights: I1.dataset.disableHighlights ? I1.dataset.disableHighlights === "true" : void 0,
+    agendaTitle: I1.dataset.agendaTitle,
+    highlightTitle: I1.dataset.highlightTitle,
+    startDate: I1.dataset.startDate,
+    endDate: I1.dataset.endDate,
+    loadBy: parseInt(I1.dataset.eventsPerChunk ?? "") ? parseInt(I1.dataset.eventsPerChunk ?? "") : void 0
   }
 }) : document.querySelector("swc-lt-agenda") ? console.warn("currently using web component") : console.error("id lt-agenda not found");
 const jx = Ys;

@@ -1363,11 +1363,6 @@ video {
     line-height: 1.75rem;
   }
 
-  .sm\:hover\:border-honey-500:hover {
-    --tw-border-opacity: 1;
-    border-color: rgb(252 189 5 / var(--tw-border-opacity));
-  }
-
   .sm\:has-\[\:checked\]\:border-honey-500:has(:checked) {
     --tw-border-opacity: 1;
     border-color: rgb(252 189 5 / var(--tw-border-opacity));
