@@ -368,7 +368,7 @@
                     </div>
                 {:else}
                     <TagsSwiper
-                            class="!hidden sm:flex"
+                            class="hidden sm:flex"
                             {tags}
                             {selectedTags}
                             displayBtnAll={true}
