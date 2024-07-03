@@ -206,17 +206,17 @@
     }
 
     const onInput = () => {
-        if (searchValue !== oldSearchValue) {
-            isLoading = true; //will be false on props 'events' update
-            debounce(() => {
-                if (searchValue !== oldSearchValue) {
-                    selectedTags = [];
-                    selectedTagsName = [];
-                    dispatch("search", {query: searchValue?.toLowerCase(), events: eventsToDisplay});
-                    oldSearchValue = searchValue
-                }
-            }, 400)();
-        }
+        isLoading = true; //will be false on props 'events' update
+        debounce(() => {
+            if (searchValue !== oldSearchValue) {
+                selectedTags = [];
+                selectedTagsName = [];
+                dispatch("search", {query: searchValue?.toLowerCase(), events: eventsToDisplay});
+                oldSearchValue = searchValue
+            }
+
+            isLoading = false;
+        }, 600)();
     }
 
     $: events, eventsToDisplay = events, isLoading = false;
@@ -315,8 +315,8 @@
                 {disableButtons ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent' : ''}"
             >
                 <input type="text" id="dp" class="absolute bottom-0 left-0 w-0 outline-0 ring-transparent outline-none"
-                       bind:value={dpDates}
-                       bind:this={dpField}/>
+                        bind:value={dpDates}
+                        bind:this={dpField}/>
                 <button
                         disabled="{disableButtons}"
                         on:click={(_) => {
@@ -328,11 +328,11 @@
                     {startDate && endDate && !todaySelected && !thisWeekend ? 'border-honey-500 bg-honey-500' : ''}
                     {disableButtons ? 'cursor-progress' : ''}"
                 >
-                <span class="flex justify-center items-center w-max m-auto">
-                    <Calendar class="w-5 h-5 -mt-1"/>
-                    &nbsp;
-                    {$_("agenda.search_section.dates")}
-                </span>
+                    <span class="flex justify-center items-center w-max m-auto">
+                        <Calendar class="w-5 h-5 -mt-1"/>
+                        &nbsp;
+                        {$_("agenda.search_section.dates")}
+                    </span>
                 </button>
             </div>
 
@@ -344,7 +344,7 @@
                         placeholder={$_("agenda.search_section.by_name_placeholder")}
                         type="search"
                         bind:value={searchValue}
-                        on:keyup={() => onInput()}
+                        on:keydown={onInput}
                 />
                 <Search class="text-honey-500"/>
             </div>
@@ -392,7 +392,9 @@
                         {$_("agenda.tags.title")}
                     </Heading>
 
-                    <span class="mt-3"><Cross1/></span>
+                    <span class="mt-3">
+                        <Cross1/>
+                    </span>
                 </button>
                 <div class="drawer-categories absolute mt-2 h-72 overflow-y-scroll flex flex-wrap">
                     <button
