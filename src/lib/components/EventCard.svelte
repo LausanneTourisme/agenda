@@ -132,7 +132,7 @@
     <div class="lt-agenda-informations flex flex-col flex-1 overflow-hidden h-40 sm:h-64">
         <!--TAGS-->
         <TagsSwiper class="tags mx-3 mt-3 sm:mt-4 sm:mx-5 cursor-grab active:cursor-grabbing pb-0"
-                    tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full sm:hover:border-honey-500 sm:has-[:checked]:border-honey-500 hover:bg-honey-500 sm:has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent cursor-grab active:cursor-grabbing"
+                    tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full sm:has-[:checked]:border-honey-500 sm:has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent cursor-grab active:cursor-grabbing"
                     tags="{event.tags}"/>
 
 
