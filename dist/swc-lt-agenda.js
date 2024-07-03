@@ -12413,7 +12413,7 @@ function cs({ type: t = "widget", onLoad: e, onError: i }) {
   const s = document.createElement("script");
   t === "widget" ? s.src = "https://widget.cloudinary.com/v2.0/global/all.js" : s.src = "https://unpkg.com/cloudinary-video-player@1.9.4/dist/cld-video-player.min.js", document.body.appendChild(s), s.addEventListener("load", e), s.addEventListener("error", i);
 }
-var Xn = { VITE_PUBLIC_CLOUDINARY_CLOUD_NAME: "lt-assets", VITE_API_URL: "https://stage.lausanne-tourisme.ch/wp-json/api/agenda", VITE_LT_URL: "https://www.lausanne-tourisme.ch", VITE_LOCALE: "fr", VITE_ENV: "production", BASE_URL: "/", MODE: "production", DEV: !1, PROD: !0, SSR: !1 };
+var Xn = { VITE_PUBLIC_CLOUDINARY_CLOUD_NAME: "lt-assets", VITE_API_URL: "https://www.lausanne-tourisme.ch/wp-json/api/agenda", VITE_LT_URL: "https://www.lausanne-tourisme.ch", VITE_LOCALE: "fr", VITE_ENV: "production", BASE_URL: "/", MODE: "production", DEV: !1, PROD: !0, SSR: !1 };
 const Tw = (t) => ({
   widget: t[0] & /*widget*/
   2,
@@ -129388,7 +129388,7 @@ I1 ? Ys = new As({
   target: I1,
   props: {
     lang: I1.dataset.lang ?? I1.dataset.locale ?? fl,
-    apiUrl: I1.dataset.apiUrl ?? "https://stage.lausanne-tourisme.ch/wp-json/api/agenda",
+    apiUrl: I1.dataset.apiUrl ?? "https://www.lausanne-tourisme.ch/wp-json/api/agenda",
     baseUrl: I1.dataset.baseUrl ?? "https://www.lausanne-tourisme.ch",
     blankLinks: (I1.dataset.blank ? I1.dataset.blank === "true" : void 0) ?? !0,
     disableAgenda: I1.dataset.disableAgenda ? I1.dataset.disableAgenda === "true" : void 0,
