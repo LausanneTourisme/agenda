@@ -13,7 +13,7 @@
 
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, register} from "svelte-i18n";
-    import {type Event, type Locales, type Query} from "$lib/types";
+    import {type Event, type Locales, type Query, type Tag} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
     import {createEventDispatcher, onMount} from "svelte";
@@ -60,6 +60,7 @@
     let usableHighlights: Event[] = []; // available highlighted events for the current locale
     let highlights: Event[] = []; // highlights to display
     let agendaEvents: Event[] = []; // events to display in agenda section
+    let selectedTags: Tag[] = []; // currently selected tags
     let hasMoreEvents: boolean = true;
     let disableHighlightsLoadMore = false;
     let loadingData = true;
@@ -174,7 +175,7 @@
         log('App: reset Events')
 
         const result = await getFreshEvents(apiUrl, key, events, {events_per_chunk: eventsPerChunk})
-        log('App: reset Events getted', {result})
+        log('App: got fresh events', {result})
 
         events = sort(result.events);
         usableEvents = sort(result.usableEvents);
