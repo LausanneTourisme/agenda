@@ -169,11 +169,11 @@
     }
     onMount(() => {
         buildCalendar();
-        filterBySelectedTagsOrDisplayTodayEvents();
+        filterBySelectedTags();
     })
     afterUpdate(() => {
         buildCalendar();
-        filterBySelectedTagsOrDisplayTodayEvents();
+        filterBySelectedTags();
     })
 
     /*****************************************************************************
@@ -209,7 +209,7 @@
     /**
      * When the user has selected tags and clicks "loads more", the tag filtering should re-apply
      * */
-    function filterBySelectedTagsOrDisplayTodayEvents() {
+    function filterBySelectedTags() {
         if (selectedTagsName.length) {
             debounce(() => {
                 eventsToDisplay = events.filter((event: Event) => {
@@ -218,32 +218,12 @@
                     })
                 });
             }, 400)();
-        } else {
-            // fixme: unoptimized way to load today's events on initial load @diogo-vf
-            displayTodaysEvents();
         }
     }
 
     const onTagSelected = (tag: Tag | null | undefined = null) => {
         sortEventsByTags(tag)
         searchValue = "";
-    }
-
-    const displayTodaysEvents = () => {
-        if(disableButtons) return;
-
-        if (!todaySelected){
-            startDate = now;
-            endDate = todaySelected ? null : now;
-        } else {
-            startDate = now;
-            endDate = null;
-        }
-
-        calendar?.clear()
-        selectedTags = [];
-        selectedTagsName = [];
-        dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
     }
 
     const onInput = () => {
@@ -330,7 +310,23 @@
                     {weekendSelected ? 'border-honey-500 bg-honey-500' : ''}
                     {disableButtons ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent' : ''}"
                     disabled="{disableButtons}"
-                    on:click={displayTodaysEvents}
+                    on:click={(_) => {
+                        if(disableButtons) return;
+
+                        if (weekendSelected){
+                            startDate = now;
+                            endDate = null;
+                        } else {
+                            startDate = thisWeekend.saturday.format(dateFormat);
+                            endDate = thisWeekend.sunday.format(dateFormat);
+                        }
+
+                        todaySelected = false;
+                        calendar?.clear()
+                        selectedTags = [];
+                        selectedTagsName = [];
+                        dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
+                    }}
             >
                 {$_("agenda.search_section.this_weekend")}
             </button>
