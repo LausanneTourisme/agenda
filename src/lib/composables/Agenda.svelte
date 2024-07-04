@@ -93,7 +93,7 @@
         try {
             calendar?.destroy()
         } catch (e) {
-            console.error('Trying to reset calendar too earlier')
+            console.error('Trying to reset calendar too early')
         }
 
         calendar = new AirDatepicker('#dp', {
@@ -167,8 +167,14 @@
             // startDate,
         });
     }
-    onMount(buildCalendar)
-    afterUpdate(buildCalendar)
+    onMount(() => {
+        buildCalendar();
+        filterBySelectedTags();
+    })
+    afterUpdate(() => {
+        buildCalendar();
+        filterBySelectedTags();
+    })
 
     /*****************************************************************************
      /* END CALENDAR SECTION
@@ -198,6 +204,21 @@
                 selectedTagsName.includes(tag.name),
             );
         }), 400)(); //reduce lag when user select multiple tags
+    }
+
+    /**
+     * When the user has selected tags and clicks "loads more", the tag filtering should re-apply
+     * */
+    function filterBySelectedTags() {
+        if (selectedTagsName.length) {
+            debounce(() => {
+                eventsToDisplay = events.filter((event: Event) => {
+                    return event.tags.some((tag: Tag) => {
+                        return selectedTagsName.indexOf(tag.name) !== -1;
+                    })
+                });
+            }, 400)();
+        }
     }
 
     const onTagSelected = (tag: Tag | null | undefined = null) => {
