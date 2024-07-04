@@ -12,7 +12,7 @@
     import {dateFormat, getWeekend, now} from "$lib/date-utils";
     import moment from "moment";
 
-    import {debounce, defaultLocale, log} from "$lib/utils";
+    import {debounce, defaultLocale} from "$lib/utils";
     import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
 
     /*****************************************************************************
