@@ -105,7 +105,7 @@
 
 <div data-id="{event.id}"
      class="lt-agenda-event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
-    <div class="lt-agenda-image-wrapper aspect-4/5 sm:aspect-square h-40 sm:h-64">
+    <div class="lt-agenda-image-wrapper aspect-4/5 sm:aspect-square h-40 sm:h-48">
 
         <Clickable href="{baseUrl}{event.seo.hreflang[key]}" class="h-full w-full">
             {#if media}
@@ -129,7 +129,7 @@
             {/if}
         </Clickable>
     </div>
-    <div class="lt-agenda-informations flex flex-col flex-1 overflow-hidden h-40 sm:h-64">
+    <div class="lt-agenda-informations flex flex-col flex-1 overflow-hidden h-40 sm:h-48">
         <!--TAGS-->
         <TagsSwiper class="tags mx-3 mt-3 sm:mt-4 sm:mx-5 cursor-grab active:cursor-grabbing pb-0"
                     tagClass="flex justify-content items-center text-sm  mr-2 sm:text-md px-3 sm:py-1 sm:px-2 text-black border border-black rounded-full sm:has-[:checked]:border-honey-500 sm:has-[:checked]:bg-honey-500 items-center ring-2 ring-transparent cursor-grab active:cursor-grabbing"
@@ -174,16 +174,7 @@
                     {/if}
                 </p>
             </div>
-            <!--SCHEDULE-->
-            <div class="lt-agenda-schedule text-sm sm:text-md hidden sm:flex w-full sm:mt-4 ">
-                <div class="my-auto mr-2">
-                    <Clock class="text-honey-500" size="24px"/>
-                </div>
-                <p class="leading-snug tracking-tight mt-1"
-                   title="{hourMessage}">
-                    {hourMessage}
-                </p>
-            </div>
+
             <!--LOCATION-->
             <div class="lt-agenda-location text-sm sm:text-md flex w-full mt-2 sm:mt-4">
                 {#if (geolocation?.venue ?? geolocation?.address) !== undefined}
