@@ -19,7 +19,7 @@
     import {createEventDispatcher, onMount} from "svelte";
     import {applyStyling, defaultLocale, log, warn} from "$lib/utils";
     import {blankableLinks} from "$lib/store";
-    import {getAllEvents, getFreshEvents, searchEvents, sort} from "$lib/event-utils";
+    import {getAllEvents, getFreshEvents, searchEvents, sort, unique} from "$lib/event-utils";
     import moment from "moment";
     import {dateFormat, now} from "$lib/date-utils";
 
@@ -66,25 +66,25 @@
     let loadingData = true;
     let loadingNextData = true;
 
+    /**
+     * turn off all flags used in other components to prevent iterations
+     * @param events
+     */
     function setDataAndDisableSpecialEvents(events: Event[]) {
         agendaEvents = [...events];
-        highlights = [...events.filter(e => e.highlight)];
-        disableHighlightsLoadMore = true;
         hasMoreEvents = false;
         loadingData = false;
     }
 
     async function onDateChanges(events: Event[], locale: Locales, query: Query, dates: [string, string | undefined | null]) {
         if (!dates[1]) {
-            await resetEvents();
-            return searchValue ? searchEvents(searchValue, locale, agendaEvents) : agendaEvents
+            await resetEvents({triggerSearchEvent: false});
+            return query ? onSearch(query, locale) : setDataAndDisableSpecialEvents(agendaEvents);
         }
 
         searchValue = query;
 
         const tempEvents: Event[] = searchValue ? searchEvents(searchValue, locale, events) : events;
-
-        disableHighlightsLoadMore = !!dates[1];
 
         startDate = dates[0];
         endDate = dates[1];
@@ -133,8 +133,7 @@
             }
         }
 
-        agendaEvents = [...agendaEvents, ...tmpEvents];
-        highlights = [...highlights, ...tmpEvents];
+        highlights = sort([...highlights, ...tmpEvents]);
         log("Handle more highlights!", {usableEvents, newEvents: tmpEvents, agendaEvents, highlights})
     }
 
@@ -157,7 +156,7 @@
             index++;
         }
         agendaEvents = [...agendaEvents, ...tmpEvents];
-        highlights = [...highlights, ...tmpHighlight];
+        usableHighlights = unique(usableHighlights, tmpHighlight);
 
         hasMoreEvents = agendaEvents.length < usableEvents.length
 
@@ -165,12 +164,16 @@
             usableEvents,
             newEvents: tmpEvents,
             agendaEvents,
-            highlights,
+            usableHighlights,
             hasMoreEvents
         })
     }
 
-    async function resetEvents() {
+    /**
+     * on first load, get x events (highlighted or not). On background get all events to prevents future calls
+     * every time after the first load, clear all "usable" var and re-set again like first load without external call
+     */
+    async function resetEvents(options: {triggerSearchEvent: boolean} = {triggerSearchEvent : true}) {
         loadingData = true;
         log('App: reset Events')
 
@@ -179,30 +182,37 @@
 
         events = sort(result.events);
         usableEvents = sort(result.usableEvents);
+        //use only the chunked result
+        usableHighlights = sort(usableEvents.filter(e => e.highlight && e.languages.includes(key)));
 
         if (events.length === 0) {
             setTimeout(async () => {
                 if (apiUrl) {
                     loadingNextData = true;
                     disableHighlightsLoadMore = true;
+                    log("App: getting all events...")
                     events = sort(await getAllEvents(apiUrl));
                     usableEvents = events.filter(event => event.languages.includes(key));
+                    usableHighlights = events.filter(e => e.highlight && e.languages.includes(key));
                     disableHighlightsLoadMore = false;
                     loadingNextData = false;
                     appIsLoading = false;
+                    log("App: all events completely loaded")
                 }
             }, 500);
         }
 
-        usableHighlights = sort(result.usableEvents.filter(e => e.highlight));
-
-        if (searchValue) {
+        if (searchValue && options.triggerSearchEvent) {
             log(`App: previous search: '${searchValue}'. Keeping it for now`)
             await onDateChanges(usableEvents, key, searchValue, [startDate, endDate]);
             return;
         }
 
-        agendaEvents = sort(result.agenda);
+        agendaEvents = sort(result.agenda, {
+            startingDate: moment(startDate, dateFormat),
+            endingDate: endDate ? moment(endDate, dateFormat) : null,
+
+        });
         highlights = sort(result.highlights);
         hasMoreEvents = true;
         disableHighlightsLoadMore = true;
