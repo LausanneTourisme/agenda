@@ -6,10 +6,12 @@ import {
     type GqlOptions,
     type GqlResponse,
     type Locales,
-    type OptionsSortEvents, type Query,
-    type ScheduleDate
+    type OptionsSortEvents,
+    type Query,
+    type ScheduleDate,
+    type ShortDay
 } from "$lib/types";
-import {dateFormat, findAvailablePeriod, now, sortDates} from "$lib/date-utils";
+import {dateFormat, findAvailablePeriod, getDaysBetween, now, sortDates} from "$lib/date-utils";
 import moment from "moment/moment";
 import {log, warn} from "$lib/utils";
 import Fuse from "fuse.js";
@@ -49,12 +51,19 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
         }
 
         if (options.onlyAvailable) {
+            const availableDays: ShortDay[] = getDaysBetween(options.startingDate ?? moment(), options.endingDate ?? moment().endOf('year'));
+
             const availableDates: ScheduleDate[] = []
             // I love shadow reference ❤️
             const schedules = {...event.schedules}
 
             for (const date of schedules.dates) {
                 const d = {...date}
+                const isOpen = d.open_days.some(x => availableDays.includes(x));
+
+                //skip period if open_days doesn't contain one of the days
+                if (!isOpen) continue;
+
                 const period = findAvailablePeriod(d, options.startingDate, options.endingDate);
 
                 if (!period) continue;
@@ -172,8 +181,8 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
     const emptyEvents = events.length === 0;
     let highlights: Event[] = [];
     let agenda: Event[] = [];
-    let newEvents: Event[] = [];
-    let usableEvents: Event[] = [];
+    let newEvents: Event[];
+    let usableEvents: Event[];
 
 
     log('Has to get freshEvents: ', {emptyEvents});
