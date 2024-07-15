@@ -273,8 +273,6 @@
 
     onMount(() => {
         buildCalendar();
-        todaySelected = now === startDate && now === endDate;
-        weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate;
         log("Agenda: mounting", {events})
     })
 
@@ -294,6 +292,10 @@
             );
         sortEventsToDisplay(locale,{firstLoad: true});
         isLoading=false;
+
+
+        todaySelected = now === startDate && now === endDate;
+        weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate;
     })();
     $: hasMoreEvents;
     $: isMobile;
@@ -342,7 +344,7 @@
                         calendar?.clear()
                         selectedTags = [];
                         selectedTagsName = [];
-                        dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
+                        log("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
                     }}
             >
                 {$_("agenda.search_section.today")}
@@ -369,7 +371,7 @@
                         calendar?.clear()
                         selectedTags = [];
                         selectedTagsName = [];
-                        dispatch("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
+                        log("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] })
                     }}
             >
                 {$_("agenda.search_section.this_weekend")}
