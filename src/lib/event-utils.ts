@@ -115,6 +115,13 @@ export const unique = (arr1: Event[], arr2: Event[]): Event[] => {
     return [...arr1, ...result];
 }
 
+export const distinct = (events: Event[]) : Event[] => [...events].reduce((acc: Event[], obj: Event) => {
+    if (!acc.some(o => o.id === obj.id)) {
+        acc.push(obj);
+    }
+    return acc;
+}, []) ;
+
 export const searchEvents = (query: Query, locale: Locales = "en", events: Event[] = []) => {
     if (!query || events.length === 0) {
         return [...events];
@@ -162,27 +169,22 @@ export const searchEvents = (query: Query, locale: Locales = "en", events: Event
 export const getFreshEvents = async (apiUrl: string | null | undefined, locale: Locales, events: Event[], options: {
     disableAgenda?: boolean,
     disableHighlights?: boolean,
-    events_per_chunk?: number,
+    events_per_chunk: number,
 } = {}): Promise<{
-    agenda: Event[],
     highlights: Event[],
     events: Event[],
-    usableEvents: Event[],
 }> => {
 
     if (!apiUrl) {
         console.error('getFreshEvent: no api url defined');
-        return {agenda: [], highlights: [], events: [], usableEvents: []};
+        return {highlights: [], events: []};
     }
 
-    options = {disableAgenda: false, disableHighlights: false, events_per_chunk: 10, ...options}
+    options = {disableAgenda: false, disableHighlights: false, ...options}
 
 
     const emptyEvents = events.length === 0;
     let highlights: Event[] = [];
-    let agenda: Event[] = [];
-    let newEvents: Event[];
-    let usableEvents: Event[];
 
 
     log('Has to get freshEvents: ', {emptyEvents});
@@ -195,52 +197,42 @@ export const getFreshEvents = async (apiUrl: string | null | undefined, locale: 
             const result: EventsResult = await update(apiUrl, locale, type, [], options.events_per_chunk);
             log('getFreshEvent: getting highlights', {highlights: result.events})
 
-            highlights = [...result.events];
+            highlights = sort([...result.events]);
         }
         if (!options.disableAgenda) {
-            const type: EventType = EventType.agenda;
+            const type: EventType = EventType.events;
 
             const result: EventsResult = await update(apiUrl, locale, type, highlights, options.events_per_chunk);
             log('getFreshEvent: getting all type of events', {agenda: result.events})
 
-            agenda = [...result.events, ...highlights];
+            events = sort([...result.events, ...highlights]);
         }
 
-        usableEvents = sort([...highlights, ...agenda]);
-        newEvents = []
-        log('getFreshEvent: events completely sorted', {totalEvents: newEvents, usableEvents})
+        log('getFreshEvent: events completely sorted', {totalEvents: events})
     } else {
         log('getFreshEvent: events already exists let we use it')
 
-        usableEvents = events.filter(event => event.languages.includes(locale));
+
         const tempHighlights: Event[] = [];
-        const tempAgenda: Event[] = [];
         let index: number = 0;
 
-        for (const event of usableEvents) {
+        for (const event of events.filter(event => event.languages.includes(locale))) {
             // @ts-ignore typescript can't see default value defined bellow
             if (event.highlight && tempHighlights.length < options.events_per_chunk) {
                 tempHighlights.push(event);
-                tempAgenda.push(event);
-                //@ts-ignore
-            } else if (index < options.events_per_chunk && !event.highlight) {
-                tempAgenda.push(event);
-                index++;
-                //@ts-ignore
-            } else if (index >= options.events_per_chunk && tempHighlights.length >= options.events_per_chunk) {
+            } else if (index >= options.events_per_chunk) {
                 break;
             }
         }
         highlights = [...tempHighlights];
-        agenda = [...tempAgenda];
-        newEvents = [...events];
+        events = [...events];
     }
 
-    return {agenda, highlights, events: newEvents, usableEvents};
+    return {highlights, events};
 };
 
 
-export const update = async (url: string | undefined | null, locale: Locales, type: EventType = EventType.agenda, events: Event[] = [], limit: number | null = null): Promise<EventsResult> => {
+export const update = async (url: string | undefined | null, locale: Locales, type: EventType = EventType.events, events: Event[] = [], limit: number | null = null): Promise<EventsResult> => {
     if (!url) throw new Error("Api url not configured")
 
     const items = await fetchEvent(url, {
@@ -307,7 +299,12 @@ export const fetchAll = async (url: string | null | undefined): Promise<Event[] 
     return gqlResponse?.result?.data?.items.data ?? [];
 }
 
-export async function getAllEvents(apiUrl: string): Promise<Event[]> {
+export async function getAllEvents(apiUrl: string | undefined | null): Promise<Event[]> {
+    if (!apiUrl) {
+        console.error('no api url defined')
+        return [];
+    }
+
     log('getAllEvents: getting all events')
     const items = await fetchAll(apiUrl);
     log('getAllEvents: dump completed', {events: items})
