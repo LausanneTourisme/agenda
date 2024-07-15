@@ -3,7 +3,7 @@ import type {Moment} from "moment";
 export type Locales = "fr" | "en" | "de" | "it" | "es"
 
 export enum EventType {
-    agenda = "events",
+    events = "events",
     highlights = "highlights"
 }
 

@@ -24,80 +24,7 @@
 
     const media = event.medias.find(x => x.is_cover);
 
-    let hourMessage: string = getSchedulesText(event.schedules, selectedDates);
-
-    function getSchedulesText(schedules: Schedules, days: {
-        start: string,
-        end: string | undefined | null
-    } | undefined): string {
-        let period: Period | null = null;
-        const schedule: ScheduleDate | undefined = schedules.dates.find((schedule) => {
-            period = findAvailablePeriod(schedule, date?.start, date?.end);
-            return period != null
-        })
-
-        if (!schedule || !period) return $_('date.other'); // This case shouldn't occur
-
-        const startDay = moment(new Date(days?.start ?? now));
-        const shortDay = startDay.locale('en').format('dd').toLowerCase() as ShortDay;
-        const hasDay = schedule.open_days.includes(shortDay) ?? false;
-
-        if (!hasDay) return `${$_('date.close')} ${$_('date.more')}`;
-
-        if (schedule.open_days.length === 7 && schedule.week[0].days.length === 7 &&
-            (schedule.week[0].times?.length === 0 || !schedule.week[0].times))
-            return $_('date.every_days');
-
-        const week = schedule.week.find(({days}) => days.includes(shortDay))
-
-        if (!week) return `${$_('date.close')} ${$_('date.more')}`;
-
-        if (!week.times || week.times.length === 0) return `${$_('date.open')}${week.days.length > 1 || schedule.week.length > 1 ? ` ${$_('date.more')}` : ''}`
-
-        const isToday = startDay.isSame(moment(), 'day');
-
-        const times = week.times.sort((a, b) => {
-            const aStart = a.start.split(':');
-            const bStart = b.start.split(':');
-            if (aStart[0] < bStart[0]) return -1;
-            if (aStart[0] > bStart[0]) return 1;
-
-            if (aStart[1] < bStart[1]) return -1;
-            if (aStart[1] > bStart[1]) return 1;
-
-            return 0;
-        });
-
-        const startTime = moment(times[0].start, 'HH:mm');
-        const endTime = moment(times[times.length - 1].start, 'HH:mm');
-
-        const start = startDay.set({
-            hour: startTime.get('hour'),
-            minute: startTime.get('minute'),
-            second: 0,
-            millisecond: 0,
-        });
-        const end = startDay.set({
-            hour: endTime.get('hour'),
-            minute: endTime.get('minute'),
-            second: 59,
-            millisecond: 999,
-        });
-
-        if (isToday) {
-            if (moment().isBefore(start)) {
-                const duration = moment.duration(start.diff(moment()));
-                if (duration.asHours() >= 1) return `${$_('date.open_in.hours', {values: {hours: Math.floor(duration.asHours()).toString().padStart(2, '0')}})} ${$_('date.more')}`;
-                return `${$_('date.open_in.minutes', {values: {minutes: Math.floor(duration.asMinutes()).toString().padStart(2, '0')}})} ${$_('date.more')}`;
-            }
-            if (moment().isAfter(end)) {
-                return $_('date.close')
-            }
-            if (startDay.isBetween(start, end)) return $_('date.open')
-        }
-
-        return `${$_('date.open_at', {values: {time: times[0].start}})} ${$_('date.more')}`;
-    }
+console.log(event)
 
     $: selectedDates;
     $: key = ($locale ?? defaultLocale);
@@ -106,7 +33,6 @@
 <div data-id="{event.id}"
      class="lt-agenda-event-card flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
     <div class="lt-agenda-image-wrapper aspect-4/5 sm:aspect-square h-40 sm:h-48">
-
         <Clickable href="{baseUrl}{event.seo.hreflang[key]}" class="h-full w-full">
             {#if media}
                 <CldImage

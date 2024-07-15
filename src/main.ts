@@ -19,7 +19,7 @@ if (ltAgenda) {
             highlightTitle: ltAgenda.dataset.highlightTitle,
             startDate: ltAgenda.dataset.startDate,
             endDate: ltAgenda.dataset.endDate,
-            loadBy: parseInt(ltAgenda.dataset.eventsPerChunk ?? "") ? parseInt(ltAgenda.dataset.eventsPerChunk ?? "") : undefined,
+            loadBy: parseInt(ltAgenda.dataset.eventsPerChunk ?? "") ? parseInt(ltAgenda.dataset.eventsPerChunk ?? "") : import.meta.env.VITE_EVENTS_PER_CHUNK ?? undefined,
         }
     })
 } else {
