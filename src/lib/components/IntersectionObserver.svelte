@@ -5,6 +5,10 @@
         intersecting: { event: any };
     }>();
     export let once = false;
+
+    /**
+     * Enable or disable event trigger
+     */
     export let enable: boolean = false;
 
     let element: HTMLElement;
@@ -17,8 +21,6 @@
     let observer: IntersectionObserver;
 
     onMount(() => {
-        if (!enable) return;
-
         observer = new IntersectionObserver((entries, _) => {
             intersecting = entries[0].isIntersecting;
 

@@ -21,10 +21,14 @@
     export let title: string | null | undefined;
 
     export let loading: boolean = false;
+    export let LoadingAllContent: boolean = false;
 
     let isDragging: boolean = false;
 
     let lastEvent: Event | null = null
+
+    //ids of last interaction observe, prevent multiple calls
+    let lastIntersections: number[] = []
 
     $: events, lastEvent = events.slice(-1)[0]
     $: lastEvent
@@ -58,8 +62,11 @@
                     maxContent="{events.length}"
                     on:dragging={(e) => isDragging = e.detail.isDragging}
             >
-                {#each events as event (events.length, event.id)}
-                    <IntersectionObserver enable="{event.id===lastEvent?.id}" once={true} on:intersecting={(e) => {
+                {#each events as event, index (event.seo.slug.fr)}
+                    <IntersectionObserver enable="{!LoadingAllContent && event.id===lastEvent?.id}" on:intersecting={(e) => {
+                        if(lastIntersections.includes(event.id)) return;
+
+                        lastIntersections.push(event.id)
                         dispatch("loadMore", { event: e });
                         log('load more highlights!', {event, lastEvent: lastEvent?.name})
                     }}>

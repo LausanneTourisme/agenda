@@ -91,7 +91,6 @@
         result = await fetchEvent(apiUrl, {
             locale,
             options: `get${EventType.highlights}`,
-            ignoreIds: events.map(x => x.id),
             limit: eventsPerChunk,
         })
         highlightsToDisplay = result?.data ?? [];
@@ -171,6 +170,7 @@
                     title={highlightTitle}
                     bind:events={highlightsDisplayed}
                     bind:loading={loadingFirstEvents}
+                    bind:LoadingAllContent={loadingAllEvents}
                     on:loadMore={handleMoreHighlights}
             />
         {/if}
