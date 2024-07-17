@@ -1,15 +1,15 @@
 <script lang="ts">
-    import type {Event, Geolocation, Period, ScheduleDate, Schedules, ShortDay} from "$lib/types";
-    import moment, {type Moment} from "moment";
+    import type {Event, Geolocation} from "$lib/types";
+    import {type Moment} from "moment";
     import 'moment/dist/locale/fr-ch';
     import 'moment/dist/locale/en-gb';
     import 'moment/dist/locale/de';
     import {_, locale} from "svelte-i18n";
-    import {Calendar, Clock, MapPin} from "lucide-svelte";
+    import {Calendar, MapPin} from "lucide-svelte";
     import TagsSwiper from "$lib/components/TagsSwiper.svelte";
     import {CldImage} from "svelte-cloudinary";
     import Clickable from "$lib/components/Clickable.svelte";
-    import {extractStartEndDate, findAvailablePeriod, isSameDays, now} from "$lib/date-utils";
+    import {extractStartEndDate, isSameDays} from "$lib/date-utils";
     import {defaultLocale} from "$lib/utils";
 
     let key: string;
@@ -23,8 +23,6 @@
     const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address) ?? (event.geolocations.length ? event.geolocations[0] : undefined); // love when addresses can be false... thanks external data
 
     const media = event.medias.find(x => x.is_cover);
-
-console.log(event)
 
     $: selectedDates;
     $: key = ($locale ?? defaultLocale);
@@ -67,7 +65,7 @@ console.log(event)
             <!--TITLE-->
             <div class="flex-grow flex items-center">
                 <h3 class="lt-agenda-title my-1 ml-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle"
-                   title="{event.name[key]}">
+                    title="{event.name[key]}">
                     {event.name[key]}
                 </h3>
             </div>
