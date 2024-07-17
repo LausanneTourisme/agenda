@@ -1,7 +1,5 @@
 import {
     type Event,
-    type EventsResult,
-    EventType,
     type GqlItems,
     type GqlOptions,
     type GqlResponse,
@@ -17,7 +15,6 @@ import {log, warn} from "$lib/utils";
 import Fuse from "fuse.js";
 
 export const logIgnoredEvent = (event: Event, information?: string): void | null => warn(`Event skipped${information ? `, beacause: ${information}` : null}`, event)
-
 
 export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] => {
     options = {
@@ -115,12 +112,12 @@ export const unique = (arr1: Event[], arr2: Event[]): Event[] => {
     return [...arr1, ...result];
 }
 
-export const distinct = (events: Event[]) : Event[] => [...events].reduce((acc: Event[], obj: Event) => {
+export const distinct = (events: Event[]): Event[] => [...events].reduce((acc: Event[], obj: Event) => {
     if (!acc.some(o => o.id === obj.id)) {
         acc.push(obj);
     }
     return acc;
-}, []) ;
+}, []);
 
 export const searchEvents = (query: Query, locale: Locales = "en", events: Event[] = []) => {
     if (!query || events.length === 0) {
@@ -164,93 +161,6 @@ export const searchEvents = (query: Query, locale: Locales = "en", events: Event
 
     return [...fuse.search(query.toLowerCase()).map(e => e.item)];
 };
-
-// @ts-ignore
-export const getFreshEvents = async (apiUrl: string | null | undefined, locale: Locales, events: Event[], options: {
-    disableAgenda?: boolean,
-    disableHighlights?: boolean,
-    events_per_chunk: number,
-} = {}): Promise<{
-    highlights: Event[],
-    events: Event[],
-}> => {
-
-    if (!apiUrl) {
-        console.error('getFreshEvent: no api url defined');
-        return {highlights: [], events: []};
-    }
-
-    options = {disableAgenda: false, disableHighlights: false, ...options}
-
-
-    const emptyEvents = events.length === 0;
-    let highlights: Event[] = [];
-
-
-    log('Has to get freshEvents: ', {emptyEvents});
-
-
-    if (emptyEvents) {
-        if (!options.disableHighlights) {
-            const type: EventType = EventType.highlights;
-
-            const result: EventsResult = await update(apiUrl, locale, type, [], options.events_per_chunk);
-            log('getFreshEvent: getting highlights', {highlights: result.events})
-
-            highlights = sort([...result.events]);
-        }
-        if (!options.disableAgenda) {
-            const type: EventType = EventType.events;
-
-            const result: EventsResult = await update(apiUrl, locale, type, highlights, options.events_per_chunk);
-            log('getFreshEvent: getting all type of events', {agenda: result.events})
-
-            events = sort([...result.events, ...highlights]);
-        }
-
-        log('getFreshEvent: events completely sorted', {totalEvents: events})
-    } else {
-        log('getFreshEvent: events already exists let we use it')
-
-
-        const tempHighlights: Event[] = [];
-        let index: number = 0;
-
-        for (const event of events.filter(event => event.languages.includes(locale))) {
-            // @ts-ignore typescript can't see default value defined bellow
-            if (event.highlight && tempHighlights.length < options.events_per_chunk) {
-                tempHighlights.push(event);
-            } else if (index >= options.events_per_chunk) {
-                break;
-            }
-        }
-        highlights = [...tempHighlights];
-        events = [...events];
-    }
-
-    return {highlights, events};
-};
-
-
-export const update = async (url: string | undefined | null, locale: Locales, type: EventType = EventType.events, events: Event[] = [], limit: number | null = null): Promise<EventsResult> => {
-    if (!url) throw new Error("Api url not configured")
-
-    const items = await fetchEvent(url, {
-        options: `get${type}`,
-        ignoreIds: events?.map(e => e.id),
-        limit,
-        locale,
-    });
-
-    const elements = items?.data ?? [];
-
-    return {
-        // @ts-ignore
-        hasMore: items?.has_more_pages ?? items?.data?.length > 0,
-        events: elements,
-    }
-}
-
 
 export const fetchEvent = async (url: string | null | undefined, options: GqlOptions): Promise<GqlItems | null> => {
     if (!url) {
