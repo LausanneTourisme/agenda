@@ -9,7 +9,7 @@
     "preinstall": "npm run nvm",
     "dev": "npm run nvm && vite",
     "build-tailwind": "tailwindcss -o ./dist/tailwind.css",
-    "build": "vite build && npm run build-tailwind",
+    "build": "vite build --mode production && npm run build-tailwind",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
