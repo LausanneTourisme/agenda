@@ -19,7 +19,7 @@
     import {onMount} from "svelte";
     import {applyStyling, defaultLocale, log, warn} from "$lib/utils";
     import {blankableLinks} from "$lib/store";
-    import {getAllEvents, sort, update} from "$lib/event-utils";
+    import {fetchEvent, getAllEvents, sort} from "$lib/event-utils";
     import {now} from "$lib/date-utils";
 
     register("fr", () => import("$lib/i18n/fr.json"));
@@ -44,7 +44,6 @@
         initialLocale: lang,
     });
 
-
     let divStyleElement: HTMLElement | undefined;
 
     let key: Locales;
@@ -58,33 +57,6 @@
     let loadingFirstEvents = true;
     let loadingAllEvents = true;
 
-    // async function onDateChanges(events: Event[], locale: Locales, query: Query, dates: [string, string | undefined | null]) {
-    //     if (!dates[1]) {
-    //         await resetEvents({triggerSearchEvent: false});
-    //         return query ? onSearch(query, locale) : setDataAndDisableSpecialEvents(/*agendaEvents, {hasMoreEvents: true}*/);
-    //     }
-    //
-    //     searchValue = query;
-    //
-    //     usableEvents = sort(searchValue ? searchEvents(searchValue, locale, events) : events,{
-    //         startingDate: moment(startDate, dateFormat),
-    //         endingDate: endDate ? moment(endDate, dateFormat) : undefined
-    //     });
-    //
-    //
-    //     startDate = dates[0];
-    //     endDate = dates[1];
-    //
-    //     // const result: Event[] = sort(tempEvents, {
-    //     //     locale: locale,
-    //     //     startingDate: moment(startDate, dateFormat),
-    //     //     endingDate: endDate ? moment(endDate, dateFormat) : null
-    //     // });
-    //
-    //     setDataAndDisableSpecialEvents();
-    // }
-
-
     function handleMoreHighlights() {
         if (disableHighlightsLoadMore) {
             warn('Handle more highlights skipped!');
@@ -94,7 +66,7 @@
 
         if (highlightsToDisplay.length === highlightsDisplayed.length) return;
 
-        const tempEvents = [...highlightsToDisplay].slice(highlightsDisplayed.length, eventsPerChunk)
+        const tempEvents = [...highlightsToDisplay].slice(highlightsDisplayed.length, highlightsDisplayed.length + eventsPerChunk)
 
         highlightsDisplayed = [...highlightsDisplayed, ...tempEvents];
 
@@ -107,8 +79,22 @@
      * every time after the first load, clear all "usable" var and re-set again like first load without external call
      */
     const loadFirstEvents = async (locale: Locales) => {
-        highlightsToDisplay = (await update(apiUrl, locale, EventType.highlights, [], eventsPerChunk)).events;
-        events = (await update(apiUrl, locale, EventType.events, [], eventsPerChunk)).events;
+        let result = await fetchEvent(apiUrl, {
+            locale,
+            options: `get${EventType.events}`,
+            limit: eventsPerChunk,
+            from: startDate,
+            to: endDate,
+        })
+        events = result?.data ?? [];
+
+        result = await fetchEvent(apiUrl, {
+            locale,
+            options: `get${EventType.highlights}`,
+            ignoreIds: events.map(x => x.id),
+            limit: eventsPerChunk,
+        })
+        highlightsToDisplay = result?.data ?? [];
 
         highlightsDisplayed = [...highlightsToDisplay];
     }
@@ -131,7 +117,6 @@
 
                 events = sort(await getAllEvents(apiUrl));
                 highlightsToDisplay = events.filter(e => e.highlight && e.languages.includes(key));
-
                 disableHighlightsLoadMore = false;
                 loadingAllEvents = false;
 
@@ -208,6 +193,3 @@
         {/if}
     {/if}
 </main>
-
-<style>
-</style>
