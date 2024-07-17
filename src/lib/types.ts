@@ -227,11 +227,13 @@ export type Query = string | undefined | null;
 
 export type GqlOptions = {
     options: "search" | "getEvents" | "getHighlights" | "getevents" | "gethighlights" | 'dates' | 'tags'
-    ignoreIds: number[]
+    ignoreIds?: number[]
     locale?: string
     value?: number
     page?: number,
     limit?: number | null,
+    from?: string | null,
+    to?: string | null,
 }
 
 export type GqlResponse = {
