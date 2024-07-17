@@ -22,7 +22,7 @@
     import localeEn from 'air-datepicker/locale/en';
     import localeFr from 'air-datepicker/locale/fr';
     import localeDe from 'air-datepicker/locale/de';
-    import {searchEvents, sort, unique} from "$lib/event-utils";
+    import {searchEvents, sort} from "$lib/event-utils";
 
     /*****************************************************************************
      /* END CALENDAR SECTION
@@ -54,7 +54,6 @@
     let weekendSelected: boolean;
 
     let isLoading: boolean = true;
-    let loadedEvents: number = 0; // how many events already displayed
     let eventsToDisplay: Event[] = []; // All sorted events (by date, tags, name)
     let eventsDisplayed: Event[] = []; // events that user is currently seeing
 
@@ -173,36 +172,30 @@
      /* END CALENDAR SECTION
      /*****************************************************************************/
 
+    function handleLoadMore() {
+        const tempEvents = [...eventsToDisplay].slice(eventsDisplayed.length, eventsDisplayed.length + eventsPerChunk)
+        eventsDisplayed = [...eventsDisplayed, ...tempEvents];
 
-    const loadMore = () => {
-        const tempEvents = [...eventsToDisplay].slice(loadedEvents, eventsPerChunk)
-        eventsDisplayed = unique(eventsDisplayed,tempEvents);
-
-        loadedEvents = eventsDisplayed.length;
+        log("Handle more events!", {new: tempEvents, eventsDisplayed: eventsDisplayed})
     }
 
     const sortEventsToDisplay = (locale: string | Locales, options: {
         firstLoad?: boolean,
-        tags?: Tag[]
-    }) => {
+    } = {}) => {
         options = {
             firstLoad: false,
-            tags: [],
             ...options
         }
 
-        loadedEvents = 0;
-
         if (options.firstLoad) {
-            eventsToDisplay = sort(events, {
+            return sort(events, {
                 startingDate: moment(startDate, dateFormat),
                 endingDate: endDate ? moment(endDate, dateFormat) : undefined,
                 locale: locale,
                 onlyAvailable: true,
             });
         } else {
-
-            eventsToDisplay = sortByName(
+            return sortByName(
                 locale as Locales,
                 searchValue,
                 sortByTags(
@@ -217,7 +210,6 @@
                 ),
             );
         }
-        loadMore();
     }
 
     const sortByTags = (tags: string[] | null | undefined = null, events: Event[]): Event[] => {
@@ -252,35 +244,52 @@
 
         selectedTagsName = selectedTags.map((t) => t.name);
 
-        debounce(() => eventsToDisplay = sortByTags(selectedTagsName, eventsToDisplay), 400)(); //reduce lag when user select multiple tags;
+        debounce(() => {
+            eventsToDisplay = sortEventsToDisplay(locale);
+            eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk)
+        }, 400)(); //reduce lag when user select multiple tags;
     }
 
     const onInput = () => {
         isLoading = true; //will be false on props 'events' update
         debounce(() => {
             if (searchValue !== oldSearchValue) {
+                oldSearchValue = searchValue
+
                 selectedTags = [];
                 selectedTagsName = [];
-                sortEventsToDisplay(locale, {
-                    tags: selectedTags,
-                });
-                oldSearchValue = searchValue
+                eventsToDisplay = sortEventsToDisplay(locale);
+                eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk)
             }
 
             isLoading = false;
         }, 600)();
     }
 
+    async function onDateChanges() {
+        sortEventsToDisplay(locale)
+    }
+
+    function resetDisplay() {
+        isLoading = true;
+        eventsToDisplay = sortEventsToDisplay(locale);
+        eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk)
+        isLoading = false;
+    }
+
     onMount(() => {
-        buildCalendar();
         log("Agenda: mounting", {events})
+        buildCalendar();
+        log("Agenda: mounted", {events})
     })
 
     afterUpdate(() => {
         //prevent destroy and miss build after window resize
         buildCalendar();
-    })
+        hasMoreEvents = eventsDisplayed.length < eventsToDisplay.length;
 
+        log("Agenda: updated", {events, eventsToDisplay, eventsDisplayed, hasMoreEvents})
+    })
     $: (() => {
         allTags = events
             .flatMap((x) => x.tags)
@@ -290,12 +299,11 @@
                         .flatMap((x) => x.tags)
                         .findIndex((s) => a.name === s.name) === i,
             );
-        sortEventsToDisplay(locale,{firstLoad: true});
-        isLoading=false;
-
+        isLoading = false;
 
         todaySelected = now === startDate && now === endDate;
         weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate;
+        resetDisplay();
     })();
     $: hasMoreEvents;
     $: isMobile;
@@ -552,10 +560,7 @@
         {/if}
         {#if !isLoading && hasMoreEvents && !loading && !LoadingAllContent}
             <button
-                    on:click={(e) => {
-                        isLoading = true;
-                        loadMore();
-                    }}
+                    on:click={handleLoadMore}
                     class="flex justify-center w-full xs:w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
             >
                 <ChevronDown/>
