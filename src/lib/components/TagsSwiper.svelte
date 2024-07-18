@@ -53,13 +53,14 @@
         }}
 >
     {#if displayBtnAll}
-        <button on:click={() => {
+        <Pill
+                on:click={() => {
                 if(isDragging) return;
                 dispatch('tagSelect', {tag: null})
             }}
-                class="{selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
-                title="{$_('agenda.tags.display_all')}">{$_('agenda.tags.display_all')}
-        </button>
+                class={selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}
+                title={$_('agenda.tags.display_all')}
+        />
     {/if}
     {#each pills as pill}
         <Pill
