@@ -290,7 +290,8 @@
 
         log("Agenda: updated", {events, eventsToDisplay, eventsDisplayed, hasMoreEvents})
     })
-    $: (() => {
+
+    $: events, (() => {
         allTags = events
             .flatMap((x) => x.tags)
             .filter(
@@ -305,6 +306,7 @@
         weekendSelected = thisWeekend.saturday.format(dateFormat) === startDate && thisWeekend.sunday.format(dateFormat) === endDate;
         resetDisplay();
     })();
+
     $: hasMoreEvents;
     $: isMobile;
     $: isLoading;
@@ -429,32 +431,30 @@
 
         <!--    TAGS    -->
         <div class="by-tags sm:mt-4">
-            {#key selectedTags.map((t) => t.name)}
-                <button
-                        on:click={() => (openTagsDrawer = true)}
-                        class="sm:hidden block w-full p-3 mb-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
-                >
-                    {$_("agenda.by_tags")}
-                    {#if (selectedTagsName.length)}({selectedTagsName.length}){/if}
-                </button>
+            <button
+                    on:click={() => (openTagsDrawer = true)}
+                    class="sm:hidden block w-full p-3 mb-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
+            >
+                {$_("agenda.by_tags")}
+                {#if (selectedTagsName.length)}({selectedTagsName.length}){/if}
+            </button>
 
-                {#if loading}
-                    <div class="!hidden sm:flex text-nowrap pb-2 h-[45px] w-full">
-                        {#each {length: 20} as _}
-                            <div class="mr-2 sm:text-md px-3 sm:py-1 sm:px-2 rounded-full w-[200px] bg-gray-300 pointer-events-none"></div>
-                        {/each}
-                    </div>
-                {:else}
-                    <TagsSwiper
-                            class="hidden sm:flex"
-                            tags={allTags}
-                            {selectedTags}
-                            displayBtnAll={true}
-                            on:tagSelect={(event) => onTagClick(event.detail.tag)}
-                            tagClass="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent px-5"
-                    />
-                {/if}
-            {/key}
+            {#if loading}
+                <div class="!hidden sm:flex text-nowrap pb-2 h-[45px] w-full">
+                    {#each {length: 20} as _}
+                        <div class="mr-2 sm:text-md px-3 sm:py-1 sm:px-2 rounded-full w-[200px] bg-gray-300 pointer-events-none"></div>
+                    {/each}
+                </div>
+            {:else}
+                <TagsSwiper
+                        class="hidden sm:flex cursor-grab active:cursor-grabbing"
+                        tags={allTags}
+                        {selectedTags}
+                        displayBtnAll={true}
+                        on:tagSelect={(event) => onTagClick(event.detail.tag)}
+                        tagClass="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent px-5"
+                />
+            {/if}
 
             <Drawer
                     on:clickAway={() => (openTagsDrawer = false)}
@@ -531,8 +531,8 @@
         <p
                 class="text-xl sm:text-2xl font-semibold leading-tight tracking-tighter my-5"
         >
-            {$_(`agenda.event${eventsDisplayed.length === 1 ? "" : "s"}_found`, {
-                values: {quantity: eventsDisplayed.length},
+            {$_(`agenda.event${eventsToDisplay.length === 1 ? "" : "s"}_found`, {
+                values: {quantity: eventsToDisplay.length},
             })}
         </p>
         {#if isLoading || loading}

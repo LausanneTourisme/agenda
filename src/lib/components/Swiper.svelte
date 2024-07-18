@@ -1,8 +1,9 @@
 <script lang="ts">
     import {createEventDispatcher} from "svelte";
+    import type {Event, Query} from "$lib/types";
 
     export let maxContent: number;
-    let carousel = HTMLElement;
+    let carousel: HTMLElement|HTMLDivElement;
     let startX: number = 0;
     let startY: number = 0;
     let isDragging: boolean = false;
@@ -10,7 +11,7 @@
 
     const dispatch = createEventDispatcher();
 
-    const startDragging = (event: Event) => {
+    const startDragging = (event: MouseEvent) => {
         // Store the initial mouse coordinates
         startX = event.clientX;
         startY = event.clientY;
@@ -19,7 +20,7 @@
         mouseDown = true;
     }
 
-    const stopDragging = (event: Event) => {
+    const stopDragging = (event: MouseEvent) => {
         // If dragging didn't occur, treat it as a click event
         if (isDragging) {
             // If dragging occurred, reset the dragging state
@@ -29,9 +30,14 @@
         mouseDown = false
     }
 
-    const move = (event: Event) => {
+    const move = (event: MouseEvent) => {
         const distX = Math.abs(event.clientX - startX);
         const distY = Math.abs(event.clientY - startY);
+
+        if(event.clientX< carousel.getBoundingClientRect().x || event.clientX > (carousel.getBoundingClientRect().x + carousel.getBoundingClientRect().width)){
+            dispatch("dragging", {isDragging})
+            isDragging = false
+        }
 
         // If the distance moved is greater than a threshold (e.g., 5 pixels),
         // consider it as dragging
@@ -40,6 +46,8 @@
             dispatch("dragging", {isDragging})
             carousel.scrollLeft -= event.movementX
         }
+
+        event.preventDefault()
     }
 
     $:maxContent
@@ -60,5 +68,5 @@
         role="slider"
         tabindex="0"
 >
-    <slot/>
+    <slot />
 </div>

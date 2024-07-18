@@ -72,9 +72,7 @@ export type Range = {
 
 export type Media = {
     is_cover?: boolean,
-    is_in_gallery?: boolean,
     cloudinary_id: string,
-    original_width?: number,
     copyright?: string,
 }
 
@@ -83,31 +81,17 @@ export type Tag = {
     public_name: Translatable,
 }
 
-export type Category = {
-    name: string,
-    public_name: Translatable,
-    main_category: boolean,
-}
-
 export type Geolocation = {
     zip: string | undefined | null,
     city: string | undefined | null,
     venue: string | undefined | null,
     address: string | undefined | null,
-    address_2: string | undefined | null,
     main_address: boolean | "true" | "false" | undefined | null,
-    elevation: string | undefined | null,
-    longitude: string | undefined | null,
-    latitude: string | undefined | null,
 }
 
 export type Seo = {
-    noindex: boolean | "true" | "false",
-    name: Translatable,
-    slug: Translatable,
     hreflang: Translatable,
-    description: Translatable,
-    medias: Media[]
+    slug: Translatable,
 }
 
 export type Event = {
@@ -115,12 +99,18 @@ export type Event = {
     languages: Locales,
     name: Translatable,
     highlight: boolean,
-    categories: Category[],
     tags: Tag[],
     medias: Media[],
     schedules: Schedules,
     geolocations: Geolocation[],
-    seo: Seo
+    seo: Seo,
+    pois: Poi[],
+}
+
+export type Poi = {
+    id: number,
+    name: Translatable,
+    schedules: Schedules,
 }
 
 export type OptionsSortEvents = {

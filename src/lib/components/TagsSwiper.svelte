@@ -3,7 +3,7 @@
     import {_, locale} from "svelte-i18n";
     import {createEventDispatcher} from 'svelte';
     import Swiper from "$lib/components/Swiper.svelte";
-    import {defaultLocale} from "$lib/utils";
+    import {debounce, defaultLocale} from "$lib/utils";
 
     const dispatch = createEventDispatcher<{ tagSelect: { tag: Tag | null | undefined } }>();
 
@@ -17,40 +17,43 @@
 
     const selectedTagsName: string[] = selectedTags?.map(t => t.name) ?? [];
 
-    let carousel = HTMLElement;
-    let mouseDown: boolean = false;
+    let isDragging: boolean = false;
 
-    const startDragging = (event: Event) => {
-        mouseDown = true;
-    }
-
-    const stopDragging = (event: Event) => {
-        mouseDown = false;
-    }
-    const move = (event: Event) => {
-        if (!mouseDown) return;
-
-        carousel.scrollLeft -= event.movementX
-    }
-
+    $: isDragging;
     $: selectedTags;
     $: key = ($locale ?? defaultLocale);
 </script>
 
-<Swiper class="text-nowrap pb-2 {$$props.class ?? ''}" maxContent="{tags.length + (displayBtnAll ? 1:0)}">
+<Swiper
+        class="text-nowrap pb-2 {$$props.class ?? ''}"
+        maxContent="{tags.length + (displayBtnAll ? 1:0)}"
+        on:dragging={(e) => {
+            if(!e.detail.isDragging) {
+                setTimeout(() => {
+                    isDragging = false
+                }, 100);
+                return;
+            }
+
+            isDragging = true
+        }}
+>
     {#if displayBtnAll}
         <button on:click={() => dispatch('tagSelect', {tag: null})}
                 class="{selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
                 title="{$_('agenda.tags.display_all')}">{$_('agenda.tags.display_all')}
         </button>
     {/if}
-    {#each tags as tag, i}
-        {@const elementSelected = selectedTagsName.includes(tag.name) ? 'border-honey-500 bg-honey-500' : ''}
+    {#each tags as tag (tag.name)}
+        {@const css = selectedTagsName.includes(tag.name) ? `${tagClass} border-honey-500 bg-honey-500` : tagClass}
 
-        <button on:click={() => dispatch('tagSelect', {tag})}
-
-                class="{elementSelected} {tagClass}"
-                title="{tag.public_name[key]}">{tag.public_name[key]}
+        <button on:click={() => {
+                    if(isDragging) return;
+                    dispatch('tagSelect', {tag})
+                }}
+                class={css}
+                title="{tag.public_name[key]}">
+            {tag.public_name[key]}
         </button>
     {/each}
 </Swiper>
