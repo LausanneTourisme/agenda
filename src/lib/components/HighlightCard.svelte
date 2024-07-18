@@ -25,6 +25,12 @@
 
     let date: { start: Moment, end: Moment } = extractStartEndDate(event, selectedDates);
 
+    try{
+        date.start.locale($_('date.locale')).format('DD MMMM YYYY')
+    }catch (e){
+        console.error({e, event, date, date_locale: $_('date.locale')})
+    }
+
     const mouseDown = (e: Event) => {
         // e.clientX
         log('mouse down', {mouse_event: e})

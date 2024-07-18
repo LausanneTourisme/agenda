@@ -1,4 +1,4 @@
-import type {Event, Period, RawDate, ScheduleDate, Schedules, SelectedDates} from "./types";
+import type {Event, Period, RawDate, ScheduleDate, Schedules, SelectedDates, ShortDay} from "./types";
 import moment, {type Moment} from "moment";
 
 export const dateFormat: string = "YYYY-MM-DD"
@@ -17,6 +17,25 @@ export const isSameDays = (event: Event, selectedDates: SelectedDates): Boolean 
     const period: { start: Moment, end: Moment } | undefined = extractStartEndDate(event, selectedDates);
 
     return period?.start.format(dateFormat) === period?.end.format(dateFormat)
+}
+
+export const getDaysBetween = (startDate: Moment, endDate: Moment): ShortDay[] => {
+    const days: ShortDay[] = [];
+
+    const start = startDate.clone();
+    const end = endDate.clone();
+
+    while (start <= end) {
+        const day: ShortDay = start.locale('en').format('dd').toLowerCase() as ShortDay;
+
+        if (days.length === 7) break;
+        if (days.includes(day)) continue;
+
+        days.push(day); // 'dd' gives short day name like 'mo', 'tu'
+        start.add(1, 'day');
+    }
+
+    return days;
 }
 
 export const extractStartEndDate = (event: Event, selectedDates: SelectedDates): {
@@ -70,7 +89,7 @@ export const sortDates = (dates: ScheduleDate[]): ScheduleDate[] => {
 }
 
 export const sortSchedules = (schedules: Schedules[]): Schedules[] => {
-    return [...schedules].sort((a, b) => {
+    return [...schedules].sort((a, _) => {
         const d1 = moment(sortDates(a.dates)[0].periods[0].start, dateFormat).valueOf();
         const d2 = moment(sortDates(a.dates)[0].periods[0].start, dateFormat).valueOf();
 
@@ -81,19 +100,33 @@ export const sortSchedules = (schedules: Schedules[]): Schedules[] => {
 }
 
 export const isBetween = (period: Period, start: Moment | undefined | null, end: Moment | undefined | null): boolean => {
-    const today: Moment = start ?? moment();
+    const from: Moment = start ?? moment();
+    const to = end;
 
     const pStart: Moment = moment(period.start, dateFormat).startOf('day');
     const pEnd: Moment = moment(period.end, dateFormat).endOf('day');
 
-    if (today.isSame(pStart, "dates")) {
-        return true;
-    } else if (today.isSame(pEnd, "dates")) {
-        return true;
-    } else if (today.isBetween(pStart, pEnd, "dates", "[]")) {
-        return true;
-    } else if (today.isBefore(pStart, "dates")) {
-        return !(end && end.isBefore(pStart));
+
+    if (from && end) {
+        if (pStart.isSameOrBefore(from, 'day') && pEnd.isSameOrAfter(to, "day")) {
+            return true;
+        }
+        if (pStart.isSameOrBefore(from, 'day') && pEnd.isSameOrAfter(from, 'day') && pEnd.isSameOrBefore(to, 'day')) {
+            return true;
+        }
+        if (pStart.isSameOrAfter(from, 'day') && pStart.isSameOrBefore(to, 'day') && pEnd.isSameOrAfter(to, 'day')) {
+            return true;
+        }
+        if (pStart.isSameOrAfter(from, 'day') && pEnd.isSameOrBefore(to, 'day')) {
+            return true;
+        }
+    } else {
+        if (pStart.isSameOrBefore(from, 'day') && pEnd.isSameOrAfter(from)) {
+            return true;
+        }
+        if (pStart.isSameOrAfter(from, 'day')) {
+            return true;
+        }
     }
 
     return false;

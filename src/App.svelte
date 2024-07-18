@@ -13,21 +13,20 @@
 
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, register} from "svelte-i18n";
-    import {type Event, type Locales, type Query} from "$lib/types";
+    import {type Event, EventType, type Locales} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
-    import {createEventDispatcher, onMount} from "svelte";
+    import {onMount} from "svelte";
     import {applyStyling, defaultLocale, log, warn} from "$lib/utils";
     import {blankableLinks} from "$lib/store";
-    import {getAllEvents, getFreshEvents, searchEvents, sort} from "$lib/event-utils";
-    import moment from "moment";
-    import {dateFormat, now} from "$lib/date-utils";
+    import {fetchEvent, getAllEvents, sort} from "$lib/event-utils";
+    import {now} from "$lib/date-utils";
 
     register("fr", () => import("$lib/i18n/fr.json"));
     register("en", () => import("$lib/i18n/en.json"));
     register("de", () => import("$lib/i18n/de.json"));
 
-    export let blank: boolean = $$props["blank"] ?? false;
+    export let blankLinks: boolean = $$props["blank-links"] ?? false;
     export let disableHighlights: boolean = $$props["disable-highlights"] ?? false;
     export let disableAgenda: boolean = $$props["disable-agenda"] ?? false;
 
@@ -35,9 +34,9 @@
     export let agendaTitle: string | null | undefined = $$props["agenda-title"];
     export let apiUrl: string | null | undefined = $$props["api-url"];
     export let startDate: string = $$props["start-date"] ?? now;
-    export let endDate: string | null | undefined = $$props["end-date"];
+    export let endDate: string | null | undefined = $$props["end-date"] ?? now;
     export let baseUrl: string = $$props["base-url"];
-    export let lang: string = $$props["locale"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
+    export let lang: string = $$props["lang"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
     export let eventsPerChunk: number = $$props["events-per-chunk"] ?? 20;
 
     init({
@@ -45,191 +44,119 @@
         initialLocale: lang,
     });
 
-    let appIsLoading: boolean = true
-
-    let searchValue: string | undefined | null;
-
-    const dispatch = createEventDispatcher();
-
     let divStyleElement: HTMLElement | undefined;
 
     let key: Locales;
 
     let events: Event[] = [];// all events in db
-    let usableEvents: Event[] = []; // available events for the current locale
-    let usableHighlights: Event[] = []; // available highlighted events for the current locale
-    let highlights: Event[] = []; // highlights to display
-    let agendaEvents: Event[] = []; // events to display in agenda section
+    let highlightsToDisplay: Event[] = []; // available highlighted events for the current locale
+    let highlightsDisplayed: Event[] = []; // highlights to display
+
     let hasMoreEvents: boolean = true;
     let disableHighlightsLoadMore = false;
-    let loadingData = true;
-    let loadingNextData = true;
+    let loadingFirstEvents = true;
+    let loadingAllEvents = true;
 
-    function setDataAndDisableSpecialEvents(events: Event[]) {
-        agendaEvents = [...events];
-        highlights = [...events.filter(e => e.highlight)];
-        disableHighlightsLoadMore = true;
-        hasMoreEvents = false;
-        loadingData = false;
-    }
-
-    async function onDateChanges(events: Event[], locale: Locales, query: Query, dates: [string, string | undefined | null]) {
-        if (!dates[1]) {
-            await resetEvents();
-            return searchValue ? searchEvents(searchValue, locale, agendaEvents) : agendaEvents
-        }
-
-        searchValue = query;
-
-        const tempEvents: Event[] = searchValue ? searchEvents(searchValue, locale, events) : events;
-
-        disableHighlightsLoadMore = !!dates[1];
-
-        startDate = dates[0];
-        endDate = dates[1];
-
-        const result: Event[] = sort(tempEvents, {
-            locale: locale,
-            startingDate: moment(startDate, dateFormat),
-            endingDate: endDate ? moment(endDate, dateFormat) : null
-        });
-
-        setDataAndDisableSpecialEvents(result);
-    }
-
-    async function onSearch(query: Query, locale: Locales) {
-        searchValue = query;
-        if (!searchValue) {
-            log("no query")
-            return await resetEvents();
-        }
-
-        const result = sort(searchEvents(searchValue, locale, usableEvents), {
-            locale,
-            startingDate: moment(startDate, dateFormat),
-            endingDate: endDate ? moment(endDate, dateFormat) : null
-        });
-
-        setDataAndDisableSpecialEvents(result);
-    }
-
-    async function handleMoreHighlights() {
+    function handleMoreHighlights() {
         if (disableHighlightsLoadMore) {
             warn('Handle more highlights skipped!');
             // disableHighlightsLoadMore = false;
             return;
         }
 
-        let index = 0;
-        let tmpEvents: Event[] = [];
+        if (highlightsToDisplay.length === highlightsDisplayed.length) return;
 
-        for (const event of usableHighlights) {
-            if (index >= eventsPerChunk) break;
+        const tempEvents = [...highlightsToDisplay].slice(highlightsDisplayed.length, highlightsDisplayed.length + eventsPerChunk)
 
-            if (event.highlight && !highlights.find(e => e.id === event.id)) {
-                tmpEvents.push(event)
-                index++;
-            }
-        }
+        highlightsDisplayed = [...highlightsDisplayed, ...tempEvents];
 
-        agendaEvents = [...agendaEvents, ...tmpEvents];
-        highlights = [...highlights, ...tmpEvents];
-        log("Handle more highlights!", {usableEvents, newEvents: tmpEvents, agendaEvents, highlights})
+        log("Handle more highlights!", {newHighlights: tempEvents, highlights: highlightsDisplayed})
     }
 
-    async function handleMoreAgenda() {
-        let index = 0;
-        let tmpHighlight: Event[] = [];
-        let tmpEvents: Event[] = [];
 
-        for (const event of usableEvents) {
-            if (agendaEvents.find(e => e.id === event.id)) continue;
-
-            if (index >= eventsPerChunk) {
-                break;
-            }
-
-            if (event.highlight) {
-                tmpHighlight.push(event);
-            }
-            tmpEvents.push(event);
-            index++;
-        }
-        agendaEvents = [...agendaEvents, ...tmpEvents];
-        highlights = [...highlights, ...tmpHighlight];
-
-        hasMoreEvents = agendaEvents.length < usableEvents.length
-
-        log("Handle more events for the agenda!", {
-            usableEvents,
-            newEvents: tmpEvents,
-            agendaEvents,
-            highlights,
-            hasMoreEvents
+    /**
+     * on first load, get x events (highlighted or not). On background get all events to prevents future calls
+     * every time after the first load, clear all "usable" var and re-set again like first load without external call
+     */
+    const loadFirstEvents = async (locale: Locales) => {
+        let result = await fetchEvent(apiUrl, {
+            locale,
+            options: `get${EventType.events}`,
+            limit: eventsPerChunk,
+            from: startDate,
+            to: endDate,
         })
+        events = result?.data ?? [];
+
+        result = await fetchEvent(apiUrl, {
+            locale,
+            options: `get${EventType.highlights}`,
+            limit: eventsPerChunk,
+        })
+        highlightsToDisplay = result?.data ?? [];
+
+        highlightsDisplayed = [...highlightsToDisplay];
     }
 
-    async function resetEvents() {
-        loadingData = true;
-        log('App: reset Events')
-
-        const result = await getFreshEvents(apiUrl, key, events, {events_per_chunk: eventsPerChunk})
-        log('App: reset Events getted', {result})
-
-        events = sort(result.events);
-        usableEvents = sort(result.usableEvents);
+    const loadEvents = async () => {
+        log("App: load Events!")
+        disableHighlightsLoadMore = true;
+        loadingFirstEvents = true;
 
         if (events.length === 0) {
+            log("App: loading first events");
+            await loadFirstEvents(key);
+            log("App: first events loaded", {events, highlightsToDisplay, highlightsDisplayed});
+            loadingFirstEvents = false;
+
+            loadingAllEvents = true;
             setTimeout(async () => {
-                if (apiUrl) {
-                    loadingNextData = true;
-                    disableHighlightsLoadMore = true;
-                    events = sort(await getAllEvents(apiUrl));
-                    usableEvents = events.filter(event => event.languages.includes(key));
-                    disableHighlightsLoadMore = false;
-                    loadingNextData = false;
-                    appIsLoading = false;
-                }
+                disableHighlightsLoadMore = true;
+                log("App: getting all events...")
+
+                events = sort(await getAllEvents(apiUrl));
+                highlightsToDisplay = events.filter(e => e.highlight && e.languages.includes(key));
+                disableHighlightsLoadMore = false;
+                loadingAllEvents = false;
+
+                log("App: all events completely loaded", {events, highlightsToDisplay})
             }, 500);
+        } else {
+            highlightsDisplayed = [];
+            disableHighlightsLoadMore = false;
+            handleMoreHighlights()
         }
 
-        usableHighlights = sort(result.usableEvents.filter(e => e.highlight));
-
-        if (searchValue) {
-            log(`App: previous search: '${searchValue}'. Keeping it for now`)
-            await onDateChanges(usableEvents, key, searchValue, [startDate, endDate]);
-            return;
-        }
-
-        agendaEvents = sort(result.agenda);
-        highlights = sort(result.highlights);
         hasMoreEvents = true;
-        disableHighlightsLoadMore = true;
-        loadingData = false;
-    }
+        log("App: Events loaded!")
+    };
 
     onMount(async () => {
-        log("App: Mounting App", {agendaEvents});
+        log("App: Mounting App", {events});
         key = lang as Locales;
         locale.set(lang);
         log('locale', {locale: $locale, key, lang});
-        blankableLinks.set(blank)
+        blankableLinks.set(blankLinks)
 
-        log("App: App mounted", {agendaEvents});
+        log("App: App mounted", {events});
     });
 
 
-    $: $locale, (() => log('locale', {locale: $locale, key, lang}))();
-    $: lang;
-    $: key = ($locale ?? lang) as Locales, (async () => {
-        events = [];
+    locale.subscribe(async () => {
+        key = ($locale ?? lang) as Locales;
         locale.set(key);
-        await resetEvents();
-    })();
+        events = [];
+        log('locale changed to ', {locale: $locale, key, lang})
+        await loadEvents();
+    });
+
+    $: $locale;
+    $: lang;
+    $: key;
     $: applyStyling(divStyleElement);
-    $: agendaEvents;
     $: events;
-    $: highlights;
+    $: highlightsToDisplay;
+    $: highlightsDisplayed;
 </script>
 
 <main bind:this={divStyleElement}>
@@ -239,10 +166,11 @@
         {#if !disableHighlights}
             <Highlights
                     {baseUrl}
-                    selectedDates={{start: startDate, end: endDate}}
+                    selectedDates={{start: startDate, end: undefined}}
                     title={highlightTitle}
-                    events={highlights}
-                    bind:loading={loadingData}
+                    bind:events={highlightsDisplayed}
+                    bind:loading={loadingFirstEvents}
+                    bind:loadingAllContent={loadingAllEvents}
                     on:loadMore={handleMoreHighlights}
             />
         {/if}
@@ -251,21 +179,17 @@
                 <Agenda
                         {baseUrl}
                         title={agendaTitle}
-                        bind:disableButtons={appIsLoading}
+                        {eventsPerChunk}
+                        bind:locale={key}
+                        bind:events={events}
+                        bind:disableButtons={loadingAllEvents}
                         bind:hasMoreEvents={hasMoreEvents}
                         bind:startDate={startDate}
                         bind:endDate={endDate}
-                        bind:loading={loadingData}
-                        bind:LoadingAllContent={loadingNextData}
-                        bind:events={agendaEvents}
-                        on:search={async (e) => await onSearch(e.detail.query, key)}
-                        on:loadMore={handleMoreAgenda}
-                        on:updateDates={async (e)=>{ await onDateChanges(usableEvents, key, e.detail.query, e.detail.dates)}}
+                        bind:loading={loadingFirstEvents}
+                        bind:loadingAllContent={loadingAllEvents}
                 />
             </div>
         {/if}
     {/if}
 </main>
-
-<style>
-</style>

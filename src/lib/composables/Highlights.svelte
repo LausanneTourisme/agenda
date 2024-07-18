@@ -15,16 +15,20 @@
     }>();
 
     export let baseUrl: string;
-    export let selectedDates: { start: string, end: string|undefined|null };
+    export let selectedDates: { start: string, end: string | undefined | null };
 
     export let events: Event[];
     export let title: string | null | undefined;
 
     export let loading: boolean = false;
+    export let loadingAllContent: boolean = false;
 
     let isDragging: boolean = false;
 
     let lastEvent: Event | null = null
+
+    //ids of last interaction observe, prevent multiple calls
+    let lastIntersections: number[] = []
 
     $: events, lastEvent = events.slice(-1)[0]
     $: lastEvent
@@ -32,7 +36,7 @@
     $: isDragging;
 </script>
 
-<div class="w-full bg-honey-500 h-[400px] sm:h-[515px]">
+<div class="w-full bg-honey-500 min-h-[400px] max-h-fit sm:min-h-[515px]">
     <div class="flex pt-7 md:px-7">
         <Heading tag="h2" class="!text-2xl font-semibold pl-5 md:pl-12 whitespace-nowrap" {title}>
             {title ?? $_('highlights.title', {default: 'Home'})}
@@ -58,12 +62,16 @@
                     maxContent="{events.length}"
                     on:dragging={(e) => isDragging = e.detail.isDragging}
             >
-                {#each events as event (events.length, event.id)}
-                    <IntersectionObserver enable="{event.id===lastEvent?.id}" once={true} on:intersecting={(e) => {
+                {#each events as event, index (event.seo.slug.fr)}
+                    <IntersectionObserver enable="{!loadingAllContent && event.id===lastEvent?.id}" on:intersecting={(e) => {
+                        if (lastIntersections.includes(event.id)) return;
+
+                        lastIntersections.push(event.id)
                         dispatch("loadMore", { event: e });
                         log('load more highlights!', {event, lastEvent: lastEvent?.name})
                     }}>
-                        <HighlightCard preventClick="{isDragging}" {baseUrl} {selectedDates} {event} draggable="{false}"/>
+                        <HighlightCard preventClick="{isDragging}" {baseUrl} {selectedDates} {event}
+                                       draggable="{false}"/>
                     </IntersectionObserver>
                 {/each}
             </Swiper>

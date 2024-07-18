@@ -9,17 +9,17 @@ if (ltAgenda) {
     app = new App({
         target: ltAgenda,
         props: {
-            lang: ltAgenda.dataset.locale ?? defaultLocale,
+            lang: ltAgenda.dataset.lang ?? ltAgenda.dataset.locale ?? defaultLocale,
             apiUrl: ltAgenda.dataset.apiUrl ?? import.meta.env.VITE_API_URL,
             baseUrl: ltAgenda.dataset.baseUrl ?? import.meta.env.VITE_LT_URL,
-            blank: ltAgenda.dataset.blank ? ltAgenda.dataset.blank === "true" : false,
+            blankLinks: (ltAgenda.dataset.blank ? ltAgenda.dataset.blank === "true" : undefined) ?? true,
             disableAgenda: ltAgenda.dataset.disableAgenda ? ltAgenda.dataset.disableAgenda === "true" : undefined,
             disableHighlights: ltAgenda.dataset.disableHighlights ? ltAgenda.dataset.disableHighlights === "true" : undefined,
             agendaTitle: ltAgenda.dataset.agendaTitle,
             highlightTitle: ltAgenda.dataset.highlightTitle,
             startDate: ltAgenda.dataset.startDate,
             endDate: ltAgenda.dataset.endDate,
-            loadBy: parseInt(ltAgenda.dataset.eventsPerChunk ?? "") ? parseInt(ltAgenda.dataset.eventsPerChunk ?? "") : undefined,
+            eventsPerChunk: parseInt(ltAgenda.dataset.eventsPerChunk ?? "") ? parseInt(ltAgenda.dataset.eventsPerChunk ?? "") : import.meta.env.VITE_EVENTS_PER_CHUNK ?? undefined,
         }
     })
 } else {

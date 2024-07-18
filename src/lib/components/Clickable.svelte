@@ -10,7 +10,12 @@
     export let preload: true | "" | "hover" | "tap" | "off" | null | undefined = "tap";
 
     let ready: boolean = false;
-    let target: NullableString = $blankableLinks ? blankable(href) : null;
+    let blankableLinks_value: boolean = true;
+    let target: NullableString = blankableLinks_value ? blankable(href) : null;
+
+    blankableLinks.subscribe((value: boolean) => {
+        blankableLinks_value = value;
+    });
 
     onMount(() => {
         ready = true;
