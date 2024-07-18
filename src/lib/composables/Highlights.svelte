@@ -15,13 +15,13 @@
     }>();
 
     export let baseUrl: string;
-    export let selectedDates: { start: string, end: string|undefined|null };
+    export let selectedDates: { start: string, end: string | undefined | null };
 
     export let events: Event[];
     export let title: string | null | undefined;
 
     export let loading: boolean = false;
-    export let LoadingAllContent: boolean = false;
+    export let loadingAllContent: boolean = false;
 
     let isDragging: boolean = false;
 
@@ -63,14 +63,15 @@
                     on:dragging={(e) => isDragging = e.detail.isDragging}
             >
                 {#each events as event, index (event.seo.slug.fr)}
-                    <IntersectionObserver enable="{!LoadingAllContent && event.id===lastEvent?.id}" on:intersecting={(e) => {
-                        if(lastIntersections.includes(event.id)) return;
+                    <IntersectionObserver enable="{!loadingAllContent && event.id===lastEvent?.id}" on:intersecting={(e) => {
+                        if (lastIntersections.includes(event.id)) return;
 
                         lastIntersections.push(event.id)
                         dispatch("loadMore", { event: e });
                         log('load more highlights!', {event, lastEvent: lastEvent?.name})
                     }}>
-                        <HighlightCard preventClick="{isDragging}" {baseUrl} {selectedDates} {event} draggable="{false}"/>
+                        <HighlightCard preventClick="{isDragging}" {baseUrl} {selectedDates} {event}
+                                       draggable="{false}"/>
                     </IntersectionObserver>
                 {/each}
             </Swiper>

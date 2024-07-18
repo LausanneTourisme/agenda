@@ -170,7 +170,7 @@
                     title={highlightTitle}
                     bind:events={highlightsDisplayed}
                     bind:loading={loadingFirstEvents}
-                    bind:LoadingAllContent={loadingAllEvents}
+                    bind:loadingAllContent={loadingAllEvents}
                     on:loadMore={handleMoreHighlights}
             />
         {/if}
@@ -187,7 +187,7 @@
                         bind:startDate={startDate}
                         bind:endDate={endDate}
                         bind:loading={loadingFirstEvents}
-                        bind:LoadingAllContent={loadingAllEvents}
+                        bind:loadingAllContent={loadingAllEvents}
                 />
             </div>
         {/if}

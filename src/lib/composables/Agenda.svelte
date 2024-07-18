@@ -47,7 +47,7 @@
     export let eventsPerChunk: number;
 
     export let loading: boolean = false;
-    export let LoadingAllContent: boolean = true;
+    export let loadingAllContent: boolean = true;
 
     const thisWeekend = getWeekend(moment());
     let todaySelected: boolean;
@@ -311,7 +311,7 @@
     $: isMobile;
     $: isLoading;
     $: disableButtons;
-    $: LoadingAllContent;
+    $: loadingAllContent;
     $: loading;
     $: selectedTags;
     $: selectedTagsName;
@@ -551,14 +551,14 @@
         {/if}
     </div>
     <div class="flex flex-col items-center mt-5">
-        {#if isLoading || LoadingAllContent}
+        {#if isLoading || loadingAllContent}
             <p>
                 <Loader class="ml-3" size="{30}"/>
 
                 {$_("agenda.getting_data")}
             </p>
         {/if}
-        {#if !isLoading && hasMoreEvents && !loading && !LoadingAllContent}
+        {#if !isLoading && hasMoreEvents && !loading && !loadingAllContent}
             <button
                     on:click={handleLoadMore}
                     class="flex justify-center w-full xs:w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
@@ -568,7 +568,7 @@
                 {$_("agenda.search_section.load_more")}
             </button>
         {/if}
-        {#if ((!isLoading && !hasMoreEvents) || loading) && !LoadingAllContent }
+        {#if ((!isLoading && !hasMoreEvents) || loading) && !loadingAllContent }
             <p class="w-full align-middle text-center">
                 {$_("agenda.search_section.load_complete")}
             </p>
