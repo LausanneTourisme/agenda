@@ -32,6 +32,7 @@
         loadMore: { event: any };
         updateDates: { query: Query, dates: [string, string | undefined | null] };
         search: { query: Query, events: Event[] };
+        selectedTags: {tags: string[]};
     }>();
 
     export let locale: Locales;
@@ -230,7 +231,10 @@
             return events;
         }
 
-        return searchEvents(searchValue, locale, events);
+        const result = searchEvents(searchValue, locale, events);
+        dispatch("search", {query: searchValue?.toLowerCase(), events: result})
+
+        return result;
     }
 
     const onTagClick = (tag: Tag | null | undefined = null) => {
@@ -243,6 +247,7 @@
         }
 
         selectedTagsName = selectedTags.map((t) => t.name);
+        dispatch('selectedTags', {tags: selectedTagsName});
 
         debounce(() => {
             eventsToDisplay = sortEventsToDisplay(locale);
