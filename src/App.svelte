@@ -131,6 +131,14 @@
         log("App: Events loaded!")
     };
 
+    const dispatchCustomEvent: ({name, detail}:{name: string, detail: any}) => void = ({name, detail}) => {
+        //plug custom events to the root
+        document.getElementById('lt-agenda')?.dispatchEvent(new CustomEvent(name, {
+            detail: detail,
+            composed: true,
+        }));
+    }
+
     onMount(async () => {
         log("App: Mounting App", {events});
         key = lang as Locales;
@@ -188,6 +196,10 @@
                         bind:endDate={endDate}
                         bind:loading={loadingFirstEvents}
                         bind:loadingAllContent={loadingAllEvents}
+                        on:search={(e) => dispatchCustomEvent({name: 'search', detail: e.detail})}
+                        on:updateDates={(e) => dispatchCustomEvent({name: 'modifiedDates', detail: e.detail})}
+                        on:loadMore={(e) => dispatchCustomEvent({name: 'loadMore', detail: e.detail})}
+                        on:selectedTags={(e) => dispatchCustomEvent({name: 'selectedTags', detail: e.detail})}
                 />
             </div>
         {/if}
