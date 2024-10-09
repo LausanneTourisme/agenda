@@ -29,9 +29,10 @@
      /*****************************************************************************/
 
     const dispatch = createEventDispatcher<{
+        change: {locale: string, query: Query, dates: [string, string | undefined | null], tags: string[]}
         loadMore: { event: any };
         updateDates: { query: Query, dates: [string, string | undefined | null] };
-        search: { query: Query, events: Event[] };
+        search: { locale: string, query: Query, events: Event[] };
         selectedTags: {tags: string[]};
     }>();
 
@@ -196,6 +197,8 @@
                 onlyAvailable: true,
             });
         } else {
+            dispatch('change', {locale, query: searchValue, tags: selectedTagsName, dates: [startDate, endDate]});
+
             return sortByName(
                 locale as Locales,
                 searchValue,
@@ -232,7 +235,7 @@
         }
 
         const result = searchEvents(searchValue, locale, events);
-        dispatch("search", {query: searchValue?.toLowerCase(), events: result})
+        dispatch("search", {locale: locale, query: searchValue?.toLowerCase(), events: result})
 
         return result;
     }
