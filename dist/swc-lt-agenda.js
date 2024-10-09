@@ -128540,7 +128540,12 @@ function wx(t, e, i) {
   };
   function Be() {
     const fe = [...r].slice(Q.length, Q.length + M);
-    i(11, Q = [...Q, ...fe]), T1("Handle more events!", { new: fe, eventsDisplayed: Q });
+    i(11, Q = [...Q, ...fe]), n("loadMore", {
+      locale: l,
+      query: x,
+      tags: te,
+      dates: [a, h]
+    }), T1("Handle more events!", { new: fe, eventsDisplayed: Q });
   }
   const Qe = (fe, Ae = {}) => (Ae = { firstLoad: !1, ...Ae }, Ae.firstLoad ? yr(_, {
     startingDate: ke(a, M1),

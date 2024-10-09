@@ -30,7 +30,7 @@
 
     const dispatch = createEventDispatcher<{
         change: {locale: string, query: Query, dates: [string, string | undefined | null], tags: string[]}
-        loadMore: { event: any };
+        loadMore: {locale: string, query: Query, dates: [string, string | undefined | null], tags: string[]};
         updateDates: { query: Query, dates: [string, string | undefined | null] };
         search: { locale: string, query: Query, events: Event[] };
         selectedTags: {tags: string[]};
@@ -177,6 +177,7 @@
     function handleLoadMore() {
         const tempEvents = [...eventsToDisplay].slice(eventsDisplayed.length, eventsDisplayed.length + eventsPerChunk)
         eventsDisplayed = [...eventsDisplayed, ...tempEvents];
+        dispatch('loadMore', {locale: locale as string, query: searchValue, tags: selectedTagsName, dates: [startDate, endDate]});
 
         log("Handle more events!", {new: tempEvents, eventsDisplayed: eventsDisplayed})
     }
