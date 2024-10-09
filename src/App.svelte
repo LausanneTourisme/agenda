@@ -196,6 +196,7 @@
                         bind:endDate={endDate}
                         bind:loading={loadingFirstEvents}
                         bind:loadingAllContent={loadingAllEvents}
+                        on:change={(e) => dispatchCustomEvent({name: 'change', detail: e.detail})}
                         on:search={(e) => dispatchCustomEvent({name: 'search', detail: e.detail})}
                         on:updateDates={(e) => dispatchCustomEvent({name: 'modifiedDates', detail: e.detail})}
                         on:loadMore={(e) => dispatchCustomEvent({name: 'loadMore', detail: e.detail})}
