@@ -29,6 +29,11 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
     const availableEvents = [...events].filter((e: Event, index: number) => {
         const event = {...e};
 
+        if(event.tags.length === 0) {
+            logIgnoredEvent(events[index], 'Event without tags')
+            return false;
+        }
+
         if (options.locale && !event.languages.includes(options.locale)) {
             // logIgnoredEvent(events[index], 'locale not found')
 
@@ -36,7 +41,7 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
         }
 
         if (!event.schedules.dates || event.schedules.dates.length === 0) {
-            logIgnoredEvent(events[index], 'empty dates')
+            logIgnoredEvent(events[index], 'Empty dates')
 
             return false;
         }
@@ -47,7 +52,7 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
             logIgnoredEvent(events[index], 'No cover')
             return false;
         }
-
+        if(event.name.fr === 'La révolte des immigrants') console.error({event})
         if(media.cloudinary_id === 'fgbcshmie94gzvhjxqoc') {//generic image
             logIgnoredEvent(events[index], 'No cover')
             return false;
