@@ -23,6 +23,7 @@
     const geolocation: Geolocation | undefined = event.geolocations?.find(x => x.main_address) ?? (event.geolocations.length ? event.geolocations[0] : undefined); // love when addresses can be false... thanks external data
 
     const media = event.medias.find(x => x.is_cover);
+    const sameDays = isSameDays(event, selectedDates);
 
     $: selectedDates;
     $: key = ($locale ?? defaultLocale);
@@ -75,26 +76,32 @@
                     <Calendar class="text-honey-500" size="24px"/>
                 </div>
 
-                <p class="flex w-full leading-snug tracking-tight truncate mt-1">
-                    {#if isSameDays(event, selectedDates)}
-                            <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.start.locale($_('date.locale')).format('DD.MM.YY')}
-                            </span>
+                <p
+                        class="flex w-full leading-snug tracking-tight truncate mt-1"
+                        title="{sameDays
+                        ? date.start.locale($_('date.locale')).format('DD MMMM YYYY')
+                        : `${$_('date.start')} ${date.start.locale($_('date.locale')).format('DD MMMM YYYY')} ${$_('date.separator')} ${date.end.locale($_('date.locale')).format('DD MMMM YYYY')}`}"
+                >
+                    {#if sameDays}
+                        <span>
+                            {date.start.locale($_('date.locale')).format('DD.MM.YY')}
+                        </span>
                     {:else}
-                            <span class="hidden sm:inline-block pr-1"
-                                  title="{$_('date.start')}">{$_('date.start')}</span>
+                        <span class="hidden sm:inline-block pr-1">
+                            {$_('date.start')}
+                        </span>
 
-                        <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.start.locale($_('date.locale')).format('DD.MM.YY')}
-                            </span>
+                        <span>
+                            {date.start.locale($_('date.locale')).format('DD.MM.YY')}
+                        </span>
 
-                        <span class="px-1 sm:hidden" title="{$_('date.separator')}"> - </span>
+                        <span class="px-1 sm:hidden"> - </span>
                         <span class="px-1 hidden sm:inline-block"
                               title="{$_('date.separator')}"> {$_('date.separator')} </span>
 
-                        <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.end.locale($_('date.locale')).format('DD.MM.YY')}
-                            </span>
+                        <span>
+                            {date.end.locale($_('date.locale')).format('DD.MM.YY')}
+                        </span>
                     {/if}
                 </p>
             </div>
