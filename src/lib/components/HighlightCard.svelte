@@ -24,6 +24,7 @@
     const media: Media | undefined = event.medias.find(x => x.is_cover);
 
     let date: { start: Moment, end: Moment } = extractStartEndDate(event, selectedDates);
+    const sameDate = isSameDays(event, selectedDates);
 
     try{
         date.start.locale($_('date.locale')).format('DD MMMM YYYY')
@@ -83,21 +84,26 @@
                     <Calendar class="text-black" size="24px"/>
                 </div>
 
-                <p class="flex w-full text-sm">
-                    {#if isSameDays(event, selectedDates)}
-                            <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.start.format('DD.MM.YY')}
-                            </span>
+                <p
+                    class="flex w-full text-sm"
+                    title="{sameDate
+                    ? date.start.locale($_('date.locale')).format('DD MMMM YYYY')
+                    :`${$_('date.start')} ${date.start.locale($_('date.locale')).format('DD MMMM YYYY')} ${$_('date.separator')} ${date.end.locale($_('date.locale')).format('DD MMMM YYYY')}`}"
+                >
+                    {#if sameDate}
+                        <span>
+                            {date.start.format('DD.MM.YY')}
+                        </span>
                     {:else}
-                            <span title="{date.start.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.start.format('DD.MM.YY')}
-                            </span>
+                        <span>
+                            {date.start.format('DD.MM.YY')}
+                        </span>
 
-                        <span class="px-1" title="{$_('date.separator')}"> - </span>
+                        <span class="px-1"> - </span>
 
-                        <span title="{date.end.locale($_('date.locale')).format('DD MMMM YYYY')}">
-                                {date.end.format('DD.MM.YY')}
-                            </span>
+                        <span>
+                            {date.end.format('DD.MM.YY')}
+                        </span>
                     {/if}
                 </p>
             </div>
