@@ -41,6 +41,18 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
             return false;
         }
 
+        const media = event.medias.find(x => x.is_cover)
+
+        if(!media || !media.cloudinary_id){
+            logIgnoredEvent(events[index], 'No cover')
+            return false;
+        }
+
+        if(media.cloudinary_id === 'fgbcshmie94gzvhjxqoc') {//generic image
+            logIgnoredEvent(events[index], 'No cover')
+            return false;
+        }
+
         //when only highlighted event
         if (options.onlyHighlights && !event.highlight) {
             // logIgnoredEvent(events[index], 'not highlighted')
