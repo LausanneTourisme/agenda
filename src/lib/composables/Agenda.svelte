@@ -301,14 +301,26 @@
     })
 
     $: events, (() => {
+        let tagOther = null;
         allTags = events
             .flatMap((x) => x.tags)
-            .filter(
-                (a, i) =>
-                    events
+            .filter(//get a list of unique tags
+                (a, i) => {
+                    //we want other in the end of the list
+                    if(a.name === "Autres") {
+                        tagOther = a;
+                        return false;
+                    }
+
+                    return events
                         .flatMap((x) => x.tags)
-                        .findIndex((s) => a.name === s.name) === i,
-            );
+                        .findIndex((s) => a.name === s.name) === i
+                });
+
+        if(tagOther){
+            allTags.push(tagOther);
+        }
+
         isLoading = false;
 
         todaySelected = now === startDate && now === endDate;
