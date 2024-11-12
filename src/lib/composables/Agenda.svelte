@@ -315,7 +315,18 @@
                     return events
                         .flatMap((x) => x.tags)
                         .findIndex((s) => a.name === s.name) === i
-                });
+                })
+            .sort(( a, b )=> {
+                const first = a.name.toUpperCase();
+                const second = b.name.toUpperCase();
+                if (  first < second ){
+                    return -1;
+                }
+                if ( first > second ){
+                    return 1;
+                }
+                return 0;
+            });
 
         if(tagOther){
             allTags.push(tagOther);
