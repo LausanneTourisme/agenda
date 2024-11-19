@@ -25,7 +25,7 @@
             const selected = selectedTags.some(x => x.name === t.name);
 
             return {
-                title: t.name,
+                title: t.public_name[$locale ?? defaultLocale],
                 selected,
                 class: selected ? `${tagClass} border-honey-500 bg-honey-500` : tagClass,
                 tag: t,
