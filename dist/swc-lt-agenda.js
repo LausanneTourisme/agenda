@@ -128645,14 +128645,14 @@ function wx(t, e, i) {
   return t.$$set = (fe) => {
     "locale" in fe && i(3, l = fe.locale), "disableButtons" in fe && i(4, o = fe.disableButtons), "startDate" in fe && i(0, a = fe.startDate), "endDate" in fe && i(1, h = fe.endDate), "baseUrl" in fe && i(5, d = fe.baseUrl), "hasMoreEvents" in fe && i(2, C = fe.hasMoreEvents), "title" in fe && i(6, v = fe.title), "events" in fe && i(28, _ = fe.events), "eventsPerChunk" in fe && i(29, E = fe.eventsPerChunk), "loading" in fe && i(7, M = fe.loading), "loadingAllContent" in fe && i(8, V = fe.loadingAllContent);
   }, t.$$.update = () => {
-    t.$$.dirty[0] & /*events, allTags, startDate, endDate*/
-    268451843 && (() => {
+    t.$$.dirty[0] & /*events, locale, allTags, startDate, endDate*/
+    268451851 && (() => {
       let fe = null;
       i(14, ue = _.flatMap((Ne) => Ne.tags).filter(
         //get a list of unique tags
         (Ne, Ke) => Ne.name === "Autres" ? (fe = Ne, !1) : _.flatMap(($e) => $e.tags).findIndex(($e) => Ne.name === $e.name) === Ke
       ).sort((Ne, Ke) => {
-        const $e = Ne.name.toUpperCase(), a1 = Ke.name.toUpperCase();
+        const $e = Ne.public_name[l].toUpperCase(), a1 = Ke.public_name[l].toUpperCase();
         return $e < a1 ? -1 : $e > a1 ? 1 : 0;
       })), fe && ue.push(fe), i(9, B = !1), i(16, Z = Ct === a && Ct === h), i(17, D = y.saturday.format(M1) === a && y.sunday.format(M1) === h), pe();
     })(), t.$$.dirty[0] & /*hasMoreEvents*/

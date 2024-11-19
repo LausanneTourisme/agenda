@@ -317,8 +317,8 @@
                         .findIndex((s) => a.name === s.name) === i
                 })
             .sort(( a, b )=> {
-                const first = a.name.toUpperCase();
-                const second = b.name.toUpperCase();
+                const first = a.public_name[locale].toUpperCase();
+                const second = b.public_name[locale].toUpperCase();
                 if (  first < second ){
                     return -1;
                 }
