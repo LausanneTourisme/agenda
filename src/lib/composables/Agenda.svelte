@@ -68,6 +68,7 @@
   let isLoading: boolean = true;
   let eventsToDisplay: Event[] = []; // All sorted events (by date, tags, name)
   let eventsDisplayed: Event[] = []; // events that user is currently seeing
+  let currentChunk: number = 1;
 
   let searchValue: string | undefined | null;
   let oldSearchValue: string | undefined | null;
@@ -199,13 +200,15 @@
   /*****************************************************************************
      /* END CALENDAR SECTION
      /*****************************************************************************/
-
   function handleLoadMore() {
-    const tempEvents = [...eventsToDisplay].slice(
-      eventsDisplayed.length,
-      eventsDisplayed.length + eventsPerChunk
-    );
+    const start: number = Number(currentChunk) * Number(eventsPerChunk);
+    const end = Number(start) + Number(eventsPerChunk);
+
+    console.log(eventsDisplayed.length)
+    console.log({before: eventsToDisplay.slice(start, end), after: eventsToDisplay.slice(start, end), start, end})
+    const tempEvents = eventsToDisplay.slice(start, end);
     eventsDisplayed = [...eventsDisplayed, ...tempEvents];
+    currentChunk++;
     dispatch("loadMore", {
       locale: locale as string,
       query: searchValue,
@@ -313,6 +316,7 @@
     debounce(() => {
       eventsToDisplay = sortEventsToDisplay(locale);
       eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
+      currentChunk = 1;
     }, 400)(); //reduce lag when user select multiple tags;
   };
 
@@ -340,6 +344,7 @@
     isLoading = true;
     eventsToDisplay = sortEventsToDisplay(locale);
     eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
+    currentChunk = 1;
     isLoading = false;
   }
 
@@ -573,7 +578,7 @@
     <div class="by-tags sm:mt-4">
       <button
         on:click={() => (openTagsDrawer = true)}
-        class="sm:hidden block w-full p-3 mb-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
+        class="sm:hidden block w-full p-3 mb-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent"
       >
         {$_("agenda.by_tags")}
         {#if selectedTagsName.length}({selectedTagsName.length}){/if}
@@ -657,7 +662,7 @@
     <!--    SEARCH    -->
     <div class="by-name w-full sm:hidden">
       <input
-        class="bg-stone-100 w-full focus:outline-none p-4 font-light border-0 focus:ring-0"
+        class="bg-stone-100 w-full outline-none p-4 font-light border-0 ring-0"
         name="search-event"
         placeholder={$_("agenda.search_section.by_name_placeholder")}
         type="search"
@@ -686,7 +691,7 @@
         <EventCardPlaceholder />
       {/each}
     {:else}
-      {#each eventsDisplayed as event, index (event.seo.slug.fr)}
+      {#each eventsDisplayed as event, index (event.id, event.seo.slug.fr)}
         <EventCard
           {event}
           {baseUrl}
@@ -706,7 +711,7 @@
     {#if !isLoading && hasMoreEvents && !loading && !loadingAllContent}
       <button
         on:click={handleLoadMore}
-        class="flex justify-center w-full xs:w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
+        class="flex justify-center w-full xs:w-max px-4 py-3 m-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent"
       >
         <ChevronDown />
         &nbsp;
@@ -718,7 +723,7 @@
         {$_("agenda.search_section.load_complete")}
       </p>
       <button
-        class="block w-max px-4 py-3 m-3 border border-black hover:border-honey-500 focus:border-honey-500 hover:bg-honey-500 focus:bg-honey-500 ring-transparent"
+        class="block w-max px-4 py-3 m-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent"
         on:click={() => {
           document.querySelector(".agenda")?.scrollIntoView({
             behavior: "smooth",
