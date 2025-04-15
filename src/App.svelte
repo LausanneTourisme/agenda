@@ -73,54 +73,33 @@
         log("Handle more highlights!", {newHighlights: tempEvents, highlights: highlightsDisplayed})
     }
 
-
-    /**
-     * on first load, get x events (highlighted or not). On background get all events to prevents future calls
-     * every time after the first load, clear all "usable" var and re-set again like first load without external call
-     */
-    const loadFirstEvents = async (locale: Locales) => {
-        let result = await fetchEvent(apiUrl, {
-            locale,
-            options: `get${EventType.events}`,
-            limit: eventsPerChunk,
-            from: startDate,
-            to: endDate,
-        })
-        events = result?.data ?? [];
-
-        result = await fetchEvent(apiUrl, {
-            locale,
-            options: `get${EventType.highlights}`,
-            limit: eventsPerChunk,
-        })
-        highlightsToDisplay = result?.data ?? [];
-
-        highlightsDisplayed = [...highlightsToDisplay];
-    }
-
     const loadEvents = async () => {
         log("App: load Events!")
         disableHighlightsLoadMore = true;
         loadingFirstEvents = true;
 
         if (events.length === 0) {
-            log("App: loading first events");
-            await loadFirstEvents(key);
-            log("App: first events loaded", {events, highlightsToDisplay, highlightsDisplayed});
             loadingFirstEvents = false;
 
             loadingAllEvents = true;
-            setTimeout(async () => {
-                disableHighlightsLoadMore = true;
-                log("App: getting all events...")
 
-                events = sort(await getAllEvents(apiUrl));
-                highlightsToDisplay = events.filter(e => e.highlight && e.languages.includes(key));
-                disableHighlightsLoadMore = false;
-                loadingAllEvents = false;
+            const result = await fetchEvent(apiUrl, {
+                locale: key,
+                options: `get${EventType.highlights}`,
+                limit: eventsPerChunk,
+            })
+            highlightsToDisplay = result?.data ?? [];
+            highlightsDisplayed = [...highlightsToDisplay];
 
-                log("App: all events completely loaded", {events, highlightsToDisplay})
-            }, 500);
+            disableHighlightsLoadMore = true;
+            log("App: getting all events...")
+
+            events = sort(await getAllEvents(apiUrl));
+            highlightsToDisplay = events.filter(e => e.highlight && e.languages.includes(key));
+            disableHighlightsLoadMore = false;
+            loadingAllEvents = false;
+
+            log("App: all events completely loaded", {events, highlightsToDisplay})
         } else {
             highlightsDisplayed = [];
             disableHighlightsLoadMore = false;
@@ -144,27 +123,20 @@
         key = lang as Locales;
         locale.set(lang);
         log('locale', {locale: $locale, key, lang});
-        blankableLinks.set(blankLinks)
 
         log("App: App mounted", {events});
     });
 
 
     locale.subscribe(async () => {
-        key = ($locale ?? lang) as Locales;
-        locale.set(key);
         events = [];
+        key = ($locale ?? lang) as Locales;
         log('locale changed to ', {locale: $locale, key, lang})
         await loadEvents();
     });
 
-    $: $locale;
-    $: lang;
-    $: key;
+    $: blankableLinks.set(blankLinks);
     $: applyStyling(divStyleElement);
-    $: events;
-    $: highlightsToDisplay;
-    $: highlightsDisplayed;
 </script>
 
 <main bind:this={divStyleElement}>

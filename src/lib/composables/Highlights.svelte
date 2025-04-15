@@ -36,7 +36,7 @@
     $: isDragging;
 </script>
 
-<div class="w-full bg-honey-500 min-h-[400px] max-h-fit sm:min-h-[515px]">
+<div class="w-full bg-honey-500 min-h-[400px] max-h-[416px] sm:min-h-[515px] md:max-h-[528px]">
     <div class="flex pt-7 md:px-7">
         <Heading tag="h2" class="!text-2xl font-semibold pl-5 md:pl-12 whitespace-nowrap" {title}>
             {title ?? $_('highlights.title', {default: 'Home'})}
