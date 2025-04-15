@@ -7,11 +7,12 @@ import {
     type OptionsSortEvents,
     type Query,
     type ScheduleDate,
-    type ShortDay
+    type ShortDay,
+    type Tag
 } from "$lib/types";
 import {dateFormat, findAvailablePeriod, getDaysBetween, now, sortDates} from "$lib/date-utils";
 import moment from "moment/moment";
-import {log, warn} from "$lib/utils";
+import {arrayUniqueByKey, log, warn} from "$lib/utils";
 import Fuse from "fuse.js";
 
 export const logIgnoredEvent = (event: Event, information?: string): void | null => warn(`Event skipped${information ? `, beacause: ${information}` : null}`, event)
@@ -158,19 +159,19 @@ export const searchEvents = (query: Query, locale: Locales = "en", events: Event
                 weight: 0.9,
             },
             {
-                name: `geolocations.address`,
-                weight: 0.4,
-            },
-            {
-                name: `geolocations.venue`,
-                weight: 0.4,
+                name: `tags.public_name.${locale}`,
+                weight: 0.5,
             },
             {
                 name: `categories.public_name.${locale}`,
-                weight: 0.3,
+                weight: 0.5,
             },
             {
-                name: `tags.public_name.${locale}`,
+                name: `geolocations.venue`,
+                weight: 0.1,
+            },
+            {
+                name: `geolocations.address`,
                 weight: 0.1,
             },
         ]
@@ -240,3 +241,95 @@ export async function getAllEvents(apiUrl: string | undefined | null): Promise<E
 
     return items;
 }
+
+
+export const sortByTags = (
+    tags: string[] | null | undefined = null,
+    events: Event[]
+  ): Event[] => {
+    if (!tags) return events;
+
+    if (tags.length === 0) return events;
+
+    return events.filter((event: Event) => {
+      return event.tags.some((tag) => tags.includes(tag.name));
+    });
+  };
+
+  export const sortEventsToDisplay = (
+    locale: string | Locales,
+    events: Event[],
+    startDate: string,
+    options: {
+        query?: Query,
+        selectedTagsName?: string[],
+        endDate?: string,
+      firstLoad?: boolean;
+    } = {}
+  ) => {
+    options = {
+      firstLoad: false,
+      ...options
+    };
+
+    if (options.firstLoad) {
+      return sort(events, {
+        startingDate: moment(startDate, dateFormat),
+        endingDate: options.endDate ? moment(options.endDate, dateFormat) : undefined,
+        locale: locale,
+        onlyAvailable: true
+      });
+    } else {
+      return searchEvents(
+        options.query,
+        locale as Locales,
+        sortByTags(
+          options.selectedTagsName,
+          // get available events
+          sort(events, {
+            startingDate: moment(startDate, dateFormat),
+            endingDate: options.endDate ? moment(options.endDate, dateFormat) : undefined,
+            locale: locale,
+            onlyAvailable: true
+          })
+        )
+      );
+    }
+  };
+
+
+  export const getUniqueTagsFromEvents = (
+    events: Event[],
+    dates: { start: string; end?: string },
+    query: Query,
+    locale: Locales,
+  ): Tag[] => {
+    const eventsToFilter: Event[] = sortEventsToDisplay(
+      locale,
+      events,
+      dates.start,
+      { endDate: dates.end, query: query, firstLoad: true }
+    );
+    const tags: Tag[] = eventsToFilter.flatMap((event) => event.tags);
+    const uniqueTags = arrayUniqueByKey(tags, "name");
+
+    return uniqueTags.sort((a: Tag, b: Tag) => {
+      if (a.name === "Autres") {
+        return 1; // always display at the end
+      }
+
+      const first = a.public_name[locale]?.toUpperCase();
+      const second = b.public_name[locale]?.toUpperCase();
+      if (!first || !second) {
+        return 0;
+      }
+
+      if (first < second) {
+        return -1;
+      }
+      if (first > second) {
+        return 1;
+      }
+      return 0;
+    });
+  };
