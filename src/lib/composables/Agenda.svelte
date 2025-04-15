@@ -1,32 +1,34 @@
 <script lang="ts">
-  import type { Event, Locales, Query, Tag } from "$lib/types";
-  import Heading from "$lib/components/Heading.svelte";
-  import { Calendar, ChevronDown, Search } from "lucide-svelte";
-  import { _ } from "svelte-i18n";
   import EventCard from "$lib/components/EventCard.svelte";
-  import TagsSwiper from "$lib/components/TagsSwiper.svelte";
-  import Drawer from "svelte-drawer-component";
-  import { Cross1 } from "svelte-radix";
-  import { afterUpdate, createEventDispatcher, onMount } from "svelte";
+  import Heading from "$lib/components/Heading.svelte";
   import Loader from "$lib/components/Loader.svelte";
+  import TagsSwiper from "$lib/components/TagsSwiper.svelte";
   import { dateFormat, getWeekend, now } from "$lib/date-utils";
+  import type { Event, Locales, Query, Tag } from "$lib/types";
+  import { Calendar, ChevronDown, Search } from "lucide-svelte";
   import moment from "moment";
+  import { afterUpdate, createEventDispatcher, onMount } from "svelte";
+  import Drawer from "svelte-drawer-component";
+  import { _ } from "svelte-i18n";
+  import { Cross1 } from "svelte-radix";
 
-  import { debounce, log } from "$lib/utils";
   import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
-
+  import { arrayUniqueByKey, debounce, log } from "$lib/utils";
   /*****************************************************************************
-     /* START CALENDAR SECTION
-     /*****************************************************************************/
+   /* START CALENDAR SECTION
+   /*****************************************************************************/
+  import {
+    getUniqueTagsFromEvents,
+    sortEventsToDisplay
+  } from "$lib/event-utils";
   import AirDatepicker from "air-datepicker";
+  import localeDe from "air-datepicker/locale/de";
   import localeEn from "air-datepicker/locale/en";
   import localeFr from "air-datepicker/locale/fr";
-  import localeDe from "air-datepicker/locale/de";
-  import { searchEvents, sort } from "$lib/event-utils";
 
   /*****************************************************************************
-     /* END CALENDAR SECTION
-     /*****************************************************************************/
+   /* END CALENDAR SECTION
+   /*****************************************************************************/
 
   const dispatch = createEventDispatcher<{
     change: {
@@ -80,8 +82,8 @@
   let openTagsDrawer = false;
 
   /*****************************************************************************
-     /* START CALENDAR SECTION
-     /*****************************************************************************/
+   /* START CALENDAR SECTION
+   /*****************************************************************************/
 
   const smallScreen: number = 640;
   let isMobile: boolean = window.innerWidth < smallScreen;
@@ -198,17 +200,16 @@
   };
 
   /*****************************************************************************
-     /* END CALENDAR SECTION
-     /*****************************************************************************/
+  /* END CALENDAR SECTION
+  /*****************************************************************************/
   function handleLoadMore() {
     const start: number = Number(currentChunk) * Number(eventsPerChunk);
     const end = Number(start) + Number(eventsPerChunk);
 
-    console.log(eventsDisplayed.length)
-    console.log({before: eventsToDisplay.slice(start, end), after: eventsToDisplay.slice(start, end), start, end})
     const tempEvents = eventsToDisplay.slice(start, end);
     eventsDisplayed = [...eventsDisplayed, ...tempEvents];
     currentChunk++;
+
     dispatch("loadMore", {
       locale: locale as string,
       query: searchValue,
@@ -222,83 +223,7 @@
     });
   }
 
-  const sortEventsToDisplay = (
-    locale: string | Locales,
-    options: {
-      firstLoad?: boolean;
-    } = {}
-  ) => {
-    options = {
-      firstLoad: false,
-      ...options
-    };
-
-    if (options.firstLoad) {
-      return sort(events, {
-        startingDate: moment(startDate, dateFormat),
-        endingDate: endDate ? moment(endDate, dateFormat) : undefined,
-        locale: locale,
-        onlyAvailable: true
-      });
-    } else {
-      dispatch("change", {
-        locale,
-        query: searchValue,
-        tags: selectedTagsName,
-        dates: [startDate, endDate]
-      });
-
-      return sortByName(
-        locale as Locales,
-        searchValue,
-        sortByTags(
-          selectedTagsName,
-          // get available events
-          sort(events, {
-            startingDate: moment(startDate, dateFormat),
-            endingDate: endDate ? moment(endDate, dateFormat) : undefined,
-            locale: locale,
-            onlyAvailable: true
-          })
-        )
-      );
-    }
-  };
-
-  const sortByTags = (
-    tags: string[] | null | undefined = null,
-    events: Event[]
-  ): Event[] => {
-    if (!tags) return events;
-
-    if (tags.length === 0) return events;
-
-    return events.filter((event: Event) => {
-      return event.tags.some((tag) => tags.includes(tag.name));
-    });
-  };
-
-  const sortByName = (
-    locale: Locales,
-    query: string | null | undefined,
-    events: Event[]
-  ): Event[] => {
-    if (!query || query.trim().length === 0) {
-      log("no query");
-      return events;
-    }
-
-    const result = searchEvents(searchValue, locale, events);
-    dispatch("search", {
-      locale: locale,
-      query: searchValue?.toLowerCase(),
-      events: result
-    });
-
-    return result;
-  };
-
-  const onTagClick = (tag: Tag | null | undefined = null) => {
+  const handleTagClick = (tag: Tag | null | undefined = null) => {
     if (!tag) {
       //reset Tags
       selectedTags = [];
@@ -314,13 +239,24 @@
     dispatch("selectedTags", { tags: selectedTagsName });
 
     debounce(() => {
-      eventsToDisplay = sortEventsToDisplay(locale);
+      eventsToDisplay = sortEventsToDisplay(locale, events, startDate, {
+        endDate: endDate ?? undefined,
+        query: searchValue,
+        selectedTagsName
+      });
       eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
       currentChunk = 1;
+
+      dispatch("change", {
+        locale,
+        query: searchValue,
+        tags: selectedTagsName,
+        dates: [startDate, endDate]
+      });
     }, 400)(); //reduce lag when user select multiple tags;
   };
 
-  const onInput = () => {
+  const handleInput = () => {
     isLoading = true; //will be false on props 'events' update
     debounce(() => {
       if (searchValue !== oldSearchValue) {
@@ -328,21 +264,38 @@
 
         selectedTags = [];
         selectedTagsName = [];
-        eventsToDisplay = sortEventsToDisplay(locale);
+        eventsToDisplay = sortEventsToDisplay(locale, events, startDate, {
+          endDate: endDate ?? undefined,
+          query: searchValue,
+          selectedTagsName: selectedTagsName
+        });
         eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
+
+        dispatch("search", {
+          locale: locale,
+          query: searchValue?.toLowerCase(),
+          events: eventsToDisplay
+        });
+
+        dispatch("change", {
+          locale,
+          query: searchValue,
+          tags: [],
+          dates: [startDate, endDate]
+        });
       }
 
       isLoading = false;
     }, 600)();
   };
 
-  async function onDateChanges() {
-    sortEventsToDisplay(locale);
-  }
-
   function resetDisplay() {
     isLoading = true;
-    eventsToDisplay = sortEventsToDisplay(locale);
+    eventsToDisplay = sortEventsToDisplay(locale, events, startDate, {
+      endDate: endDate ?? undefined,
+      query: searchValue,
+      selectedTagsName: selectedTagsName
+    });
     eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
     currentChunk = 1;
     isLoading = false;
@@ -367,71 +320,22 @@
     });
   });
 
-  $: events,
-    (() => {
-      let tagOther = null;
-      allTags = sort(events, {
-        startingDate: moment(startDate, dateFormat),
-        endingDate: endDate ? moment(endDate, dateFormat) : undefined,
-        locale: locale,
-        onlyAvailable: true
-      })
-        .flatMap((x) => x.tags)
-        .filter(
-          //get a list of unique tags
-          (a: Tag, i) => {
-            //we want other in the end of the list
-            if (a.name === "Autres") {
-              tagOther = a;
-              return false;
-            }
-
-            return (
-              events
-                .flatMap((x) => x.tags)
-                .findIndex((s) => a.name === s.name) === i
-            );
-          }
-        )
-        .sort((a: Tag, b: Tag) => {
-          const first = a.public_name[locale]?.toUpperCase();
-          const second = b.public_name[locale]?.toUpperCase();
-          if (!first || !second) {
-            return 0;
-          }
-
-          if (first < second) {
-            return -1;
-          }
-          if (first > second) {
-            return 1;
-          }
-          return 0;
-        });
-
-      if (tagOther) {
-        allTags.push(tagOther);
-      }
-
-      isLoading = false;
-
-      todaySelected = now === startDate && now === endDate;
-      weekendSelected =
-        thisWeekend.saturday.format(dateFormat) === startDate &&
-        thisWeekend.sunday.format(dateFormat) === endDate;
-      resetDisplay();
-    })();
-
-  $: hasMoreEvents;
-  $: isMobile;
-  $: isLoading;
-  $: disableButtons;
-  $: loadingAllContent;
-  $: loading;
-  $: selectedTags;
-  $: selectedTagsName;
-  $: eventsToDisplay;
-  $: eventsDisplayed;
+  $: {
+    allTags = getUniqueTagsFromEvents(
+      events,
+      {
+        start: startDate,
+        end: endDate ?? undefined
+      },
+      searchValue,
+      locale
+    );
+    resetDisplay();
+  }
+  $: weekendSelected =
+    thisWeekend.saturday.format(dateFormat) === startDate &&
+    thisWeekend.sunday.format(dateFormat) === endDate;
+  $: todaySelected = now === startDate && now === endDate;
 </script>
 
 <svelte:window
@@ -568,7 +472,7 @@
           placeholder={$_("agenda.search_section.by_name_placeholder")}
           type="search"
           bind:value={searchValue}
-          on:keyup={onInput}
+          on:keyup={handleInput}
         />
         <Search class="text-honey-500" />
       </div>
@@ -598,7 +502,7 @@
           tags={allTags}
           {selectedTags}
           displayBtnAll={true}
-          on:tagSelect={(event) => onTagClick(event.detail.tag)}
+          on:tagSelect={(event) => handleTagClick(event.detail.tag)}
           tagClass="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent px-5"
         />
       {/if}
@@ -667,7 +571,7 @@
         placeholder={$_("agenda.search_section.by_name_placeholder")}
         type="search"
         bind:value={searchValue}
-        on:keyup={() => onInput()}
+        on:keyup={() => handleInput()}
       />
     </div>
   </div>
@@ -691,7 +595,7 @@
         <EventCardPlaceholder />
       {/each}
     {:else}
-      {#each eventsDisplayed as event, index (event.id, event.seo.slug.fr)}
+      {#each eventsDisplayed as event, index ((event.id, event.seo.slug.fr))}
         <EventCard
           {event}
           {baseUrl}

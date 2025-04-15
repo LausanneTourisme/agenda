@@ -123,27 +123,20 @@
         key = lang as Locales;
         locale.set(lang);
         log('locale', {locale: $locale, key, lang});
-        blankableLinks.set(blankLinks)
 
         log("App: App mounted", {events});
     });
 
 
     locale.subscribe(async () => {
-        key = ($locale ?? lang) as Locales;
-        locale.set(key);
         events = [];
+        key = ($locale ?? lang) as Locales;
         log('locale changed to ', {locale: $locale, key, lang})
         await loadEvents();
     });
 
-    $: $locale;
-    $: lang;
-    $: key;
+    $: blankableLinks.set(blankLinks);
     $: applyStyling(divStyleElement);
-    $: events;
-    $: highlightsToDisplay;
-    $: highlightsDisplayed;
 </script>
 
 <main bind:this={divStyleElement}>
