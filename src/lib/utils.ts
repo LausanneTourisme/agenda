@@ -45,3 +45,6 @@ export const debounce = (callback: Function, wait: number) => {
         }, wait);
     };
 }
+
+export const arrayUniqueByKey = <T extends Record<string, any>>(array: T[], key: string):T[] => [...new Map(array.map(item =>
+    [item[key], item])).values()]
