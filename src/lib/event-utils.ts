@@ -12,7 +12,7 @@ import {
 } from "$lib/types";
 import {dateFormat, findAvailablePeriod, getDaysBetween, now, sortDates} from "$lib/date-utils";
 import moment from "moment/moment";
-import {arrayUniqueByKey, log, warn} from "$lib/utils";
+import {arrayUniqueByKey, error, log, warn} from "$lib/utils";
 import Fuse from "fuse.js";
 
 export const logIgnoredEvent = (event: Event, information?: string): void | null => warn(`Event skipped${information ? `, beacause: ${information}` : null}`, event)
@@ -53,7 +53,6 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
             logIgnoredEvent(events[index], 'No cover')
             return false;
         }
-        if(event.name.fr === 'La révolte des immigrants') console.error({event})
         if(media.cloudinary_id === 'fgbcshmie94gzvhjxqoc') {//generic image
             logIgnoredEvent(events[index], 'No cover')
             return false;
@@ -182,7 +181,7 @@ export const searchEvents = (query: Query, locale: Locales = "en", events: Event
 
 export const fetchEvent = async (url: string | null | undefined, options: GqlOptions): Promise<GqlItems | null> => {
     if (!url) {
-        console.error('no api url defined')
+        error('no api url defined')
         return null;
     }
 
@@ -204,7 +203,7 @@ export const fetchEvent = async (url: string | null | undefined, options: GqlOpt
 
 export const fetchAll = async (url: string | null | undefined): Promise<Event[] | null> => {
     if (!url) {
-        console.error('no api url defined')
+        error('no api url defined')
         return null;
     }
 
@@ -229,7 +228,7 @@ export const fetchAll = async (url: string | null | undefined): Promise<Event[] 
 
 export async function getAllEvents(apiUrl: string | undefined | null): Promise<Event[]> {
     if (!apiUrl) {
-        console.error('no api url defined')
+        error('no api url defined')
         return [];
     }
 
@@ -314,7 +313,7 @@ export const sortByTags = (
     const uniqueTags = arrayUniqueByKey(tags, "name");
 
     return uniqueTags.sort((a: Tag, b: Tag) => {
-      if (a.name === "Autres") {
+      if (a.name === "lt-autres") {
         return 1; // always display at the end
       }
 

@@ -11,7 +11,7 @@
     import {Calendar} from "lucide-svelte";
     import {CldImage} from "svelte-cloudinary";
     import {extractStartEndDate, isSameDays} from "$lib/date-utils";
-    import {defaultLocale, log} from "$lib/utils";
+    import {defaultLocale, error, log} from "$lib/utils";
     import {onMount} from "svelte";
 
     let key: string;
@@ -29,7 +29,7 @@
     try{
         date.start.locale($_('date.locale')).format('DD MMMM YYYY')
     }catch (e){
-        console.error({e, event, date, date_locale: $_('date.locale')})
+        error("can't apply date", {e, event, date, date_locale: $_('date.locale')})
     }
 
     const mouseDown = (e: Event) => {

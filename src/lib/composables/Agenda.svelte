@@ -13,7 +13,7 @@
   import { Cross1 } from "svelte-radix";
 
   import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
-  import { arrayUniqueByKey, debounce, log } from "$lib/utils";
+  import {arrayUniqueByKey, debounce, error, log} from "$lib/utils";
   /*****************************************************************************
    /* START CALENDAR SECTION
    /*****************************************************************************/
@@ -112,7 +112,7 @@
     try {
       calendar?.destroy();
     } catch (e) {
-      console.error("Trying to reset calendar too early");
+      error("Trying to reset calendar too early");
     }
 
     calendar = new AirDatepicker("#dp", {
@@ -344,7 +344,7 @@
     try {
       if (calendar?.visible) calendar?.hide();
     } catch (e) {
-      console.error(
+      error(
         `calendar element is not yet created: ${calendar?.visible}`
       );
     }

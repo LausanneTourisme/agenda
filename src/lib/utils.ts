@@ -22,6 +22,7 @@ export const randomString = (size: number = 8): string => Math.random().toString
 
 export const log = (information: string, content: any = undefined): void | null => import.meta.env.VITE_ENV === Environment.dev ? console.log({information, ...content}) : null;
 export const warn = (information: string, content: any = undefined): void | null => import.meta.env.VITE_ENV === Environment.dev ? console.warn({information, ...content}) : null;
+export const error = (information: string, content: any = undefined): void | null => import.meta.env.VITE_ENV === Environment.dev ? console.error({information, ...content}) : console.error(`Please contact admin and explain how to obtain this error. Additional information: ${information}`);
 
 /**
  *
