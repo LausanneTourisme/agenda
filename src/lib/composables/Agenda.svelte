@@ -533,7 +533,7 @@
             0
               ? 'border-honey-500 bg-honey-500'
               : ''} px-5"
-            on:click={() => onTagClick()}
+            on:click={() => handleTagClick()}
             title={$_("agenda.tags.display_all")}
             >{$_("agenda.tags.display_all")}</button
           >
@@ -544,7 +544,7 @@
               : ""}
 
             <button
-              on:click={() => onTagClick(tag)}
+              on:click={() => handleTagClick(tag)}
               class="inline-flex justify-center items-center h-min py-2 m-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 gap-6 ring-2 ring-transparent px-5 {elementSelected} "
               title={tag.public_name[locale]}>{tag.public_name[locale]}</button
             >
