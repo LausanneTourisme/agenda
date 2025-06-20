@@ -19,6 +19,7 @@
 
     export let events: Event[];
     export let title: string | null | undefined;
+    export let hideTitle: boolean | null | undefined = false;
 
     export let loading: boolean = false;
     export let loadingAllContent: boolean = false;
@@ -37,14 +38,18 @@
 </script>
 
 <div class="w-full bg-honey-500 min-h-[400px] max-h-[416px] sm:min-h-[515px] md:max-h-[528px]">
-    <div class="flex pt-7 md:px-7">
-        <Heading tag="h2" class="!text-2xl font-semibold pl-5 md:pl-12 whitespace-nowrap" {title}>
-            {title ?? $_('highlights.title', {default: 'Home'})}
-        </Heading>
-        {#if loading}
+    {#if !hideTitle}
+        <div class="flex pt-7 md:px-7">
+            <Heading tag="h2" class="!text-2xl font-semibold pl-5 md:pl-12 whitespace-nowrap" {title}>
+                {title ?? $_('highlights.title', {default: 'Home'})}
+            </Heading>
+        </div>
+    {/if}
+    {#if loading}
+        <div class="flex justify-center pt-7 md:px-7">
             <Loader class="ml-3" size="{30}"/>
-        {/if}
-    </div>
+        </div>
+    {/if}
     {#if loading}
         <Swiper
                 class="highlights pb-4 px-2 sm:px-16 select-none"

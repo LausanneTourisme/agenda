@@ -32,6 +32,8 @@
 
     export let highlightTitle: string | null | undefined = $$props["highlight-title"];
     export let agendaTitle: string | null | undefined = $$props["agenda-title"];
+    export let highlightRemoveTitle: boolean | null | undefined = $$props["highlight-remove-title"] === "true" || $$props["highlight-remove-title"] === true;
+    export let agendaRemoveTitle: boolean | null | undefined = $$props["agenda-remove-title"] === "true" || $$props["agenda-remove-title"] === true;
     export let apiUrl: string | null | undefined = $$props["api-url"];
     export let startDate: string = $$props["start-date"] ?? now;
     export let endDate: string | null | undefined = $$props["end-date"] ?? now;
@@ -147,6 +149,7 @@
             <Highlights
                     {baseUrl}
                     selectedDates={{start: startDate, end: undefined}}
+                    hideTitle={highlightRemoveTitle}
                     title={highlightTitle}
                     bind:events={highlightsDisplayed}
                     bind:loading={loadingFirstEvents}
@@ -158,6 +161,7 @@
             <div class="md:px-7">
                 <Agenda
                         {baseUrl}
+                        hideTitle={agendaRemoveTitle}
                         title={agendaTitle}
                         {eventsPerChunk}
                         bind:locale={key}
