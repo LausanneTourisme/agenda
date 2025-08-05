@@ -296,7 +296,7 @@
         eventsToDisplay = sortEventsToDisplay(locale, events, startDate, {
           endDate: endDate ?? undefined,
           query: searchValue,
-          selectedTagsName: selectedTagsName
+          selectedTagsName: []
         });
         eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
 
@@ -309,7 +309,7 @@
         dispatch("change", {
           locale,
           query: searchValue,
-          tags: selectedTagsName,
+          tags: [],
           dates: [startDate, endDate]
         });
       }
