@@ -34,6 +34,10 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
             logIgnoredEvent(events[index], 'Event without tags')
             return false;
         }
+        if(!event.seo || !event.seo.slug) {
+            logIgnoredEvent(events[index], 'Event without seo')
+            return false;
+        }
 
         if (options.locale && !event.languages.includes(options.locale)) {
             // logIgnoredEvent(events[index], 'locale not found')
