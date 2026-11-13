@@ -1,11 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@import "assets/fonts/euclid-flex";
-@import "assets/air-datepicker";
+@import "tailwindcss";
+@import "./theme.css";
+@import "./assets/air-datepicker.css";
 
 @layer base {
-  :root {
+  :root, :host {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
 
@@ -80,17 +78,5 @@
 
   img {
     image-rendering: auto;
-  }
-}
-
-@layer utilities {
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
   }
 }
