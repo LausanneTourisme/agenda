@@ -182,8 +182,12 @@
           emitChange();
         }
       },
-      toggleSelected: ({ datepicker }) => {
-        return datepicker.selectedDates.length === 2;
+      toggleSelected: ({ datepicker, date }) => {
+        if (datepicker.selectedDates.length === 2) {
+          datepicker.clear({ silent: true });
+          datepicker.selectDate(date);
+        }
+        return false;
       },
       buttons: [
         {
@@ -362,10 +366,10 @@
     </Heading>
   {/if}
   <div class="search-section">
-    <div class="w-full xs:flex xs:justify-start search-section">
+    <div class="w-full flex flex-wrap sm:flex-nowrap sm:justify-start search-section">
       <!--    TODAY    -->
       <button
-        class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
+        class="flex-1 p-3 mb-3 mr-1 sm:flex-none sm:mb-0 sm:mr-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
                     {todaySelected ? 'border-honey-500 bg-honey-500' : ''}
                     {disableButtons
           ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent'
@@ -383,7 +387,7 @@
 
       <!--    WEEKEND   -->
       <button
-        class="block w-full p-3 mb-3 xs:mr-1 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent break-keep whitespace-break-spaces
+        class="flex-1 p-3 mb-3 sm:flex-none sm:mb-0 sm:mr-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent break-keep whitespace-break-spaces
                     {weekendSelected ? 'border-honey-500 bg-honey-500' : ''}
                     {disableButtons
           ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent'
@@ -408,7 +412,7 @@
 
       <!--    DATE    -->
       <div
-        class="flex relative w-full mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
+        class="flex relative basis-full mb-3 sm:basis-auto sm:mb-0 sm:mr-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
                 {customDatesSelected
           ? 'border-honey-500 bg-honey-500'
           : ''}
