@@ -66,6 +66,23 @@
     thisWeekend.saturday.format(dateFormat) === startDate &&
       thisWeekend.sunday.format(dateFormat) === endDate
   );
+  const customDatesSelected = $derived(
+    !todaySelected && !weekendSelected && !!startDate && !!endDate
+  );
+  const selectedDatesLabel = $derived.by(() => {
+    if (!customDatesSelected || !endDate) return null;
+    const start = moment(startDate, dateFormat);
+    const end = moment(endDate, dateFormat);
+    const sameYear = start.year() === end.year() && start.year() === moment().year();
+    const formatter = new Intl.DateTimeFormat(locale, {
+      day: "numeric",
+      month: "short",
+      ...(sameYear ? {} : { year: "numeric" }),
+    });
+    return start.isSame(end, "day")
+      ? formatter.format(start.toDate())
+      : formatter.formatRange(start.toDate(), end.toDate());
+  });
 
   let isLoading: boolean = $state(true);
   let eventsToDisplay: Event[] = $state.raw([]); // All sorted events (by date, tags, name)
@@ -392,13 +409,13 @@
       <!--    DATE    -->
       <div
         class="flex relative w-full mb-3 sm:mb-0 sm:mr-3 sm:w-auto border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent
-                {!todaySelected && !weekendSelected && startDate && endDate
+                {customDatesSelected
           ? 'border-honey-500 bg-honey-500'
           : ''}
                 {disableButtons
           ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent'
           : ''}"
-        part="filter-button{!todaySelected && !weekendSelected && startDate && endDate ? ' filter-button-active' : ''}"
+        part="filter-button{customDatesSelected ? ' filter-button-active' : ''}"
       >
         <input
           type="text"
@@ -414,7 +431,7 @@
             dpField?.focus();
           }}
           class="block w-full p-3 ring-transparent
-                    {startDate && endDate && !todaySelected && !thisWeekend
+                    {customDatesSelected
             ? 'border-honey-500 bg-honey-500'
             : ''}
                     {disableButtons ? 'cursor-progress' : ''}"
@@ -422,7 +439,7 @@
           <span class="flex justify-center items-center w-max m-auto">
             <Calendar class="w-5 h-5 -mt-1" />
             &nbsp;
-            {$_("agenda.search_section.dates")}
+            {selectedDatesLabel ?? $_("agenda.search_section.dates")}
           </span>
         </button>
       </div>
