@@ -16,9 +16,9 @@
                 <div class="w-full h-2/3 bg-honey-800"></div>
             </Heading>
             <div class="lt-agenda-highlight-dates flex items-center">
-                <div class="mr-2 bg-honey-800 aspect-square h-[24px]"></div>
+                <div class="mr-2 bg-honey-800 aspect-square h-6"></div>
 
-                <p class="flex w-full h-[24px] bg-honey-800 text-sm"></p>
+                <p class="flex w-full h-6 bg-honey-800 text-sm"></p>
             </div>
         </div>
     </div>

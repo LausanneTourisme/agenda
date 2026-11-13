@@ -39,7 +39,7 @@
     const lastIntersections: number[] = [];
 </script>
 
-<div part="highlights" class="w-full bg-honey-500 min-h-[400px] max-h-[416px] sm:min-h-[515px] md:max-h-[528px]">
+<div part="highlights" class="w-full bg-honey-500 min-h-100 max-h-104 sm:min-h-128.75 md:max-h-132">
     {#if !hideTitle}
         <div class="flex pt-7 md:px-7">
             <Heading tag="h2" class="text-2xl! font-semibold pl-5 md:pl-12 whitespace-nowrap" part="highlights-title" {title}>
@@ -82,7 +82,7 @@
             </Swiper>
         {:else}
             <div class="highlights pb-4 px-2 sm:px-16 select-none">
-                <p class="rounded-none shadow-none p-4 h-[400px] sm:h-[515px]">
+                <p class="rounded-none shadow-none p-4 h-100 sm:h-128.75">
                     {$_('highlights.nothing')}
                 </p>
             </div>

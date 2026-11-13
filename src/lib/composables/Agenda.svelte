@@ -480,10 +480,10 @@
       </button>
 
       {#if loading}
-        <div class="hidden! sm:flex text-nowrap pb-2 h-[45px] w-full">
+        <div class="hidden! sm:flex text-nowrap pb-2 h-11.25 w-full">
           {#each { length: 20 } as _}
             <div
-              class="mr-2 sm:text-md px-3 sm:py-1 sm:px-2 rounded-full w-[200px] bg-gray-300 pointer-events-none"
+              class="mr-2 sm:text-md px-3 sm:py-1 sm:px-2 rounded-full w-50 bg-gray-300 pointer-events-none"
             ></div>
           {/each}
         </div>
