@@ -1,6 +1,22 @@
 <svelte:options
         customElement={{
-            tag: "swc-lt-agenda"
+            tag: "swc-lt-agenda",
+            props: {
+                blankLinks: {attribute: "blank-links", type: "String"},
+                disableHighlights: {attribute: "disable-highlights", type: "Boolean"},
+                disableAgenda: {attribute: "disable-agenda", type: "Boolean"},
+                highlightTitle: {attribute: "highlight-title", type: "String"},
+                agendaTitle: {attribute: "agenda-title", type: "String"},
+                highlightRemoveTitle: {attribute: "highlight-remove-title", type: "String"},
+                agendaRemoveTitle: {attribute: "agenda-remove-title", type: "String"},
+                apiUrl: {attribute: "api-url", type: "String"},
+                startDate: {attribute: "start-date", type: "String"},
+                endDate: {attribute: "end-date", type: "String"},
+                baseUrl: {attribute: "base-url", type: "String"},
+                lang: {attribute: "lang", type: "String"},
+                eventsPerChunk: {attribute: "events-per-chunk", type: "Number"},
+                stylesheet: {attribute: "stylesheet", type: "String"},
+            }
         }}
 />
 
@@ -16,8 +32,9 @@
     import {type Event, EventType, type Locales} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
-    import {onMount} from "svelte";
-    import {applyStyling, defaultLocale, log, warn} from "$lib/utils";
+    import {onMount, untrack} from "svelte";
+    import {defaultLocale, getShadowRoot, injectShadowStyles, log, registerFonts, warn} from "$lib/utils";
+    import appStyles from "./app.css?inline";
     import {blankableLinks} from "$lib/store";
     import {fetchEvent, getAllEvents, sort} from "$lib/event-utils";
     import {now} from "$lib/date-utils";
@@ -26,43 +43,64 @@
     register("en", () => import("$lib/i18n/en.json"));
     register("de", () => import("$lib/i18n/de.json"));
 
-    export let blankLinks: boolean = $$props["blank-links"] ?? false;
-    export let disableHighlights: boolean = $$props["disable-highlights"] ?? false;
-    export let disableAgenda: boolean = $$props["disable-agenda"] ?? false;
+    interface Props {
+        blankLinks?: boolean | string;
+        disableHighlights?: boolean;
+        disableAgenda?: boolean;
+        highlightTitle?: string | null;
+        agendaTitle?: string | null;
+        highlightRemoveTitle?: boolean | string | null;
+        agendaRemoveTitle?: boolean | string | null;
+        apiUrl?: string | null;
+        startDate?: string;
+        endDate?: string | null;
+        baseUrl: string;
+        lang?: string;
+        eventsPerChunk?: number;
+        stylesheet?: string | null;
+    }
 
-    export let highlightTitle: string | null | undefined = $$props["highlight-title"];
-    export let agendaTitle: string | null | undefined = $$props["agenda-title"];
-    export let highlightRemoveTitle: boolean | null | undefined = $$props["highlight-remove-title"] === "true" || $$props["highlight-remove-title"] === true;
-    export let agendaRemoveTitle: boolean | null | undefined = $$props["agenda-remove-title"] === "true" || $$props["agenda-remove-title"] === true;
-    export let apiUrl: string | null | undefined = $$props["api-url"];
-    export let startDate: string = $$props["start-date"] ?? now;
-    export let endDate: string | null | undefined = $$props["end-date"] ?? now;
-    export let baseUrl: string = $$props["base-url"];
-    export let lang: string = $$props["lang"] ?? getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale;
-    export let eventsPerChunk: number = $$props["events-per-chunk"] ?? 20;
+    let {
+        blankLinks = false,
+        disableHighlights = false,
+        disableAgenda = false,
+        highlightTitle,
+        agendaTitle,
+        highlightRemoveTitle,
+        agendaRemoveTitle,
+        apiUrl,
+        startDate = now,
+        endDate = now,
+        baseUrl,
+        lang = getLocaleFromNavigator()?.slice(0, 2) ?? defaultLocale,
+        eventsPerChunk = 20,
+        stylesheet,
+    }: Props = $props();
+
+    const isTrue = (value: boolean | string | null | undefined): boolean => value === true || value === "true";
+
+    const initialLang = untrack(() => lang);
 
     init({
         fallbackLocale: defaultLocale,
-        initialLocale: lang,
+        initialLocale: initialLang,
     });
 
-    let divStyleElement: HTMLElement | undefined;
+    let rootElement: HTMLElement | undefined = $state();
 
-    let key: Locales;
+    let key: Locales = $state(initialLang as Locales);
 
-    let events: Event[] = [];// all events in db
+    let events: Event[] = $state.raw([]);// all events in db
     let highlightsToDisplay: Event[] = []; // available highlighted events for the current locale
-    let highlightsDisplayed: Event[] = []; // highlights to display
+    let highlightsDisplayed: Event[] = $state.raw([]); // highlights to display
 
-    let hasMoreEvents: boolean = true;
     let disableHighlightsLoadMore = false;
-    let loadingFirstEvents = true;
-    let loadingAllEvents = true;
+    let loadingFirstEvents = $state(true);
+    let loadingAllEvents = $state(true);
 
     function handleMoreHighlights() {
         if (disableHighlightsLoadMore) {
             warn('Handle more highlights skipped!');
-            // disableHighlightsLoadMore = false;
             return;
         }
 
@@ -108,19 +146,21 @@
             handleMoreHighlights()
         }
 
-        hasMoreEvents = true;
         log("App: Events loaded!")
     };
 
-    const dispatchCustomEvent: ({name, detail}:{name: string, detail: any}) => void = ({name, detail}) => {
-        //plug custom events to the root
-        document.getElementById('lt-agenda')?.dispatchEvent(new CustomEvent(name, {
+    const dispatchCustomEvent = (name: string, detail: any): void => {
+        const target = getShadowRoot(rootElement)?.host ?? document.getElementById('lt-agenda');
+        target?.dispatchEvent(new CustomEvent(name, {
             detail: detail,
             composed: true,
         }));
     }
 
-    onMount(async () => {
+    onMount(() => {
+        registerFonts();
+        const shadowRoot = getShadowRoot(rootElement);
+        if (shadowRoot) injectShadowStyles(shadowRoot, appStyles);
         log("App: Mounting App", {events});
         key = lang as Locales;
         locale.set(lang);
@@ -129,7 +169,6 @@
         log("App: App mounted", {events});
     });
 
-
     locale.subscribe(async () => {
         events = [];
         key = ($locale ?? lang) as Locales;
@@ -137,11 +176,22 @@
         await loadEvents();
     });
 
-    $: blankableLinks.set(blankLinks);
-    $: applyStyling(divStyleElement);
+    $effect(() => blankableLinks.set(isTrue(blankLinks)));
+
+    $effect(() => {
+        const shadowRoot = getShadowRoot(rootElement);
+        if (!shadowRoot || !stylesheet || $isLoading) return;
+
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = stylesheet;
+        shadowRoot.append(link);
+
+        return () => link.remove();
+    });
 </script>
 
-<main bind:this={divStyleElement}>
+<main bind:this={rootElement}>
     {#if $isLoading}
         <Loader/>
     {:else}
@@ -149,34 +199,33 @@
             <Highlights
                     {baseUrl}
                     selectedDates={{start: startDate, end: undefined}}
-                    hideTitle={highlightRemoveTitle}
+                    hideTitle={isTrue(highlightRemoveTitle)}
                     title={highlightTitle}
-                    bind:events={highlightsDisplayed}
-                    bind:loading={loadingFirstEvents}
-                    bind:loadingAllContent={loadingAllEvents}
-                    on:loadMore={handleMoreHighlights}
+                    events={highlightsDisplayed}
+                    loading={loadingFirstEvents}
+                    loadingAllContent={loadingAllEvents}
+                    onloadmore={handleMoreHighlights}
             />
         {/if}
         {#if !disableAgenda}
             <div class="md:px-7">
                 <Agenda
                         {baseUrl}
-                        hideTitle={agendaRemoveTitle}
+                        hideTitle={isTrue(agendaRemoveTitle)}
                         title={agendaTitle}
                         {eventsPerChunk}
-                        bind:locale={key}
-                        bind:events={events}
-                        bind:disableButtons={loadingAllEvents}
-                        bind:hasMoreEvents={hasMoreEvents}
-                        bind:startDate={startDate}
-                        bind:endDate={endDate}
-                        bind:loading={loadingFirstEvents}
-                        bind:loadingAllContent={loadingAllEvents}
-                        on:change={(e) => dispatchCustomEvent({name: 'change', detail: e.detail})}
-                        on:search={(e) => dispatchCustomEvent({name: 'search', detail: e.detail})}
-                        on:updateDates={(e) => dispatchCustomEvent({name: 'modifiedDates', detail: e.detail})}
-                        on:loadMore={(e) => dispatchCustomEvent({name: 'loadMore', detail: e.detail})}
-                        on:selectedTags={(e) => dispatchCustomEvent({name: 'selectedTags', detail: e.detail})}
+                        locale={key}
+                        {events}
+                        disableButtons={loadingAllEvents}
+                        bind:startDate
+                        bind:endDate
+                        loading={loadingFirstEvents}
+                        loadingAllContent={loadingAllEvents}
+                        onchange={(detail) => dispatchCustomEvent('change', detail)}
+                        onsearch={(detail) => dispatchCustomEvent('search', detail)}
+                        onupdatedates={(detail) => dispatchCustomEvent('modifiedDates', detail)}
+                        onloadmore={(detail) => dispatchCustomEvent('loadMore', detail)}
+                        onselectedtags={(detail) => dispatchCustomEvent('selectedTags', detail)}
                 />
             </div>
         {/if}

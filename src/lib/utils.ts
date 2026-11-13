@@ -1,20 +1,32 @@
-import {Environment, type Locales, type NullableString} from "$lib/types";
+import {Environment, type Locales} from "$lib/types";
+import euclidFlexFonts from "../assets/fonts/euclid-flex.css?inline";
 
 export const defaultLocale: Locales = import.meta.env.VITE_LOCALE ?? 'en';
 
-/**
- * trick to bypass problem with tailwind and shadow dom
- */
-export const applyStyling = (element: HTMLElement | undefined): void => {
-    if (!element) return;
-    const template = document.getElementById("swc-lt-agenda-styling");
-
-    // @ts-ignore
-    if (!template?.content) return;
-    // @ts-ignore
-    const node = document.importNode(template.content, true);
-    element?.parentNode?.appendChild(node);
+export const getShadowRoot = (element: HTMLElement | undefined): ShadowRoot | null => {
+    const root = element?.getRootNode();
+    return root instanceof ShadowRoot ? root : null;
 }
+
+// Prepended so that any stylesheet added after it can override it.
+export const injectShadowStyles = (root: ShadowRoot, css: string): void => {
+    const style = document.createElement("style");
+    style.textContent = css;
+    root.prepend(style);
+}
+
+const FONTS_STYLE_ID = "swc-lt-agenda-fonts";
+
+// @font-face is ignored inside shadow roots, so fonts are registered on the document.
+export const registerFonts = (): void => {
+    if (document.getElementById(FONTS_STYLE_ID)) return;
+
+    const style = document.createElement("style");
+    style.id = FONTS_STYLE_ID;
+    style.textContent = euclidFlexFonts;
+    document.head.appendChild(style);
+}
+
 /**
  * @param {number} [size = 8] size max 36
  */
@@ -34,7 +46,6 @@ export const error = (information: string, content: any = undefined): void | nul
  */
 export const randomNumber = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1) + min);
 
-export const blankable = (href: NullableString): NullableString => (href && href.includes('http')) ? "_blank" : null;
 
 export const debounce = (callback: Function, wait: number) => {
     let timeoutId: NodeJS.Timeout | number | undefined;

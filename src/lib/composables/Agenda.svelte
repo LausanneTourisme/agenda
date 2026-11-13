@@ -3,111 +3,139 @@
   import Heading from "$lib/components/Heading.svelte";
   import Loader from "$lib/components/Loader.svelte";
   import TagsSwiper from "$lib/components/TagsSwiper.svelte";
+  import Drawer from "$lib/components/Drawer.svelte";
+  import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
   import { dateFormat, getWeekend, now } from "$lib/date-utils";
   import type { Event, Locales, Query, Tag } from "$lib/types";
-  import { Calendar, ChevronDown, Search } from "lucide-svelte";
+  import { Calendar, ChevronDown, Search } from "@lucide/svelte";
   import moment from "moment";
-  import { afterUpdate, createEventDispatcher, onMount } from "svelte";
-  import Drawer from "svelte-drawer-component";
+  import { untrack } from "svelte";
   import { _ } from "svelte-i18n";
   import { Cross1 } from "svelte-radix";
-
-  import EventCardPlaceholder from "$lib/components/EventCardPlaceholder.svelte";
   import { debounce, error, log } from "$lib/utils";
-  /*****************************************************************************
-     /* START CALENDAR SECTION
-     /*****************************************************************************/
-  import {
-    getUniqueTagsFromEvents,
-    sortEventsToDisplay
-  } from "$lib/event-utils";
-  import AirDatepicker from "air-datepicker";
+  import { getUniqueTagsFromEvents, sortEventsToDisplay } from "$lib/event-utils";
+  import AirDatepicker, { type AirDatepickerLocale } from "air-datepicker";
   import localeDe from "air-datepicker/locale/de";
   import localeEn from "air-datepicker/locale/en";
   import localeFr from "air-datepicker/locale/fr";
 
-  /*****************************************************************************
-     /* END CALENDAR SECTION
-     /*****************************************************************************/
+  type Dates = [string, string | undefined | null];
+  type ChangeDetail = { locale: string; query: Query; dates: Dates; tags: string[] };
 
-  const dispatch = createEventDispatcher<{
-    change: {
-      locale: string;
-      query: Query;
-      dates: [string, string | undefined | null];
-      tags: string[];
-    };
-    loadMore: {
-      locale: string;
-      query: Query;
-      dates: [string, string | undefined | null];
-      tags: string[];
-    };
-    updateDates: { query: Query; dates: [string, string | undefined | null] };
-    search: { locale: string; query: Query; events: Event[] };
-    selectedTags: { tags: string[] };
-  }>();
+  interface Props {
+    locale: Locales;
+    disableButtons?: boolean;
+    startDate: string;
+    endDate: string | undefined | null;
+    baseUrl: string;
+    title: string | null | undefined;
+    hideTitle?: boolean | null | undefined;
+    events: Event[];
+    eventsPerChunk: number;
+    loading?: boolean;
+    loadingAllContent?: boolean;
+    onchange?: (detail: ChangeDetail) => void;
+    onloadmore?: (detail: ChangeDetail) => void;
+    onupdatedates?: (detail: { query: Query; dates: Dates }) => void;
+    onsearch?: (detail: { locale: string; query: Query; events: Event[] }) => void;
+    onselectedtags?: (detail: { tags: string[] }) => void;
+  }
 
-  export let locale: Locales;
-
-  export let disableButtons: boolean = true;
-  export let startDate: string;
-  export let endDate: string | undefined | null;
-
-  export let baseUrl: string;
-  export let hasMoreEvents: boolean = true;
-  export let title: string | null | undefined;
-  export let hideTitle: boolean | null | undefined = false;
-  export let events: Event[];
-  export let eventsPerChunk: number;
-
-  export let loading: boolean = false;
-  export let loadingAllContent: boolean = true;
+  let {
+    locale,
+    disableButtons = true,
+    startDate = $bindable(),
+    endDate = $bindable(),
+    baseUrl,
+    title,
+    hideTitle = false,
+    events,
+    eventsPerChunk,
+    loading = false,
+    loadingAllContent = true,
+    onchange,
+    onloadmore,
+    onupdatedates,
+    onsearch,
+    onselectedtags,
+  }: Props = $props();
 
   const thisWeekend = getWeekend(moment());
-  let todaySelected: boolean;
-  let weekendSelected: boolean;
+  const todaySelected = $derived(now === startDate && now === endDate);
+  const weekendSelected = $derived(
+    thisWeekend.saturday.format(dateFormat) === startDate &&
+      thisWeekend.sunday.format(dateFormat) === endDate
+  );
 
-  let isLoading: boolean = true;
-  let eventsToDisplay: Event[] = []; // All sorted events (by date, tags, name)
-  let eventsDisplayed: Event[] = []; // events that user is currently seeing
+  let isLoading: boolean = $state(true);
+  let eventsToDisplay: Event[] = $state.raw([]); // All sorted events (by date, tags, name)
+  let eventsDisplayed: Event[] = $state.raw([]); // events that user is currently seeing
   let currentChunk: number = 1;
+  const hasMoreEvents = $derived(eventsDisplayed.length < eventsToDisplay.length);
 
-  let searchValue: string | undefined | null;
+  let searchValue: string | undefined | null = $state();
   let oldSearchValue: string | undefined | null;
 
-  let selectedTags: Tag[] = [];
-  let selectedTagsName: string[] = [];
+  let selectedTags: Tag[] = $state.raw([]);
+  let selectedTagsName: string[] = $state.raw([]);
 
-  let allTags: Tag[] = [];
-  let openTagsDrawer = false;
+  const allTags: Tag[] = $derived(
+    getUniqueTagsFromEvents(
+      events,
+      { start: startDate, end: endDate ?? undefined },
+      searchValue,
+      locale
+    )
+  );
+  let openTagsDrawer = $state(false);
+
+  const resetSelectedTags = () => {
+    selectedTags = [];
+    selectedTagsName = [];
+  };
+
+  const emitChange = (query: Query = searchValue?.toLowerCase()) => {
+    onchange?.({ locale, query, tags: selectedTagsName, dates: [startDate, endDate] });
+  };
 
   /*****************************************************************************
      /* START CALENDAR SECTION
      /*****************************************************************************/
 
   const smallScreen: number = 640;
-  let isMobile: boolean = window.innerWidth < smallScreen;
+  let isMobile: boolean = $state(document.body.offsetWidth < smallScreen);
 
-  const calendarLocales = (locale: Locales) => {
+  // air-datepicker locales are CommonJS: Vite 8 interop may wrap them in a `default` key.
+  const unwrapLocale = (l: AirDatepickerLocale): AirDatepickerLocale =>
+    (l as AirDatepickerLocale & { default?: AirDatepickerLocale }).default ?? l;
+
+  const calendarLocales = (locale: Locales): AirDatepickerLocale => {
     switch (locale) {
       case "fr":
-        return localeFr;
+        return unwrapLocale(localeFr);
       case "de":
-        return localeDe;
+        return unwrapLocale(localeDe);
       case "en":
       default:
-        return localeEn;
+        return unwrapLocale(localeEn);
     }
   };
 
-  let calendar:
-    | AirDatepicker
-    | AirDatepicker<HTMLInputElement>
-    | AirDatepicker<HTMLElement>
-    | null = null;
-  let dpDates: string = "";
+  let calendar: AirDatepicker<HTMLInputElement> | null = null;
+  let dpDates: string = $state("");
   let dpField: HTMLInputElement;
+  let agendaElement: HTMLElement;
+
+  const selectCalendarDates = (dp: AirDatepicker<HTMLInputElement>, start: string, end: string) => {
+    startDate = start;
+    endDate = end;
+    const dates = [new Date(startDate), new Date(endDate)];
+    resetSelectedTags();
+
+    dp.selectDate(dates);
+    dp.setViewDate(dates[0]);
+    onupdatedates?.({ query: searchValue?.toLowerCase(), dates: [startDate, endDate] });
+  };
 
   const buildCalendar = () => {
     try {
@@ -116,8 +144,14 @@
       error("Trying to reset calendar too early");
     }
 
-    calendar = new AirDatepicker("#dp", {
+    // air-datepicker appends its mobile overlay to its global container, which it skips building when given a custom container.
+    if (isMobile && !document.getElementById(AirDatepicker.defaultGlobalContainerId)) {
+      AirDatepicker.buildGlobalContainer(AirDatepicker.defaultGlobalContainerId);
+    }
+
+    calendar = new AirDatepicker<HTMLInputElement>(dpField, {
       locale: calendarLocales(locale),
+      container: agendaElement,
       range: true,
       selectedDates: startDate && endDate ? [startDate, endDate] : undefined,
       multipleDatesSeparator: `,`,
@@ -125,20 +159,10 @@
         if (date instanceof Array && date.length === 2) {
           startDate = moment(date[0]).format(dateFormat);
           endDate = moment(date[1]).format(dateFormat);
-          selectedTags = [];
-          selectedTagsName = [];
+          resetSelectedTags();
 
-          dispatch("updateDates", {
-            query: searchValue?.toLowerCase(),
-            dates: [startDate, endDate]
-          });
-
-          dispatch("change", {
-            locale,
-            query: searchValue?.toLowerCase(),
-            tags: selectedTagsName,
-            dates: [startDate, endDate]
-          });
+          onupdatedates?.({ query: searchValue?.toLowerCase(), dates: [startDate, endDate] });
+          emitChange();
         }
       },
       toggleSelected: ({ datepicker }) => {
@@ -149,50 +173,20 @@
           content: $_("datepicker.today"),
           className: "custom-button-classname",
           onClick: (dp) => {
-            startDate = now;
-            endDate = now;
-            const dates = [new Date(startDate), new Date(endDate)];
-            selectedTags = [];
-            selectedTagsName = [];
-
-            dp.selectDate(dates);
-            dp.setViewDate(dates[0]);
-            dispatch("updateDates", {
-              query: searchValue?.toLowerCase(),
-              dates: [startDate, endDate]
-            });
-
-            dispatch("change", {
-              locale,
-              query: searchValue,
-              tags: selectedTagsName,
-              dates: [startDate, endDate]
-            });
+            selectCalendarDates(dp, now, now);
+            emitChange(searchValue);
           }
         },
         {
           content: $_("datepicker.weekend"),
           className: "custom-button-classname",
           onClick: (dp) => {
-            startDate = thisWeekend.saturday.format(dateFormat);
-            endDate = thisWeekend.sunday.format(dateFormat);
-            const dates = [new Date(startDate), new Date(endDate)];
-            selectedTags = [];
-            selectedTagsName = [];
-
-            dp.selectDate(dates);
-            dp.setViewDate(dates[0]);
-            dispatch("updateDates", {
-              query: searchValue?.toLowerCase(),
-              dates: [startDate, endDate]
-            });
-
-            dispatch("change", {
-              locale,
-              query: searchValue?.toLowerCase(),
-              tags: selectedTagsName,
-              dates: [startDate, endDate]
-            });
+            selectCalendarDates(
+              dp,
+              thisWeekend.saturday.format(dateFormat),
+              thisWeekend.sunday.format(dateFormat)
+            );
+            emitChange();
           }
         },
         {
@@ -201,36 +195,40 @@
           onClick: (dp) => {
             startDate = now;
             endDate = null;
-            selectedTags = [];
-            selectedTagsName = [];
+            resetSelectedTags();
 
             dp.clear();
             dp.hide();
             dp.setViewDate(new Date());
 
-            dispatch("updateDates", {
-              query: searchValue?.toLowerCase(),
-              dates: [startDate, endDate]
-            });
-
-            dispatch("change", {
-              locale,
-              query: searchValue?.toLowerCase(),
-              tags: selectedTagsName,
-              dates: [startDate, endDate]
-            });
+            onupdatedates?.({ query: searchValue?.toLowerCase(), dates: [startDate, endDate] });
+            emitChange();
           }
         }
       ],
       autoClose: true,
-      isMobile: document.body.offsetWidth < smallScreen
-      // startDate,
+      isMobile
     });
+
+    const overlay = document.querySelector(".air-datepicker-overlay");
+    if (overlay) agendaElement.appendChild(overlay);
   };
+
+  $effect(() => {
+    buildCalendar();
+    log("Agenda: calendar built", { events: untrack(() => events) });
+  });
 
   /*****************************************************************************
      /* END CALENDAR SECTION
      /*****************************************************************************/
+
+  const showFirstChunk = (sorted: Event[]) => {
+    eventsToDisplay = sorted;
+    eventsDisplayed = sorted.slice(0, eventsPerChunk);
+    currentChunk = 1;
+  };
+
   function handleLoadMore() {
     const start: number = Number(currentChunk) * Number(eventsPerChunk);
     const end = Number(start) + Number(eventsPerChunk);
@@ -239,108 +237,77 @@
     eventsDisplayed = [...eventsDisplayed, ...tempEvents];
     currentChunk++;
 
-    dispatch("loadMore", {
+    onloadmore?.({
       locale: locale as string,
       query: searchValue?.toLowerCase(),
       tags: selectedTagsName,
       dates: [startDate, endDate]
     });
 
-    log("Handle more events!", {
-      new: tempEvents,
-      eventsDisplayed: eventsDisplayed
-    });
+    log("Handle more events!", { new: tempEvents, eventsDisplayed });
   }
 
   const handleTagClick = (tag: Tag | null | undefined = null) => {
     if (!tag) {
-      //reset Tags
       selectedTags = [];
     } else if (selectedTags.includes(tag)) {
-      // remove Tag
       selectedTags = selectedTags.filter((t) => t != tag);
     } else {
-      // add Tag
       selectedTags = [...selectedTags, tag];
     }
 
     selectedTagsName = selectedTags.map((t) => t.name);
-    dispatch("selectedTags", { tags: selectedTagsName });
+    onselectedtags?.({ tags: selectedTagsName });
 
     debounce(() => {
-      eventsToDisplay = sortEventsToDisplay(locale, events, startDate, {
-        endDate: endDate ?? undefined,
-        query: searchValue,
-        selectedTagsName
-      });
-      eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
-      currentChunk = 1;
-
-      dispatch("change", {
-        locale,
-        query: searchValue?.toLowerCase(),
-        tags: selectedTagsName,
-        dates: [startDate, endDate]
-      });
+      showFirstChunk(
+        sortEventsToDisplay(locale, events, startDate, {
+          endDate: endDate ?? undefined,
+          query: searchValue,
+          selectedTagsName
+        })
+      );
+      emitChange();
     }, 400)(); //reduce lag when user select multiple tags;
   };
 
   const handleInput = () => {
-    isLoading = true; //will be false on props 'events' update
+    isLoading = true;
     debounce(() => {
       if (searchValue !== oldSearchValue) {
         oldSearchValue = searchValue;
 
-        selectedTags = [];
-        selectedTagsName = [];
-        eventsToDisplay = sortEventsToDisplay(locale, events, startDate, {
-          endDate: endDate ?? undefined,
-          query: searchValue,
-          selectedTagsName: []
-        });
-        eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
+        resetSelectedTags();
+        showFirstChunk(
+          sortEventsToDisplay(locale, events, startDate, {
+            endDate: endDate ?? undefined,
+            query: searchValue,
+            selectedTagsName: []
+          })
+        );
 
-        dispatch("search", {
-          locale: locale,
-          query: searchValue?.toLowerCase(),
-          events: eventsToDisplay
-        });
-
-        dispatch("change", {
-          locale,
-          query: searchValue,
-          tags: [],
-          dates: [startDate, endDate]
-        });
+        onsearch?.({ locale, query: searchValue?.toLowerCase(), events: eventsToDisplay });
+        onchange?.({ locale, query: searchValue, tags: [], dates: [startDate, endDate] });
       }
 
       isLoading = false;
     }, 600)();
   };
 
-  function resetDisplay() {
-    isLoading = true;
-    eventsToDisplay = sortEventsToDisplay(locale, events, startDate, {
+  $effect(() => {
+    const sorted = sortEventsToDisplay(locale, events, startDate, {
       endDate: endDate ?? undefined,
       query: searchValue,
-      selectedTagsName: selectedTagsName
+      selectedTagsName: untrack(() => selectedTagsName)
     });
-    eventsDisplayed = [...eventsToDisplay].slice(0, eventsPerChunk);
-    currentChunk = 1;
-    isLoading = false;
-  }
 
-  onMount(() => {
-    log("Agenda: mounting", { events });
-    buildCalendar();
-    log("Agenda: mounted", { events });
+    untrack(() => {
+      showFirstChunk(sorted);
+      isLoading = false;
+    });
   });
 
-  afterUpdate(() => {
-    //prevent destroy and miss build after window resize
-    buildCalendar();
-    hasMoreEvents = eventsDisplayed.length < eventsToDisplay.length;
-
+  $effect(() => {
     log("Agenda: updated", {
       events,
       eventsToDisplay,
@@ -349,26 +316,19 @@
     });
   });
 
-  $: {
-    allTags = getUniqueTagsFromEvents(
-      events,
-      {
-        start: startDate,
-        end: endDate ?? undefined
-      },
-      searchValue,
-      locale
-    );
-    resetDisplay();
-  }
-  $: weekendSelected =
-    thisWeekend.saturday.format(dateFormat) === startDate &&
-    thisWeekend.sunday.format(dateFormat) === endDate;
-  $: todaySelected = now === startDate && now === endDate;
+  const selectQuickDates = (start: string, end: string | null) => {
+    startDate = start;
+    endDate = end;
+
+    calendar?.clear();
+    resetSelectedTags();
+    log("updateDates", { query: searchValue?.toLowerCase(), dates: [startDate, endDate] });
+    emitChange();
+  };
 </script>
 
 <svelte:window
-  on:resize={() => {
+  onresize={() => {
     isMobile = document.body.offsetWidth < smallScreen;
     try {
       if (calendar?.visible) calendar?.hide();
@@ -378,9 +338,9 @@
   }}
 />
 
-<div class="agenda p-5 md:p-7 md:px-12">
+<div class="agenda relative p-5 md:p-7 md:px-12" part="agenda" bind:this={agendaElement}>
   {#if !hideTitle}
-    <Heading tag="h2" class="mb-5 !text-2xl font-semibold">
+    <Heading tag="h2" class="mb-5 text-2xl! font-semibold" part="agenda-title">
       {title ?? $_("agenda.title")}
     </Heading>
   {/if}
@@ -393,32 +353,12 @@
                     {disableButtons
           ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent'
           : ''}"
+        part="filter-button{todaySelected ? ' filter-button-active' : ''}"
         disabled={disableButtons}
-        on:click={(_) => {
+        onclick={() => {
           if (disableButtons) return;
 
-          if (!todaySelected) {
-            startDate = now;
-            endDate = todaySelected ? null : now;
-          } else {
-            startDate = now;
-            endDate = null;
-          }
-
-          calendar?.clear();
-          selectedTags = [];
-          selectedTagsName = [];
-          log("updateDates", {
-            query: searchValue?.toLowerCase(),
-            dates: [startDate, endDate]
-          });
-
-          dispatch("change", {
-              locale,
-              query: searchValue?.toLowerCase(),
-              tags: selectedTagsName,
-              dates: [startDate, endDate]
-            });
+          selectQuickDates(now, todaySelected ? null : now);
         }}
       >
         {$_("agenda.search_section.today")}
@@ -431,33 +371,19 @@
                     {disableButtons
           ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent'
           : ''}"
+        part="filter-button{weekendSelected ? ' filter-button-active' : ''}"
         disabled={disableButtons}
-        on:click={(_) => {
+        onclick={() => {
           if (disableButtons) return;
 
           if (weekendSelected) {
-            startDate = now;
-            endDate = null;
+            selectQuickDates(now, null);
           } else {
-            startDate = thisWeekend.saturday.format(dateFormat);
-            endDate = thisWeekend.sunday.format(dateFormat);
+            selectQuickDates(
+              thisWeekend.saturday.format(dateFormat),
+              thisWeekend.sunday.format(dateFormat)
+            );
           }
-
-          todaySelected = false;
-          calendar?.clear();
-          selectedTags = [];
-          selectedTagsName = [];
-          log("updateDates", {
-            query: searchValue?.toLowerCase(),
-            dates: [startDate, endDate]
-          });
-
-          dispatch("change", {
-              locale,
-              query: searchValue?.toLowerCase(),
-              tags: selectedTagsName,
-              dates: [startDate, endDate]
-            });
         }}
       >
         {$_("agenda.search_section.this_weekend")}
@@ -472,17 +398,17 @@
                 {disableButtons
           ? 'cursor-progress text-gray-500 border-gray-500 hover:border-gray-500 hover:bg-transparent'
           : ''}"
+        part="filter-button{!todaySelected && !weekendSelected && startDate && endDate ? ' filter-button-active' : ''}"
       >
         <input
           type="text"
-          id="dp"
-          class="absolute bottom-0 left-0 w-0 outline-0 ring-transparent outline-none"
+            class="absolute bottom-0 left-0 w-0 outline-0 ring-transparent outline-hidden"
           bind:value={dpDates}
           bind:this={dpField}
         />
         <button
           disabled={disableButtons}
-          on:click={(_) => {
+          onclick={() => {
             if (disableButtons) return;
 
             dpField?.focus();
@@ -506,15 +432,16 @@
         class="by-name hidden sm:flex sm:items-center border-b border-honey-500"
       >
         <input
-          class="h-full w-full outline-0 ring-transparent outline-none {disableButtons
+          class="h-full w-full outline-0 ring-transparent outline-hidden {disableButtons
             ? 'cursor-progress'
             : ''}"
           name="search-event"
+          part="search"
           disabled={disableButtons}
           placeholder={$_("agenda.search_section.by_name_placeholder")}
           type="search"
           bind:value={searchValue}
-          on:keyup={handleInput}
+          onkeyup={handleInput}
         />
         <Search class="text-honey-500" />
       </div>
@@ -523,7 +450,8 @@
     <!--    TAGS    -->
     <div class="by-tags sm:mt-4">
       <button
-        on:click={() => (openTagsDrawer = true)}
+        onclick={() => (openTagsDrawer = true)}
+        part="filter-button"
         class="sm:hidden block w-full p-3 mb-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent"
       >
         {$_("agenda.by_tags")}
@@ -531,7 +459,7 @@
       </button>
 
       {#if loading}
-        <div class="!hidden sm:flex text-nowrap pb-2 h-[45px] w-full">
+        <div class="hidden! sm:flex text-nowrap pb-2 h-[45px] w-full">
           {#each { length: 20 } as _}
             <div
               class="mr-2 sm:text-md px-3 sm:py-1 sm:px-2 rounded-full w-[200px] bg-gray-300 pointer-events-none"
@@ -544,22 +472,22 @@
           tags={allTags}
           {selectedTags}
           displayBtnAll={true}
-          on:tagSelect={(event) => handleTagClick(event.detail.tag)}
+          ontagselect={handleTagClick}
           tagClass="py-2 mr-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 ring-transparent px-5"
         />
       {/if}
 
       <Drawer
-        on:clickAway={() => (openTagsDrawer = false)}
+        onclickaway={() => (openTagsDrawer = false)}
         open={openTagsDrawer}
         placement="bottom"
         size="400px"
       >
         <button
           class="flex w-full px-2 text-left"
-          on:click={() => (openTagsDrawer = false)}
+          onclick={() => (openTagsDrawer = false)}
         >
-          <Heading class="flex-grow mt-2" tag="h3">
+          <Heading class="grow mt-2" tag="h3" part="drawer-title">
             {$_("agenda.tags.title")}
           </Heading>
 
@@ -575,7 +503,8 @@
             0
               ? 'border-honey-500 bg-honey-500'
               : ''} px-5"
-            on:click={() => handleTagClick()}
+            onclick={() => handleTagClick()}
+            part="tag{selectedTags.length === 0 ? ' tag-selected' : ''}"
             title={$_("agenda.tags.display_all")}
             >{$_("agenda.tags.display_all")}</button
           >
@@ -586,7 +515,8 @@
               : ""}
 
             <button
-              on:click={() => handleTagClick(tag)}
+              onclick={() => handleTagClick(tag)}
+              part="tag{elementSelected ? ' tag-selected' : ''}"
               class="inline-flex justify-center items-center h-min py-2 m-2 text-black border border-black rounded-full hover:border-honey-500 hover:bg-honey-500 gap-6 ring-2 ring-transparent px-5 {elementSelected} "
               title={tag.public_name[locale]}>{tag.public_name[locale]}</button
             >
@@ -595,7 +525,8 @@
         <div class="w-full p-2 absolute bottom-0 right-0">
           <button
             class="border border-honey-500 bg-honey-500 py-2 px-4 float-right"
-            on:click={() => (openTagsDrawer = false)}
+            part="drawer-button"
+            onclick={() => (openTagsDrawer = false)}
             >{$_(
               `agenda.tags_drawer.${eventsDisplayed.length === 1 ? "singular" : "plural"}`,
               { values: { quantity: eventsDisplayed.length } }
@@ -608,12 +539,13 @@
     <!--    SEARCH    -->
     <div class="by-name w-full sm:hidden">
       <input
-        class="bg-stone-100 w-full outline-none p-4 font-light border-0 ring-0"
+        class="bg-stone-100 w-full outline-hidden p-4 font-light border-0 ring-0"
         name="search-event"
+        part="search"
         placeholder={$_("agenda.search_section.by_name_placeholder")}
         type="search"
         bind:value={searchValue}
-        on:keyup={() => handleInput()}
+        onkeyup={handleInput}
       />
     </div>
   </div>
@@ -622,6 +554,7 @@
   <div class="flex">
     <p
       class="text-xl sm:text-2xl font-semibold leading-tight tracking-tighter my-5"
+      part="results-count"
     >
       {$_(`agenda.event${eventsToDisplay.length === 1 ? "" : "s"}_found`, {
         values: { quantity: eventsToDisplay.length }
@@ -637,7 +570,7 @@
         <EventCardPlaceholder />
       {/each}
     {:else}
-      {#each eventsDisplayed as event, index ((event.id, event.seo.slug.fr))}
+      {#each eventsDisplayed as event (event.seo.slug.fr)}
         <EventCard
           {event}
           {baseUrl}
@@ -656,7 +589,8 @@
     {/if}
     {#if !isLoading && hasMoreEvents && !loading && !loadingAllContent}
       <button
-        on:click={handleLoadMore}
+        onclick={handleLoadMore}
+        part="load-more"
         class="flex justify-center w-full xs:w-max px-4 py-3 m-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent"
       >
         <ChevronDown />
@@ -670,8 +604,9 @@
       </p>
       <button
         class="block w-max px-4 py-3 m-3 border border-black hover:border-honey-500 hover:bg-honey-500 ring-transparent"
-        on:click={() => {
-          document.querySelector(".agenda")?.scrollIntoView({
+        part="back-to-top"
+        onclick={() => {
+          agendaElement.scrollIntoView({
             behavior: "smooth",
             block: "start"
           });
@@ -683,7 +618,7 @@
   </div>
 </div>
 
-<style lang="scss">
+<style>
   .drawer-categories::after {
     content: "";
     position: sticky;
