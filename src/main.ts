@@ -1,12 +1,13 @@
+import {mount} from "svelte";
 import {defaultLocale} from "$lib/utils";
-import './app.scss'
+import './app.css'
 import App from './App.svelte'
 
 const ltAgenda = document.getElementById('lt-agenda');
-let app: App | null = null;
+let app: ReturnType<typeof mount> | null = null;
 
 if (ltAgenda) {
-    app = new App({
+    app = mount(App, {
         target: ltAgenda,
         props: {
             lang: ltAgenda.dataset.lang ?? ltAgenda.dataset.locale ?? defaultLocale,
@@ -29,5 +30,4 @@ if (ltAgenda) {
     else console.warn('currently using web component')
 }
 
-export * from './App.svelte'
 export default app

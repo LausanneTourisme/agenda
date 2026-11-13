@@ -1,10 +1,12 @@
 <script lang="ts">
     import {fade} from "svelte/transition";
-    import Heading from "$lib/components//Heading.svelte";
+    import Heading from "$lib/components/Heading.svelte";
+
+    let {class: className = ""}: { class?: string } = $props();
 </script>
 
 <div data-id="placeholder"
-     class="lt-agenda-highlight-card animate-pulse h-full rounded-none shadow-none p-4 {$$props.class ?? ''}"
+     class="lt-agenda-highlight-card animate-pulse h-full rounded-none shadow-none p-4 {className}"
      transition:fade
 >
     <div class="h-full flex flex-col">

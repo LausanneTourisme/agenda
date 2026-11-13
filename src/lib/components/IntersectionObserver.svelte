@@ -1,54 +1,39 @@
 <script lang="ts">
-    import {afterUpdate, createEventDispatcher, onMount, tick} from 'svelte';
+    import type {Snippet} from "svelte";
 
-    const dispatch = createEventDispatcher<{
-        intersecting: { event: any };
-    }>();
-    export let once = false;
+    interface Props {
+        once?: boolean;
+        enable?: boolean;
+        intersecting?: boolean;
+        onintersecting?: (detail: { event: HTMLElement }) => void;
+        children?: Snippet<[boolean]>;
+    }
 
-    /**
-     * Enable or disable event trigger
-     */
-    export let enable: boolean = false;
+    let {once = false, enable = false, intersecting = $bindable(false), onintersecting, children}: Props = $props();
 
     let element: HTMLElement;
+    let triggered: boolean = false;
 
-    /**
-     * Whether the element is intersecting.
-     */
-    export let intersecting = false;
-    let triggered: boolean = false
-    let observer: IntersectionObserver;
+    $effect(() => {
+        if (!enable || (once && triggered)) return;
 
-    onMount(() => {
-        observer = new IntersectionObserver((entries, _) => {
+        const observer = new IntersectionObserver((entries) => {
             intersecting = entries[0].isIntersecting;
+            if (!intersecting) return;
 
-            if (!triggered && once && intersecting) {
-                dispatch('intersecting', {event: element});
+            onintersecting?.({event: element});
+
+            if (once) {
+                triggered = true;
                 observer.disconnect();
-                triggered = true
-            } else if (intersecting && !once) {
-                dispatch('intersecting', {event: element});
             }
         });
+        observer.observe(element);
 
-        return () => {
-            observer.disconnect();
-        };
-    });
-
-    afterUpdate(async () => {
-        if (!enable) return;
-
-        await tick();
-
-        if (element) {
-            observer?.observe(element);
-        }
+        return () => observer.disconnect();
     });
 </script>
 
 <div bind:this={element}>
-    <slot {intersecting}/>
+    {@render children?.(intersecting)}
 </div>

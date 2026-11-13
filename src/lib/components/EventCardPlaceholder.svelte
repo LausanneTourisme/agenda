@@ -1,8 +1,9 @@
 <script lang="ts">
+    let {class: className = ""}: { class?: string } = $props();
 </script>
 
 <div data-id="lt-agenda-placeholder"
-     class="lt-agenda-event-card animate-pulse flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {$$props.class ?? ''}">
+     class="lt-agenda-event-card animate-pulse flex flex-row bg-slate-100 w-full rounded-sm overflow-hidden {className}">
     <div class="lt-agenda-image-wrapper aspect-square h-40 sm:h-48">
         <div class="aspect-square sm:w-full bg-gray-300"></div>
     </div>
@@ -15,9 +16,9 @@
         </div>
 
 
-        <div class="px-2 pb-2 sm:px-4 sm:pb-4 flex-grow flex flex-col">
+        <div class="px-2 pb-2 sm:px-4 sm:pb-4 grow flex flex-col">
             <!--TITLE-->
-            <div class="flex-grow flex items-center">
+            <div class="grow flex items-center">
                 <p class="title my-1 line-clamp-2 max-h-12 sm:max-h-14 text-md sm:text-xl leading-snug tracking-tight font-semibold align-middle h-2/3 bg-gray-300 w-full">
                 </p>
             </div>

@@ -1,21 +1,22 @@
 <script lang="ts">
-    import type {NullableString} from "$lib/types";
-    import {blankable} from "$lib/utils";
+    import type {Snippet} from "svelte";
     import {fade} from "svelte/transition";
     import {onMount} from "svelte";
     import {blankableLinks} from "$lib/store";
 
-    export let href: string;
-    export let overflow: boolean = false;
-    export let preload: true | "" | "hover" | "tap" | "off" | null | undefined = "tap";
+    interface Props {
+        href: string;
+        overflow?: boolean;
+        preload?: true | "" | "hover" | "tap" | "off" | null | undefined;
+        class?: string;
+        onclick?: (event: MouseEvent) => void;
+        children?: Snippet;
+    }
 
-    let ready: boolean = false;
-    let blankableLinks_value: boolean = true;
-    let target: NullableString = blankableLinks_value ? blankable(href) : null;
+    let {href, overflow = false, preload = "tap", class: className = "", onclick, children}: Props = $props();
 
-    blankableLinks.subscribe((value: boolean) => {
-        blankableLinks_value = value;
-    });
+    let ready: boolean = $state(false);
+    const target = $derived($blankableLinks ? "_blank" : null);
 
     onMount(() => {
         ready = true;
@@ -24,11 +25,11 @@
 
 {#if ready}
     <a {href} {target}
-       class="lt-agenda-clickable block group/clickable cursor-pointer {!overflow ? 'overflow-hidden' : ''} {$$props.class ?? ''}"
-       on:click
-       data-sveltekit-preload-data="{preload}"
+       class="lt-agenda-clickable block group/clickable cursor-pointer {!overflow ? 'overflow-hidden' : ''} {className}"
+       {onclick}
+       data-sveltekit-preload-data={preload}
        draggable="false"
        transition:fade>
-        <slot/>
+        {@render children?.()}
     </a>
 {/if}

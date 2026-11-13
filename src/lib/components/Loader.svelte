@@ -1,9 +1,15 @@
 <script lang="ts">
     import {Moon} from "svelte-loading-spinners";
 
-    export let size: number = 60;
+    interface Props {
+        size?: number;
+        class?: string;
+        style?: string;
+    }
+
+    let {size = 60, class: className = "", style}: Props = $props();
 </script>
 
-<div class="flex justify-center items-center {$$props.class ?? ''}" style="{$$props.style}">
+<div class="flex justify-center items-center {className}" {style}>
     <Moon duration="1s" {size} unit="px"/>
 </div>

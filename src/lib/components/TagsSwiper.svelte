@@ -1,48 +1,42 @@
 <script lang="ts">
-    import type {Tag} from "$lib/types";
+    import type {Locales, Tag} from "$lib/types";
     import {_, locale} from "svelte-i18n";
-    import {afterUpdate, createEventDispatcher} from 'svelte';
     import Swiper from "$lib/components/Swiper.svelte";
     import {defaultLocale} from "$lib/utils";
     import Pill from "$lib/components/Pill.svelte";
 
-    const dispatch = createEventDispatcher<{ tagSelect: { tag: Tag | null | undefined } }>();
+    interface Props {
+        tags: Tag[];
+        displayBtnAll?: boolean;
+        selectedTags?: Tag[];
+        tagClass?: string;
+        tagPart?: string;
+        class?: string;
+        ontagselect?: (tag: Tag | null) => void;
+    }
 
-    let key: string;
-
-    export let tags: Tag[];
-    export let displayBtnAll: boolean = false
-    export let selectedTags: Tag[] = [];
-
-    export let tagClass: string = ''
-
-    let pills: { title: string, selected: boolean, class: string, tag: Tag }[] = [];
+    let {tags, displayBtnAll = false, selectedTags = [], tagClass = "", tagPart = "tag", class: className = "", ontagselect}: Props = $props();
 
     let isDragging: boolean = false;
 
-    afterUpdate(() => {
-        pills = tags.map(t => {
-            const selected = selectedTags.some(x => x.name === t.name);
+    const pills = $derived(tags.map(t => {
+        const selected = selectedTags.some(x => x.name === t.name);
 
-            return {
-                title: t.public_name[$locale ?? defaultLocale],
-                selected,
-                class: selected ? `${tagClass} border-honey-500 bg-honey-500` : tagClass,
-                tag: t,
-            };
-        })
-    })
-
-    $: isDragging;
-    $: selectedTags;
-    $: key = ($locale ?? defaultLocale);
+        return {
+            title: t.public_name[($locale ?? defaultLocale) as Locales] ?? t.public_name.fr,
+            selected,
+            class: selected ? `${tagClass} border-honey-500 bg-honey-500` : tagClass,
+            part: selected ? `${tagPart} ${tagPart}-selected` : tagPart,
+            tag: t,
+        };
+    }));
 </script>
 
 <Swiper
-        class="text-nowrap pb-2 {$$props.class ?? ''}"
-        maxContent="{tags.length + (displayBtnAll ? 1:0)}"
-        on:dragging={(e) => {
-            if(!e.detail.isDragging) {
+        class="text-nowrap pb-2 {className}"
+        maxContent={tags.length + (displayBtnAll ? 1 : 0)}
+        ondragging={(dragging) => {
+            if (!dragging) {
                 setTimeout(() => {
                     isDragging = false
                 }, 100);
@@ -54,21 +48,23 @@
 >
     {#if displayBtnAll}
         <Pill
-            on:click={() => {
+            onclick={() => {
                 if (isDragging) return;
-                dispatch('tagSelect', {tag: null})
+                ontagselect?.(null)
             }}
-            class="{selectedTags && selectedTags.length===0? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
+            class="{selectedTags && selectedTags.length === 0 ? 'border-honey-500 bg-honey-500' : ''} {tagClass}"
+            part={selectedTags.length === 0 ? `${tagPart} ${tagPart}-selected` : tagPart}
             title={$_('agenda.tags.display_all')}
         />
     {/if}
     {#each pills as pill}
         <Pill
-            on:click={() => {
+            onclick={() => {
                 if (isDragging) return;
-                dispatch('tagSelect', {tag: pill.tag})
+                ontagselect?.(pill.tag)
             }}
             class={pill.class}
+            part={pill.part}
             title={pill.title}
         />
     {/each}
