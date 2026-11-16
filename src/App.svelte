@@ -37,7 +37,7 @@
     import appStyles from "./app.css?inline";
     import {blankableLinks} from "$lib/store";
     import {fetchEvent, getAllEvents, sort} from "$lib/event-utils";
-    import {now} from "$lib/date-utils";
+    import {isUpcoming, now} from "$lib/date-utils";
 
     register("fr", () => import("$lib/i18n/fr.json"));
     register("en", () => import("$lib/i18n/en.json"));
@@ -128,7 +128,7 @@
                 options: `get${EventType.highlights}`,
                 limit: eventsPerChunk,
             })
-            highlightsToDisplay = result?.data ?? [];
+            highlightsToDisplay = (result?.data ?? []).filter(isUpcoming);
             highlightsDisplayed = [...highlightsToDisplay];
 
             disableHighlightsLoadMore = true;
