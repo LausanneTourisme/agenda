@@ -27,8 +27,8 @@
 
     const media: Media | undefined = $derived(event.medias.find(x => x.is_cover));
 
-    const date = $derived(extractStartEndDate(event, selectedDates));
-    const sameDate = $derived(isSameDays(event, selectedDates));
+    const date = $derived(extractStartEndDate(event));
+    const sameDate = $derived(isSameDays(event));
 
     $effect(() => {
         try {
