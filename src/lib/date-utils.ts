@@ -13,7 +13,7 @@ export const randomDate = (start: Moment, end: Moment): Moment => {
     return moment(start.valueOf() + Math.random() * (end.valueOf() - start.valueOf()))
 }
 
-export const isSameDays = (event: Event, selectedDates: SelectedDates): Boolean => {
+export const isSameDays = (event: Event, selectedDates?: SelectedDates): Boolean => {
     const period: { start: Moment, end: Moment } | undefined = extractStartEndDate(event, selectedDates);
 
     return period?.start.format(dateFormat) === period?.end.format(dateFormat)
@@ -38,23 +38,33 @@ export const getDaysBetween = (startDate: Moment, endDate: Moment): ShortDay[] =
     return days;
 }
 
-export const extractStartEndDate = (event: Event, selectedDates: SelectedDates): {
+export const extractStartEndDate = (event: Event, selectedDates?: SelectedDates): {
     start: Moment,
     end: Moment
 } | undefined => {
-    let period: Period | null = null;
-    event.schedules.dates.forEach((schedule) => {
-        if (period != null) return;
-        period = findAvailablePeriod(schedule, moment(selectedDates.start), selectedDates.end ? moment(selectedDates.end) : undefined);
-    })
+    const from = moment.max(selectedDates ? moment(selectedDates.start, dateFormat) : moment(), moment()).startOf('day');
+    const to = selectedDates?.end ? moment(selectedDates.end, dateFormat) : undefined;
 
-    return period != null ? {
-        // @ts-ignore
-        start: moment(period.start),
-        // @ts-ignore
-        end: moment(period?.end ?? moment().endOf('year'))
-    } : undefined
+    let first: Period | null = null;
+    for (const schedule of event.schedules.dates) {
+        const period = findAvailablePeriod(schedule, from, to);
+        if (period && (!first || moment(period.start, dateFormat).isBefore(moment(first.start, dateFormat)))) {
+            first = period;
+        }
+    }
+
+    if (!first) return undefined;
+
+    const start = moment(first.start, dateFormat);
+    const end = moment.max(event.schedules.dates
+        .flatMap(schedule => schedule.periods)
+        .filter(period => moment(period.end, dateFormat).isSameOrAfter(start, 'day'))
+        .map(period => moment(period.end, dateFormat)));
+
+    return {start, end};
 };
+
+export const isUpcoming = (event: Event): boolean => extractStartEndDate(event) !== undefined;
 
 export const findAvailablePeriod = (schedule: ScheduleDate, start: Moment | null | undefined, end: Moment | null | undefined): Period | null => {
     const today: Moment = start ?? moment();

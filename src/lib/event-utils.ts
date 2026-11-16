@@ -10,8 +10,8 @@ import {
     type ShortDay,
     type Tag
 } from "$lib/types";
-import {dateFormat, findAvailablePeriod, getDaysBetween, now, sortDates} from "$lib/date-utils";
-import moment from "moment/moment";
+import {dateFormat, findAvailablePeriod, getDaysBetween, isUpcoming, now, sortDates} from "$lib/date-utils";
+import moment, {type Moment} from "moment/moment";
 import {arrayUniqueByKey, error, log, warn} from "$lib/utils";
 import Fuse from "fuse.js";
 
@@ -69,7 +69,13 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
         }
 
         if (options.onlyAvailable) {
-            const availableDays: ShortDay[] = getDaysBetween(options.startingDate ?? moment(), options.endingDate ?? moment().endOf('year'));
+            if (!isUpcoming(event)) {
+                logIgnoredEvent(events[index], 'expired')
+                return false;
+            }
+
+            const from: Moment = moment.max(options.startingDate ?? moment(), moment().startOf('day'));
+            const availableDays: ShortDay[] = getDaysBetween(from, options.endingDate ?? from.clone().add(1, 'week'));
 
             const availableDates: ScheduleDate[] = []
             // I love shadow reference ❤️
@@ -82,7 +88,7 @@ export const sort = (events: Event[], options: OptionsSortEvents = {}): Event[] 
                 //skip period if open_days doesn't contain one of the days
                 if (!isOpen) continue;
 
-                const period = findAvailablePeriod(d, options.startingDate, options.endingDate);
+                const period = findAvailablePeriod(d, from, options.endingDate);
 
                 if (!period) continue;
 
