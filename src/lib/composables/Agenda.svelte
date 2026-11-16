@@ -170,6 +170,7 @@
       locale: calendarLocales(locale),
       container: agendaElement,
       range: true,
+      minDate: new Date(),
       selectedDates: startDate && endDate ? [startDate, endDate] : undefined,
       multipleDatesSeparator: `,`,
       onSelect: ({ date }) => {
