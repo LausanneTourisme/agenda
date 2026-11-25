@@ -1,6 +1,7 @@
 import {
     type Event,
     type GqlItems,
+    type ApiMethod,
     type GqlOptions,
     type GqlResponse,
     type Locales,
@@ -189,61 +190,57 @@ export const searchEvents = (query: Query, locale: Locales = "en", events: Event
     return [...fuse.search(query.toLowerCase()).map(e => e.item)];
 };
 
-export const fetchEvent = async (url: string | null | undefined, options: GqlOptions): Promise<GqlItems | null> => {
+const requestApi = (url: string, params: Record<string, unknown>, method: ApiMethod): Promise<Response> => {
+    if (method === 'GET') {
+        const target = new URL(url, window.location.href);
+        Object.entries(params).forEach(([key, value]) => value != null && target.searchParams.set(key, String(value)));
+
+        return fetch(target, {method, mode: 'cors', redirect: 'follow', headers: {'Accept': 'application/json'}});
+    }
+
+    return fetch(url, {
+        method,
+        mode: 'cors',
+        redirect: 'follow',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+        body: JSON.stringify(params),
+    });
+}
+
+export const fetchEvent = async (url: string | null | undefined, options: GqlOptions, method: ApiMethod = 'POST'): Promise<GqlItems | null> => {
     if (!url) {
         error('no api url defined')
         return null;
     }
 
-    const response: Response = await fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        redirect: 'follow',
-        body: JSON.stringify(options),
-    });
+    const response: Response = await requestApi(url, options, method);
 
     const gqlResponse = await response.json();
 
     return gqlResponse?.result?.data?.items;
 }
 
-export const fetchAll = async (url: string | null | undefined): Promise<Event[] | null> => {
+export const fetchAll = async (url: string | null | undefined, method: ApiMethod = 'POST'): Promise<Event[] | null> => {
     if (!url) {
         error('no api url defined')
         return null;
     }
 
-    // @ts-ignore
-    const response: Response = await fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        redirect: 'follow',
-        body: JSON.stringify({
-            options: 'dumpEvents',
-        }),
-    });
+    const response: Response = await requestApi(url, {options: 'dumpEvents'}, method);
 
     const gqlResponse = await response.json() as GqlResponse;
 
     return gqlResponse?.result?.data?.items.data ?? [];
 }
 
-export async function getAllEvents(apiUrl: string | undefined | null): Promise<Event[]> {
+export async function getAllEvents(apiUrl: string | undefined | null, method: ApiMethod = 'POST'): Promise<Event[]> {
     if (!apiUrl) {
         error('no api url defined')
         return [];
     }
 
     log('getAllEvents: getting all events')
-    const items = await fetchAll(apiUrl);
+    const items = await fetchAll(apiUrl, method);
     log('getAllEvents: dump completed', {events: items})
 
     if (!items) return [];

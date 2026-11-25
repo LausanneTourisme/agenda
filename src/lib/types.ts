@@ -215,6 +215,8 @@ export type History = {
 
 export type Query = string | undefined | null;
 
+export type ApiMethod = 'GET' | 'POST'
+
 export type GqlOptions = {
     options: "search" | "getEvents" | "getHighlights" | "getevents" | "gethighlights" | 'dates' | 'tags'
     ignoreIds?: number[]

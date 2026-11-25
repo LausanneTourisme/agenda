@@ -10,6 +10,7 @@
                 highlightRemoveTitle: {attribute: "highlight-remove-title", type: "String"},
                 agendaRemoveTitle: {attribute: "agenda-remove-title", type: "String"},
                 apiUrl: {attribute: "api-url", type: "String"},
+                apiMethod: {attribute: "api-method", type: "String"},
                 startDate: {attribute: "start-date", type: "String"},
                 endDate: {attribute: "end-date", type: "String"},
                 baseUrl: {attribute: "base-url", type: "String"},
@@ -29,7 +30,7 @@
 
     import Highlights from "$lib/composables/Highlights.svelte";
     import {getLocaleFromNavigator, init, isLoading, locale, register} from "svelte-i18n";
-    import {type Event, EventType, type Locales} from "$lib/types";
+    import {type ApiMethod, type Event, EventType, type Locales} from "$lib/types";
     import Loader from "$lib/components/Loader.svelte";
     import Agenda from "$lib/composables/Agenda.svelte";
     import {onMount, untrack} from "svelte";
@@ -52,6 +53,7 @@
         highlightRemoveTitle?: boolean | string | null;
         agendaRemoveTitle?: boolean | string | null;
         apiUrl?: string | null;
+        apiMethod?: string | null;
         startDate?: string;
         endDate?: string | null;
         baseUrl: string;
@@ -69,6 +71,7 @@
         highlightRemoveTitle,
         agendaRemoveTitle,
         apiUrl,
+        apiMethod,
         startDate = now,
         endDate = now,
         baseUrl,
@@ -78,6 +81,8 @@
     }: Props = $props();
 
     const isTrue = (value: boolean | string | null | undefined): boolean => value === true || value === "true";
+
+    const requestMethod: ApiMethod = $derived(apiMethod?.toUpperCase() === "GET" ? "GET" : "POST");
 
     const initialLang = untrack(() => lang);
 
@@ -127,14 +132,14 @@
                 locale: key,
                 options: `get${EventType.highlights}`,
                 limit: eventsPerChunk,
-            })
+            }, requestMethod)
             highlightsToDisplay = (result?.data ?? []).filter(isUpcoming);
             highlightsDisplayed = [...highlightsToDisplay];
 
             disableHighlightsLoadMore = true;
             log("App: getting all events...")
 
-            events = sort(await getAllEvents(apiUrl));
+            events = sort(await getAllEvents(apiUrl, requestMethod));
             highlightsToDisplay = events.filter(e => e.highlight && e.languages.includes(key));
             disableHighlightsLoadMore = false;
             loadingAllEvents = false;

@@ -12,6 +12,7 @@ if (ltAgenda) {
         props: {
             lang: ltAgenda.dataset.lang ?? ltAgenda.dataset.locale ?? defaultLocale,
             apiUrl: ltAgenda.dataset.apiUrl ?? import.meta.env.VITE_API_URL,
+            apiMethod: ltAgenda.dataset.apiMethod ?? "POST",
             baseUrl: ltAgenda.dataset.baseUrl ?? import.meta.env.VITE_LT_URL,
             blankLinks: (ltAgenda.dataset.blank ? ltAgenda.dataset.blank === "true" : undefined) ?? true,
             disableAgenda: ltAgenda.dataset.disableAgenda ? ltAgenda.dataset.disableAgenda === "true" : undefined,
